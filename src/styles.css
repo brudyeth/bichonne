@@ -1,0 +1,111 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-sans: "Manrope", system-ui, sans-serif;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-night: var(--night);
+  --color-night-foreground: var(--night-foreground);
+  --color-whatsapp: var(--whatsapp);
+}
+
+:root {
+  --radius: 0.75rem;
+  --night: oklch(0.2 0.1 275);            /* #11114E */
+  --night-foreground: oklch(1 0 0);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.2 0.1 275);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.2 0.1 275);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.2 0.1 275);
+  --primary: oklch(0.69 0.18 48);          /* #F47721 */
+  --primary-foreground: oklch(0.2 0.1 275);
+  --secondary: oklch(0.94 0.008 250);      /* #E9EDF1 */
+  --secondary-foreground: oklch(0.2 0.1 275);
+  --muted: oklch(0.94 0.008 250);
+  --muted-foreground: oklch(0.42 0.05 270);
+  --accent: oklch(0.94 0.008 250);
+  --accent-foreground: oklch(0.2 0.1 275);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.88 0.015 260);
+  --input: oklch(0.85 0.02 260);
+  --ring: oklch(0.69 0.18 48);
+  --whatsapp: oklch(0.62 0.17 150);
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+  html { scroll-behavior: smooth; overflow-x: hidden; }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+  }
+  h1, h2, h3 { font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.01em; line-height: 0.95; font-weight: 700; }
+}
+
+@utility container-site {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 72rem;
+  padding-inline: 1.25rem;
+}
+
+@utility btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  min-height: 3rem; padding: 0.75rem 1.5rem; border-radius: 999px;
+  font-weight: 700; transition: transform .15s ease, background-color .15s ease;
+  &:hover { transform: translateY(-1px); }
+}
+@utility btn-primary {
+  background: var(--primary); color: var(--primary-foreground);
+  &:hover { background: color-mix(in oklab, var(--primary) 88%, white); }
+}
+@utility btn-outline-light {
+  border: 2px solid color-mix(in oklab, var(--night-foreground) 40%, transparent); color: var(--night-foreground);
+  &:hover { background: color-mix(in oklab, var(--night-foreground) 10%, transparent); }
+}
+@utility btn-outline {
+  border: 2px solid var(--foreground); color: var(--foreground);
+  &:hover { background: var(--secondary); }
+}
+@utility btn-whatsapp {
+  background: var(--whatsapp); color: var(--night-foreground);
+}
+
+@utility stripe-accent {
+  background-image: repeating-linear-gradient(-45deg, var(--primary) 0 10px, transparent 10px 20px);
+}
+
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@utility animate-rise { animation: rise .6s cubic-bezier(.2,.7,.2,1) both; }

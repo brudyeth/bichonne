@@ -1,0 +1,345 @@
+import { Link } from "@tanstack/react-router";
+import { useState, type ReactNode } from "react";
+import { Menu, Phone, X, MessageCircle, Facebook } from "lucide-react";
+import { Logo } from "./Logo";
+import { BUSINESS, whatsappLink } from "@/lib/business";
+
+const NAV = [
+  { to: "/", label: "Accueil" },
+  { to: "/formules", label: "Formules & tarifs" },
+  { to: "/contact", label: "Contact" },
+] as const;
+
+export function Facebook3DIcon({ className = "size-6" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 28 28" className={`${className} shrink-0`} aria-hidden="true">
+      <defs>
+        <linearGradient id="fb3d-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#186be0" />
+          <stop offset="50%" stopColor="#0d52b9" />
+          <stop offset="100%" stopColor="#083e91" />
+        </linearGradient>
+      </defs>
+      {/* 3D bottom bevel shadow */}
+      <rect x="1" y="2.5" width="26" height="24.5" rx="6.5" fill="#062e6e" />
+      {/* 3D front face with rich darker blue gradient */}
+      <rect x="1" y="1" width="26" height="24.5" rx="6.5" fill="url(#fb3d-grad)" />
+      {/* Top light reflection bevel */}
+      <path
+        d="M7.5 1.75h13a5.75 5.75 0 0 1 5.75 5.75v0.5a5.75 5.75 0 0 0-5.75-5.25h-13a5.75 5.75 0 0 0-5.75 5.25V7.5A5.75 5.75 0 0 1 7.5 1.75z"
+        fill="#ffffff"
+        opacity="0.3"
+      />
+      {/* White Facebook "f" */}
+      <path
+        d="M17.5 25.5v-9.5h3.2l.5-3.8h-3.7V9.8c0-1.1.3-1.8 1.8-1.8h2V4.6c-.7-.1-1.9-.2-3.3-.2-3.3 0-5.4 2-5.4 5.5v2.3H9.5v3.8h3.1v9.5h4.9z"
+        fill="#ffffff"
+      />
+    </svg>
+  );
+}
+
+export function Instagram3DIcon({ className = "size-6" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 28 28" className={`${className} shrink-0`} aria-hidden="true">
+      <defs>
+        <linearGradient id="insta3d-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#fa7e1e" />
+          <stop offset="35%" stopColor="#d62976" />
+          <stop offset="70%" stopColor="#962fbf" />
+          <stop offset="100%" stopColor="#4f5bd5" />
+        </linearGradient>
+      </defs>
+      {/* 3D bottom bevel shadow */}
+      <rect x="1" y="2.5" width="26" height="24.5" rx="6.5" fill="#3b1c61" />
+      {/* 3D front face with rich Instagram gradient */}
+      <rect x="1" y="1" width="26" height="24.5" rx="6.5" fill="url(#insta3d-grad)" />
+      {/* Top light reflection bevel */}
+      <path
+        d="M7.5 1.75h13a5.75 5.75 0 0 1 5.75 5.75v0.5a5.75 5.75 0 0 0-5.75-5.25h-13a5.75 5.75 0 0 0-5.75 5.25V7.5A5.75 5.75 0 0 1 7.5 1.75z"
+        fill="#ffffff"
+        opacity="0.3"
+      />
+      {/* Camera symbol */}
+      <rect
+        x="6.8"
+        y="6.8"
+        width="14.4"
+        height="14.4"
+        rx="4"
+        fill="none"
+        stroke="#ffffff"
+        strokeWidth="1.8"
+      />
+      <circle cx="14" cy="14" r="3.6" fill="none" stroke="#ffffff" strokeWidth="1.8" />
+      <circle cx="18.2" cy="9.8" r="1.1" fill="#ffffff" />
+    </svg>
+  );
+}
+
+export function Header() {
+  const [open, setOpen] = useState(false);
+  return (
+    <header className="sticky top-0 z-40 bg-night text-night-foreground border-b border-night-foreground/10">
+      <div className="container-site flex h-18 items-center justify-between gap-4 py-3">
+        <Link to="/" aria-label="Accueil Bichonne ta Caisse">
+          <Logo light />
+        </Link>
+        <nav className="hidden lg:flex items-center gap-7 text-sm font-semibold">
+          {NAV.map((n) => (
+            <Link
+              key={n.to}
+              to={n.to}
+              className="opacity-80 hover:opacity-100"
+              activeProps={{ className: "!opacity-100 text-primary" }}
+              activeOptions={{ exact: true }}
+            >
+              {n.label}
+            </Link>
+          ))}
+        </nav>
+        <div className="hidden lg:flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
+            <a href={BUSINESS.phoneTel} className="flex items-center gap-2 font-bold">
+              <Phone className="size-4 text-primary" />
+              {BUSINESS.phoneDisplay}
+            </a>
+            <a
+              href={BUSINESS.facebookUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Retrouvez-nous sur Facebook"
+              title="Retrouvez-nous sur Facebook"
+              className="inline-flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+            >
+              <Facebook3DIcon className="size-6 sm:size-7" />
+            </a>
+            <a
+              href={BUSINESS.instagramUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Retrouvez-nous sur Instagram"
+              title="Retrouvez-nous sur Instagram"
+              className="inline-flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+            >
+              <Instagram3DIcon className="size-6 sm:size-7" />
+            </a>
+          </div>
+          <Link to="/contact" className="btn btn-primary !min-h-10 !py-2 text-sm">
+            Demander un devis
+          </Link>
+        </div>
+        <div className="flex lg:hidden items-center gap-2">
+          <a
+            href={BUSINESS.phoneTel}
+            aria-label={`Appeler le ${BUSINESS.phoneDisplay}`}
+            className="grid size-11 place-items-center rounded-full bg-primary text-primary-foreground"
+          >
+            <Phone className="size-5" />
+          </a>
+          <a
+            href={BUSINESS.facebookUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Retrouvez-nous sur Facebook"
+            title="Retrouvez-nous sur Facebook"
+            className="grid size-11 place-items-center rounded-full border border-night-foreground/20 hover:scale-105 active:scale-95 transition-transform"
+          >
+            <Facebook3DIcon className="size-6" />
+          </a>
+          <a
+            href={BUSINESS.instagramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Retrouvez-nous sur Instagram"
+            title="Retrouvez-nous sur Instagram"
+            className="grid size-11 place-items-center rounded-full border border-night-foreground/20 hover:scale-105 active:scale-95 transition-transform"
+          >
+            <Instagram3DIcon className="size-6" />
+          </a>
+          <button
+            onClick={() => setOpen(!open)}
+            aria-label="Menu"
+            aria-expanded={open}
+            className="grid size-11 place-items-center rounded-full border border-night-foreground/30"
+          >
+            {open ? <X className="size-5" /> : <Menu className="size-5" />}
+          </button>
+        </div>
+      </div>
+      {open && (
+        <nav className="lg:hidden border-t border-night-foreground/10 container-site py-4 flex flex-col gap-1">
+          {NAV.map((n) => (
+            <Link
+              key={n.to}
+              to={n.to}
+              onClick={() => setOpen(false)}
+              className="py-3 font-display text-2xl uppercase"
+            >
+              {n.label}
+            </Link>
+          ))}
+          <div className="flex items-center gap-3 py-3">
+            <a href={BUSINESS.phoneTel} className="font-bold flex items-center gap-2">
+              <Phone className="size-4 text-primary" />
+              {BUSINESS.phoneDisplay}
+            </a>
+            <a
+              href={BUSINESS.facebookUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Retrouvez-nous sur Facebook"
+              title="Retrouvez-nous sur Facebook"
+              className="inline-flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+            >
+              <Facebook3DIcon className="size-6" />
+            </a>
+            <a
+              href={BUSINESS.instagramUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Retrouvez-nous sur Instagram"
+              title="Retrouvez-nous sur Instagram"
+              className="inline-flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+            >
+              <Instagram3DIcon className="size-6" />
+            </a>
+          </div>
+        </nav>
+      )}
+    </header>
+  );
+}
+
+export function Footer() {
+  return (
+    <footer className="bg-night text-night-foreground">
+      <div className="h-2 stripe-accent opacity-80" />
+      <div className="container-site grid gap-10 py-14 md:grid-cols-3">
+        <div className="space-y-3">
+          <Logo light />
+          <p className="text-sm opacity-75 max-w-xs">
+            Nettoyage automobile à domicile. Intervention dans la métropole lilloise.
+          </p>
+        </div>
+        <div className="space-y-2 text-sm">
+          <p className="font-display text-lg uppercase text-primary">Prestations</p>
+          <Link to="/formules" className="block opacity-80 hover:opacity-100">
+            Formules & tarifs
+          </Link>
+          <Link to="/contact" className="block opacity-80 hover:opacity-100">
+            Demande de devis
+          </Link>
+        </div>
+        <div className="space-y-2 text-sm">
+          <p className="font-display text-lg uppercase text-primary">Contact</p>
+          <a href={BUSINESS.phoneTel} className="block text-lg font-bold">
+            {BUSINESS.phoneDisplay}
+          </a>
+          <a
+            href={whatsappLink()}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block opacity-80 hover:opacity-100"
+          >
+            WhatsApp
+          </a>
+          <a
+            href={BUSINESS.facebookUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Suivez-nous sur Facebook (ouvre un nouvel onglet)"
+            className="flex items-center gap-2 opacity-80 hover:opacity-100 transition-opacity"
+          >
+            <Facebook3DIcon className="size-4.5" />
+            <span>Suivez-nous sur Facebook</span>
+          </a>
+          <a
+            href={BUSINESS.instagramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Suivez-nous sur Instagram (ouvre un nouvel onglet)"
+            className="flex items-center gap-2 opacity-80 hover:opacity-100 transition-opacity"
+          >
+            <Instagram3DIcon className="size-4.5" />
+            <span>Suivez-nous sur Instagram</span>
+          </a>
+          <p className="opacity-80">{BUSINESS.area}</p>
+        </div>
+      </div>
+      <div className="border-t border-night-foreground/10">
+        <div className="container-site flex flex-wrap gap-x-6 gap-y-2 py-5 text-xs opacity-70">
+          <span suppressHydrationWarning>
+            © {new Date().getFullYear()} {BUSINESS.name}
+          </span>
+          <Link to="/mentions-legales">Mentions légales</Link>
+          <Link to="/confidentialite">Politique de confidentialité</Link>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+export function WhatsAppFab() {
+  return (
+    <a
+      href={whatsappLink()}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Nous écrire sur WhatsApp"
+      className="fixed bottom-5 right-5 z-50 grid size-14 place-items-center rounded-full btn-whatsapp shadow-lg"
+    >
+      <MessageCircle className="size-7" />
+    </a>
+  );
+}
+
+export function PageHero({
+  eyebrow,
+  title,
+  children,
+}: {
+  eyebrow: string;
+  title: string;
+  children?: ReactNode;
+}) {
+  return (
+    <section className="bg-night text-night-foreground">
+      <div className="container-site py-14 md:py-20 animate-rise">
+        <p className="text-sm font-bold uppercase tracking-widest text-primary">{eyebrow}</p>
+        <h1 className="mt-3 text-5xl md:text-6xl">{title}</h1>
+        {children && <div className="mt-4 max-w-2xl opacity-80">{children}</div>}
+      </div>
+    </section>
+  );
+}
+
+export function ContactBand() {
+  return (
+    <section className="bg-primary">
+      <div className="container-site flex flex-col gap-6 py-12 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h2 className="text-4xl md:text-5xl text-night">On s'occupe de votre caisse ?</h2>
+          <p className="mt-2 font-medium text-night/80">
+            Contactez-nous pour organiser votre nettoyage à domicile.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <a href={BUSINESS.phoneTel} className="btn bg-night text-night-foreground">
+            <Phone className="size-4" />
+            {BUSINESS.phoneDisplay}
+          </a>
+          <a
+            href={whatsappLink()}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-whatsapp"
+          >
+            <MessageCircle className="size-4" />
+            WhatsApp
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
