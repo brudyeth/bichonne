@@ -6,15 +6,18 @@ export const Route = createFileRoute("/confidentialite")({
     meta: [
       { title: "Politique de confidentialité — Bichonne ta Caisse" },
       { name: "description", content: "Politique de confidentialité du site Bichonne ta Caisse." },
+      { property: "og:site_name", content: "Bichonne ta Caisse" },
       { property: "og:title", content: "Politique de confidentialité — Bichonne ta Caisse" },
       {
         property: "og:description",
         content: "Comment vos données sont traitées sur le site Bichonne ta Caisse.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://bichonnetacaisse.fr/confidentialite" },
       { name: "twitter:card", content: "summary" },
-      { name: "robots", content: "noindex" },
+      { name: "robots", content: "index, follow" },
     ],
+    links: [{ rel: "canonical", href: "https://bichonnetacaisse.fr/confidentialite" }],
   }),
   component: () => (
     <>

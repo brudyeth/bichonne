@@ -7,12 +7,15 @@ export const Route = createFileRoute("/mentions-legales")({
     meta: [
       { title: "Mentions légales — Bichonne ta Caisse" },
       { name: "description", content: "Mentions légales du site Bichonne ta Caisse." },
+      { property: "og:site_name", content: "Bichonne ta Caisse" },
       { property: "og:title", content: "Mentions légales — Bichonne ta Caisse" },
       { property: "og:description", content: "Mentions légales du site Bichonne ta Caisse." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://bichonnetacaisse.fr/mentions-legales" },
       { name: "twitter:card", content: "summary" },
-      { name: "robots", content: "noindex" },
+      { name: "robots", content: "index, follow" },
     ],
+    links: [{ rel: "canonical", href: "https://bichonnetacaisse.fr/mentions-legales" }],
   }),
   component: () => (
     <>

@@ -79,13 +79,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Bichonne ta Caisse — Nettoyage auto à domicile" },
+      { title: "Nettoyage voiture à domicile Lille | Bichonne ta Caisse" },
       {
         name: "description",
-        content: "Nettoyage automobile à domicile dans la métropole lilloise.",
+        content:
+          "Nettoyage intérieur, extérieur et complet de votre véhicule à domicile à Lille, Wambrechies et dans la métropole lilloise. Découvrez nos formules dès 49 €.",
       },
+      { property: "og:site_name", content: "Bichonne ta Caisse" },
       { property: "og:type", content: "website" },
+      { property: "og:locale", content: "fr_FR" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "robots", content: "index, follow" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -96,6 +100,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "apple-touch-icon", href: "/favicon.ico" },
     ],
   }),
   shellComponent: RootShell,

@@ -84,3 +84,46 @@ describe("Business configuration & pricing", () => {
     expect(BUSINESS.instagramUrl).toBe("https://www.instagram.com/bicho.nnetacaisse/");
   });
 });
+
+describe("SEO metadata configuration", () => {
+  it("has exact expected SEO title, description and canonical URL for homepage", async () => {
+    const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
+    const indexRoute = router.routesById["/"];
+    const headResult = (
+      indexRoute.options as unknown as {
+        head?: () => {
+          meta?: Array<Record<string, string>>;
+          links?: Array<Record<string, string>>;
+        };
+      }
+    ).head?.();
+
+    const titleMeta = headResult?.meta?.find((m) => "title" in m);
+    const descMeta = headResult?.meta?.find((m) => m["name"] === "description");
+    const canonicalLink = headResult?.links?.find((l) => l["rel"] === "canonical");
+
+    expect(titleMeta?.title).toBe("Nettoyage voiture à domicile Lille | Bichonne ta Caisse");
+    expect(descMeta?.content).toBe(
+      "Nettoyage intérieur, extérieur et complet de votre véhicule à domicile à Lille, Wambrechies et dans la métropole lilloise. Découvrez nos formules dès 49 €.",
+    );
+    expect(canonicalLink?.href).toBe("https://bichonnetacaisse.fr/");
+  });
+
+  it("has canonical links for formules and contact routes", () => {
+    const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
+
+    const formulesRoute = router.routesById["/formules"];
+    const formulesHead = (
+      formulesRoute.options as unknown as { head?: () => { links?: Array<Record<string, string>> } }
+    ).head?.();
+    const formulesCanonical = formulesHead?.links?.find((l) => l["rel"] === "canonical");
+    expect(formulesCanonical?.href).toBe("https://bichonnetacaisse.fr/formules");
+
+    const contactRoute = router.routesById["/contact"];
+    const contactHead = (
+      contactRoute.options as unknown as { head?: () => { links?: Array<Record<string, string>> } }
+    ).head?.();
+    const contactCanonical = contactHead?.links?.find((l) => l["rel"] === "canonical");
+    expect(contactCanonical?.href).toBe("https://bichonnetacaisse.fr/contact");
+  });
+});

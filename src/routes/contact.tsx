@@ -15,20 +15,29 @@ export const Route = createFileRoute("/contact")({
   }),
   head: () => ({
     meta: [
-      { title: "Contact & devis — Bichonne ta Caisse" },
+      { title: "Devis Nettoyage Voiture à Domicile Lille | Bichonne ta Caisse" },
       {
         name: "description",
         content:
-          "Demandez un devis pour le nettoyage de votre voiture à domicile : téléphone 06 59 14 09 39, WhatsApp ou formulaire.",
+          "Demandez votre devis gratuit de nettoyage auto à domicile à Lille, Wambrechies et métropole lilloise : téléphone 06 59 14 09 39, WhatsApp ou formulaire rapide.",
       },
-      { property: "og:title", content: "Contact & devis — Bichonne ta Caisse" },
+      { property: "og:site_name", content: "Bichonne ta Caisse" },
+      {
+        property: "og:title",
+        content: "Devis Nettoyage Voiture à Domicile Lille | Bichonne ta Caisse",
+      },
       {
         property: "og:description",
-        content: "Appelez, écrivez sur WhatsApp ou préparez votre demande en ligne.",
+        content:
+          "Appelez le 06 59 14 09 39, écrivez-nous sur WhatsApp ou préparez votre demande en ligne pour une intervention rapide à domicile.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://bichonnetacaisse.fr/contact" },
+      { property: "og:locale", content: "fr_FR" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "robots", content: "index, follow" },
     ],
+    links: [{ rel: "canonical", href: "https://bichonnetacaisse.fr/contact" }],
   }),
   component: Page,
 });
@@ -86,8 +95,10 @@ function Page() {
 
   return (
     <>
-      <PageHero eyebrow="Contact & devis" title="Parlons de votre véhicule">
-        Appelez-nous, écrivez-nous sur WhatsApp ou préparez votre demande ci-dessous.
+      <PageHero eyebrow="Contact & Devis gratuit" title="Devis nettoyage auto à domicile à Lille">
+        Intervention directement à votre domicile ou sur votre lieu de travail à Lille, Wambrechies,
+        Marcq-en-Barœul, Lambersart et communes voisines. Appelez-nous au 06 59 14 09 39,
+        écrivez-nous sur WhatsApp ou préparez votre demande ci-dessous.
       </PageHero>
       <section className="container-site grid gap-10 py-14 lg:grid-cols-[1fr_1.4fr]">
         <div className="space-y-4">
