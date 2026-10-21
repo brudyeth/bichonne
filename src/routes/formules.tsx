@@ -23,9 +23,13 @@ export const Route = createFileRoute("/formules")({
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://bichonnetacaisse.fr/formules" },
-      { property: "og:image", content: "https://bichonnetacaisse.fr/og-image.jpg" },
-      { property: "og:image:width", content: "1280" },
-      { property: "og:image:height", content: "960" },
+      {
+        property: "og:image",
+        content: "https://bichonnetacaisse.fr/brand/partage-reseaux-1200x630.png",
+      },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:type", content: "image/png" },
       {
         property: "og:image:alt",
         content: "Formules et tarifs de nettoyage automobile à domicile - Bichonne ta Caisse Lille",
@@ -41,7 +45,10 @@ export const Route = createFileRoute("/formules")({
         content:
           "Découvrez nos formules de nettoyage auto à domicile à Lille : extérieur 49 €, intérieur 69 € et complet 109 €. Intervention dans la métropole lilloise.",
       },
-      { name: "twitter:image", content: "https://bichonnetacaisse.fr/og-image.jpg" },
+      {
+        name: "twitter:image",
+        content: "https://bichonnetacaisse.fr/brand/partage-reseaux-1200x630.png",
+      },
       { name: "robots", content: "index, follow" },
     ],
     links: [{ rel: "canonical", href: "https://bichonnetacaisse.fr/formules" }],

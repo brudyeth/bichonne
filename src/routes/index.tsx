@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Home, Receipt, MessageCircle, MapPin, Phone, Car, ArrowRight } from "lucide-react";
 import heroImg from "@/assets/hero-car.jpg";
 import heroWebp from "@/assets/hero-car.webp";
-import logoImg from "@/assets/logo-full.jpg";
+import logoImg from "@/assets/logo-full.png";
 import logoWebp from "@/assets/logo-full.webp";
 import { FormulaCards, CareCards } from "@/components/site/Cards";
 import { ContactBand } from "@/components/site/Layout";
@@ -247,7 +247,7 @@ function Index() {
                 className="relative aspect-[4/3] w-full rounded-2xl object-cover shadow-xl"
               />
             </picture>
-            <div className="absolute -top-[96px] right-1 sm:-top-[120px] sm:-right-4 lg:-top-[136px] lg:-right-6 size-36 sm:size-48 lg:size-56 xl:size-60 rounded-full border-4 sm:border-6 lg:border-8 border-night shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden bg-night ring-4 ring-primary/90 z-20">
+            <div className="absolute -top-[96px] right-1 sm:-top-[120px] sm:-right-4 lg:-top-[136px] lg:-right-6 size-36 sm:size-48 lg:size-56 xl:size-60 drop-shadow-[0_20px_50px_rgba(0,0,0,0.6)] z-20">
               <picture>
                 <source type="image/webp" srcSet={logoWebp} />
                 <img
@@ -257,7 +257,7 @@ function Index() {
                   height={240}
                   loading="eager"
                   decoding="async"
-                  className="size-full object-cover"
+                  className="size-full object-contain"
                 />
               </picture>
             </div>

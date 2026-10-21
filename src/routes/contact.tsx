@@ -33,9 +33,13 @@ export const Route = createFileRoute("/contact")({
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://bichonnetacaisse.fr/contact" },
-      { property: "og:image", content: "https://bichonnetacaisse.fr/og-image.jpg" },
-      { property: "og:image:width", content: "1280" },
-      { property: "og:image:height", content: "960" },
+      {
+        property: "og:image",
+        content: "https://bichonnetacaisse.fr/brand/partage-reseaux-1200x630.png",
+      },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:type", content: "image/png" },
       {
         property: "og:image:alt",
         content: "Devis nettoyage voiture à domicile - Bichonne ta Caisse Lille",
@@ -51,7 +55,10 @@ export const Route = createFileRoute("/contact")({
         content:
           "Demandez votre devis gratuit de nettoyage auto à domicile à Lille, Wambrechies et métropole lilloise : téléphone 06 59 14 09 39, WhatsApp ou formulaire rapide.",
       },
-      { name: "twitter:image", content: "https://bichonnetacaisse.fr/og-image.jpg" },
+      {
+        name: "twitter:image",
+        content: "https://bichonnetacaisse.fr/brand/partage-reseaux-1200x630.png",
+      },
       { name: "robots", content: "index, follow" },
     ],
     links: [{ rel: "canonical", href: "https://bichonnetacaisse.fr/contact" }],
