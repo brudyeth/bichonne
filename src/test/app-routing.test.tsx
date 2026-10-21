@@ -51,13 +51,17 @@ describe("Business configuration & pricing", () => {
     const cuir = CARES.find((c) => c.id === "soin-cuir");
     const depoil = CARES.find((c) => c.id === "depoilage");
 
-    expect(intPlast?.name).toBe("Rénovation des plastiques intérieurs");
+    expect(intPlast?.name).toBe("Soin & protection des plastiques intérieurs");
     expect(intPlast?.price).toBe(20);
-    expect(intPlast?.short).toBe("Redonnez profondeur et éclat aux surfaces intérieures.");
+    expect(intPlast?.short).toBe(
+      "Application d'un soin protecteur pour raviver l'aspect des plastiques, améliorer leur finition et les protéger au quotidien.",
+    );
 
-    expect(extPlast?.name).toBe("Rénovation des plastiques extérieurs");
+    expect(extPlast?.name).toBe("Soin & protection des plastiques extérieurs");
     expect(extPlast?.price).toBe(20);
-    expect(extPlast?.short).toBe("Ravivez les plastiques ternis pour une finition soignée.");
+    expect(extPlast?.short).toBe(
+      "Application d'un soin protecteur pour raviver l'éclat des plastiques extérieurs et leur redonner une finition soignée.",
+    );
 
     expect(odeur?.name).toBe("Traitement anti-odeurs");
     expect(odeur?.price).toBe(15);
@@ -114,10 +118,25 @@ describe("SEO metadata configuration", () => {
 
     const formulesRoute = router.routesById["/formules"];
     const formulesHead = (
-      formulesRoute.options as unknown as { head?: () => { links?: Array<Record<string, string>> } }
+      formulesRoute.options as unknown as {
+        head?: () => {
+          meta?: Array<Record<string, string>>;
+          links?: Array<Record<string, string>>;
+        };
+      }
     ).head?.();
     const formulesCanonical = formulesHead?.links?.find((l) => l["rel"] === "canonical");
     expect(formulesCanonical?.href).toBe("https://bichonnetacaisse.fr/formules");
+
+    const formulesTitle = formulesHead?.meta?.find((m) => "title" in m);
+    expect(formulesTitle?.title).toBe(
+      "Tarifs nettoyage auto à domicile Lille | Bichonne ta Caisse",
+    );
+
+    const formulesDesc = formulesHead?.meta?.find((m) => m["name"] === "description");
+    expect(formulesDesc?.content).toBe(
+      "Découvrez nos formules de nettoyage auto à domicile à Lille : extérieur 49 €, intérieur 69 € et complet 109 €. Intervention dans la métropole lilloise.",
+    );
 
     const contactRoute = router.routesById["/contact"];
     const contactHead = (

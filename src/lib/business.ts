@@ -72,16 +72,18 @@ export type Care = {
 export const CARES: Care[] = [
   {
     id: "plastiques-int",
-    name: "Rénovation des plastiques intérieurs",
+    name: "Soin & protection des plastiques intérieurs",
     price: 20,
-    short: "Redonnez profondeur et éclat aux surfaces intérieures.",
+    short:
+      "Application d'un soin protecteur pour raviver l'aspect des plastiques, améliorer leur finition et les protéger au quotidien.",
     icon: "layers",
   },
   {
     id: "plastiques-ext",
-    name: "Rénovation des plastiques extérieurs",
+    name: "Soin & protection des plastiques extérieurs",
     price: 20,
-    short: "Ravivez les plastiques ternis pour une finition soignée.",
+    short:
+      "Application d'un soin protecteur pour raviver l'éclat des plastiques extérieurs et leur redonner une finition soignée.",
     icon: "shield-check",
   },
   {

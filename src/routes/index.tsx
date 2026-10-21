@@ -117,6 +117,13 @@ export const Route = createFileRoute("/")({
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://bichonnetacaisse.fr/" },
+      { property: "og:image", content: "https://bichonnetacaisse.fr/og-image.jpg" },
+      { property: "og:image:width", content: "1280" },
+      { property: "og:image:height", content: "960" },
+      {
+        property: "og:image:alt",
+        content: "Nettoyage automobile à domicile - Bichonne ta Caisse Lille",
+      },
       { property: "og:locale", content: "fr_FR" },
       { name: "twitter:card", content: "summary_large_image" },
       {
@@ -128,6 +135,7 @@ export const Route = createFileRoute("/")({
         content:
           "Nettoyage intérieur, extérieur et complet de votre véhicule à domicile à Lille, Wambrechies et dans la métropole lilloise. Découvrez nos formules dès 49 €.",
       },
+      { name: "twitter:image", content: "https://bichonnetacaisse.fr/og-image.jpg" },
       { name: "robots", content: "index, follow" },
     ],
     links: [{ rel: "canonical", href: "https://bichonnetacaisse.fr/" }],
@@ -300,8 +308,8 @@ function Index() {
             Les finitions qui font la différence
           </h2>
           <p className="mt-2 mb-10 text-base text-muted-foreground max-w-2xl">
-            Rénovation des plastiques intérieurs et extérieurs, traitement anti-odeurs, soin du cuir
-            et dépoilage intensif pour aller plus loin dans le détail.
+            Soin & protection des plastiques intérieurs et extérieurs, traitement anti-odeurs, soin
+            du cuir et dépoilage intensif pour aller plus loin dans le détail.
           </p>
           <CareCards />
           <div className="mt-10 flex flex-wrap gap-3">

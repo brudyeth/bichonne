@@ -87,8 +87,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:site_name", content: "Bichonne ta Caisse" },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: "https://bichonnetacaisse.fr/og-image.jpg" },
       { property: "og:locale", content: "fr_FR" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: "https://bichonnetacaisse.fr/og-image.jpg" },
       { name: "robots", content: "index, follow" },
     ],
     links: [

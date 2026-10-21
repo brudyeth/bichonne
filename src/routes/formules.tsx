@@ -5,26 +5,43 @@ import { ContactBand, PageHero } from "@/components/site/Layout";
 export const Route = createFileRoute("/formules")({
   head: () => ({
     meta: [
-      { title: "Formules & Tarifs Nettoyage Auto à Domicile Lille | Bichonne ta Caisse" },
+      { title: "Tarifs nettoyage auto à domicile Lille | Bichonne ta Caisse" },
       {
         name: "description",
         content:
-          "Consultez nos tarifs de nettoyage automobile à domicile à Lille et dans la métropole : extérieur dès 49 €, intérieur 69 €, formule complète 109 €. Prix unique garanti.",
+          "Découvrez nos formules de nettoyage auto à domicile à Lille : extérieur 49 €, intérieur 69 € et complet 109 €. Intervention dans la métropole lilloise.",
       },
       { property: "og:site_name", content: "Bichonne ta Caisse" },
       {
         property: "og:title",
-        content: "Formules & Tarifs Nettoyage Auto à Domicile Lille | Bichonne ta Caisse",
+        content: "Tarifs nettoyage auto à domicile Lille | Bichonne ta Caisse",
       },
       {
         property: "og:description",
         content:
-          "Extérieur 49 €, intérieur 69 €, complet 109 €. Prix transparents identiques pour tous les types de véhicules.",
+          "Découvrez nos formules de nettoyage auto à domicile à Lille : extérieur 49 €, intérieur 69 € et complet 109 €. Intervention dans la métropole lilloise.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://bichonnetacaisse.fr/formules" },
+      { property: "og:image", content: "https://bichonnetacaisse.fr/og-image.jpg" },
+      { property: "og:image:width", content: "1280" },
+      { property: "og:image:height", content: "960" },
+      {
+        property: "og:image:alt",
+        content: "Formules et tarifs de nettoyage automobile à domicile - Bichonne ta Caisse Lille",
+      },
       { property: "og:locale", content: "fr_FR" },
       { name: "twitter:card", content: "summary_large_image" },
+      {
+        name: "twitter:title",
+        content: "Tarifs nettoyage auto à domicile Lille | Bichonne ta Caisse",
+      },
+      {
+        name: "twitter:description",
+        content:
+          "Découvrez nos formules de nettoyage auto à domicile à Lille : extérieur 49 €, intérieur 69 € et complet 109 €. Intervention dans la métropole lilloise.",
+      },
+      { name: "twitter:image", content: "https://bichonnetacaisse.fr/og-image.jpg" },
       { name: "robots", content: "index, follow" },
     ],
     links: [{ rel: "canonical", href: "https://bichonnetacaisse.fr/formules" }],
@@ -37,7 +54,7 @@ function Page() {
     <>
       <PageHero
         eyebrow="Prestations & Tarifs à domicile"
-        title="Formules de nettoyage automobile à domicile"
+        title="Formules de nettoyage automobile à domicile à Lille"
       >
         Les tarifs sont identiques pour tous les types de véhicules (citadine, berline, SUV). Aucun
         frais caché dans la métropole lilloise.
@@ -53,7 +70,7 @@ function Page() {
           <p className="text-sm font-bold uppercase tracking-widest text-primary">Soins ciblés</p>
           <h2 className="mt-2 text-4xl sm:text-5xl">Les finitions qui font la différence</h2>
           <p className="mt-2 mb-8 max-w-2xl text-base text-muted-foreground">
-            Des soins ciblés pour aller plus loin dans le détail : rénovation des plastiques
+            Des soins ciblés pour aller plus loin dans le détail : soin & protection des plastiques
             intérieurs et extérieurs, traitement anti-odeurs, soin du cuir et dépoilage intensif.
           </p>
           <CareCards />
@@ -114,8 +131,14 @@ function Page() {
                 Comment réserver une date ?
               </h3>
               <p className="mt-2 text-sm text-muted-foreground">
-                Un simple appel au 06 59 14 09 39, un message sur WhatsApp ou via le formulaire de
-                devis en ligne : nous convenons ensemble du jour et du créneau qui vous arrangent.
+                Un simple appel au 06 59 14 09 39, un message sur WhatsApp ou via le{" "}
+                <Link
+                  to="/contact"
+                  className="font-medium text-foreground underline underline-offset-2 hover:text-primary transition-colors"
+                >
+                  formulaire de devis en ligne
+                </Link>{" "}
+                : nous convenons ensemble du jour et du créneau qui vous arrangent.
               </p>
             </div>
           </div>
