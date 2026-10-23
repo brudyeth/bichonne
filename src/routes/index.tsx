@@ -168,24 +168,25 @@ function Index() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(LOCAL_BUSINESS_SCHEMA) }}
       />
-      <section className="relative overflow-hidden bg-night text-night-foreground">
-        <div className="container-site grid items-center gap-8 lg:gap-12 pt-6 sm:pt-8 md:pt-10 pb-12 sm:pb-16 md:pb-20 lg:grid-cols-[1.1fr_1fr]">
-          <div className="animate-rise">
-            <div className="mb-4 sm:mb-6 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-primary">
-              Lavage automobile à domicile
+      <section className="relative overflow-hidden bg-night text-night-foreground pt-6 sm:pt-8 md:pt-10 pb-12 sm:pb-16 md:pb-20">
+        <div className="container-site">
+          {/* NIVEAU SUPÉRIEUR : Titre principal (gauche) & Photographie avec Logo officiel (droite) */}
+          <div className="grid lg:grid-cols-[1.1fr_1fr] items-start gap-8 lg:gap-12 xl:gap-16">
+            {/* Colonne gauche : Badge & Grand Titre */}
+            <div className="animate-rise">
+              <div className="mb-4 sm:mb-6 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-primary">
+                Lavage automobile à domicile
+              </div>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-5xl xl:text-6xl font-display font-bold uppercase tracking-wide leading-[1.08]">
+                Nettoyage automobile à domicile
+                <br />
+                <span className="text-primary">à Lille</span> et métropole lilloise
+              </h1>
             </div>
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl">
-              Nettoyage automobile à domicile
-              <br />
-              <span className="text-primary">à Lille</span> et métropole lilloise
-            </h1>
-            <p className="mt-3 text-base sm:text-xl font-display font-bold uppercase tracking-wide text-white/95">
-              Votre voiture propre, sans bouger de chez vous
-            </p>
 
-            {/* Bloc visuel mobile : Photo avec Logo superposé sur le coin haut droite */}
-            <div className="lg:hidden my-6 flex justify-center">
-              <div className="relative w-full max-w-[460px]">
+            {/* Colonne droite : Photo avec Logo officiel superposé */}
+            <div className="relative mt-2 lg:mt-0">
+              <div className="relative w-full max-w-[520px] mx-auto lg:ml-auto lg:mr-0">
                 <div className="absolute -inset-1.5 sm:-inset-2 rounded-2xl stripe-accent opacity-20" />
                 <picture>
                   <source type="image/webp" srcSet={heroWebp} />
@@ -197,18 +198,18 @@ function Index() {
                     loading="eager"
                     fetchPriority="high"
                     decoding="async"
-                    className="relative aspect-[16/10] w-full rounded-2xl object-cover shadow-xl"
+                    className="relative aspect-[4/3] sm:aspect-[4/3] lg:aspect-[5/4] w-full rounded-2xl object-cover shadow-2xl"
                   />
                 </picture>
-                {/* Logo officiel superposé discrètement sur le coin haut droite */}
-                <div className="absolute -top-3.5 right-1 sm:-right-2 size-20 sm:size-22 drop-shadow-md z-20">
+                {/* Logo officiel rond superposé dans l'angle supérieur droit */}
+                <div className="absolute -top-3.5 -right-2 sm:-top-4 sm:-right-3 lg:-top-5 lg:-right-4 size-22 sm:size-26 lg:size-28 xl:size-32 drop-shadow-md z-20">
                   <picture>
                     <source type="image/webp" srcSet={logoWebp} />
                     <img
                       src={logoImg}
                       alt="Logo officiel Bichonne ta Caisse - Nettoyage automobile métropole lilloise"
-                      width={120}
-                      height={120}
+                      width={130}
+                      height={130}
                       loading="eager"
                       decoding="async"
                       className="size-full object-contain"
@@ -217,90 +218,73 @@ function Index() {
                 </div>
               </div>
             </div>
-
-            <p className="mt-4 max-w-lg text-base md:text-lg opacity-80">
-              Bichonne ta Caisse intervient à votre domicile ou sur votre lieu de travail à Lille,
-              Wambrechies, Lambersart, Marcq-en-Barœul et dans toute la métropole lilloise.
-              Nettoyage intérieur, lavage extérieur ou formule complète : un tarif identique pour
-              tous les véhicules.
-            </p>
-            <div className="mt-6 sm:mt-8 flex flex-wrap gap-3">
-              <Link to="/formules" className="btn btn-primary">
-                Découvrir les formules
-              </Link>
-              <Link to="/contact" className="btn btn-outline-light">
-                Réservation & Devis
-              </Link>
-            </div>
-            <a
-              href={whatsappLink()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-4 sm:mt-5 inline-flex items-center gap-2 text-sm font-semibold opacity-90 hover:opacity-100"
-            >
-              <MessageCircle className="size-4 text-whatsapp" /> Ou écrivez-nous directement sur
-              WhatsApp
-            </a>
-
-            {/* Bandeau compact multi-véhicules */}
-            <div className="mt-6 rounded-xl border border-white/15 bg-[#11114E] p-3.5 sm:p-4 shadow-md transition-all hover:border-primary/40">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-                <div className="flex items-start sm:items-center gap-3">
-                  <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-[#F47721] text-white shadow-xs">
-                    <Car className="size-5" />
-                  </span>
-                  <div>
-                    <h2 className="font-display text-lg sm:text-xl font-bold uppercase tracking-wide text-white leading-tight">
-                      Plusieurs voitures{" "}
-                      <span className="whitespace-nowrap">à la maison&nbsp;?</span>
-                    </h2>
-                    <p className="mt-0.5 text-xs sm:text-sm text-white/80 leading-snug">
-                      On bichonne toute la famille ! Demandez votre devis personnalisé pour
-                      plusieurs véhicules.
-                    </p>
-                  </div>
-                </div>
-                <Link
-                  to="/contact"
-                  className="inline-flex items-center gap-1.5 self-start sm:self-center shrink-0 rounded-lg border border-primary/40 bg-primary/10 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
-                >
-                  Demander un devis <ArrowRight className="size-3.5" />
-                </Link>
-              </div>
-            </div>
           </div>
 
-          {/* Colonne visuelle Desktop */}
-          <div className="hidden lg:block relative">
-            <div className="relative w-full">
-              <div className="absolute -inset-2 rounded-2xl stripe-accent opacity-20" />
-              <picture>
-                <source type="image/webp" srcSet={heroWebp} />
-                <img
-                  src={heroImg}
-                  alt="Nettoyage et detailing automobile complet à domicile à Lille - Bichonne ta Caisse"
-                  width={1280}
-                  height={800}
-                  loading="eager"
-                  fetchPriority="high"
-                  decoding="async"
-                  className="relative aspect-[16/10] w-full rounded-2xl object-cover shadow-xl"
-                />
-              </picture>
-              {/* Logo officiel rond superposé sur le coin haut droit, réduit de ~15-20% pour ne pas masquer la photo */}
-              <div className="absolute -top-4 -right-2 lg:-top-5 lg:-right-3 size-28 xl:size-30 drop-shadow-md z-20">
-                <picture>
-                  <source type="image/webp" srcSet={logoWebp} />
-                  <img
-                    src={logoImg}
-                    alt="Logo officiel Bichonne ta Caisse - Nettoyage automobile métropole lilloise"
-                    width={130}
-                    height={130}
-                    loading="eager"
-                    decoding="async"
-                    className="size-full object-contain"
-                  />
-                </picture>
+          {/* NIVEAU INFÉRIEUR : Slogan, Présentation complète, Boutons d'action, WhatsApp et Multi-véhicules */}
+          <div className="mt-8 sm:mt-10 lg:mt-12 pt-6 sm:pt-8 border-t border-white/10">
+            <div className="grid lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+              {/* Colonne gauche (7 cols) : Slogan, Paragraphe complet, Boutons et Lien WhatsApp */}
+              <div className="lg:col-span-7 space-y-5">
+                <p className="text-lg sm:text-xl lg:text-2xl font-display font-bold uppercase tracking-wide text-white/95">
+                  Votre voiture propre, sans bouger de chez vous
+                </p>
+
+                <p className="text-base md:text-lg opacity-85 leading-relaxed max-w-2xl">
+                  Bichonne ta Caisse intervient à votre domicile ou sur votre lieu de travail à
+                  Lille, Wambrechies, Lambersart, Marcq-en-Barœul et dans toute la métropole
+                  lilloise. Nettoyage intérieur, lavage extérieur ou formule complète : un tarif
+                  identique pour tous les véhicules.
+                </p>
+
+                <div className="flex flex-wrap gap-3 pt-1">
+                  <Link to="/formules" className="btn btn-primary">
+                    Découvrir les formules
+                  </Link>
+                  <Link to="/contact" className="btn btn-outline-light">
+                    Réservation & Devis
+                  </Link>
+                </div>
+
+                <div>
+                  <a
+                    href={whatsappLink()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-sm font-semibold opacity-90 hover:opacity-100 transition-opacity"
+                  >
+                    <MessageCircle className="size-4 text-whatsapp" /> Ou écrivez-nous directement
+                    sur WhatsApp
+                  </a>
+                </div>
+              </div>
+
+              {/* Colonne droite (5 cols) : Encadré plusieurs voitures à la maison */}
+              <div className="lg:col-span-5">
+                <div className="rounded-xl border border-white/15 bg-[#11114E] p-4 sm:p-5 shadow-md transition-all hover:border-primary/40">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex items-start gap-3.5">
+                      <span className="grid size-11 shrink-0 place-items-center rounded-lg bg-[#F47721] text-white shadow-xs">
+                        <Car className="size-5" />
+                      </span>
+                      <div>
+                        <h2 className="font-display text-lg sm:text-xl font-bold uppercase tracking-wide text-white leading-tight">
+                          Plusieurs voitures{" "}
+                          <span className="whitespace-nowrap">à la maison&nbsp;?</span>
+                        </h2>
+                        <p className="mt-1 text-xs sm:text-sm text-white/80 leading-snug">
+                          On bichonne toute la famille ! Demandez votre devis personnalisé pour
+                          plusieurs véhicules.
+                        </p>
+                      </div>
+                    </div>
+                    <Link
+                      to="/contact"
+                      className="inline-flex items-center gap-1.5 self-start sm:self-center shrink-0 rounded-lg border border-primary/40 bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
+                    >
+                      Demander un devis <ArrowRight className="size-3.5" />
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
