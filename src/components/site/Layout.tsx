@@ -7,7 +7,7 @@ import { BUSINESS, whatsappLink } from "@/lib/business";
 const NAV = [
   { to: "/", label: "Accueil" },
   { to: "/formules", label: "Formules & tarifs" },
-  { to: "/contact", label: "Contact" },
+  { to: "/contact", label: "Réservation & Devis" },
 ] as const;
 
 export function Facebook3DIcon({ className = "size-6" }: { className?: string }) {
@@ -81,16 +81,16 @@ export function Header() {
   const [open, setOpen] = useState(false);
   return (
     <header className="sticky top-0 z-40 bg-night text-night-foreground border-b border-night-foreground/10">
-      <div className="container-site flex h-18 items-center justify-between gap-4 py-3">
-        <Link to="/" aria-label="Accueil Bichonne ta Caisse">
+      <div className="container-site flex h-18 items-center justify-between gap-3 sm:gap-4 py-3">
+        <Link to="/" aria-label="Accueil Bichonne ta Caisse" className="shrink-0">
           <Logo light />
         </Link>
-        <nav className="hidden lg:flex items-center gap-7 text-sm font-semibold">
+        <nav className="hidden lg:flex items-center gap-4 xl:gap-7 text-sm font-semibold shrink-0">
           {NAV.map((n) => (
             <Link
               key={n.to}
               to={n.to}
-              className="opacity-80 hover:opacity-100"
+              className="opacity-80 hover:opacity-100 whitespace-nowrap"
               activeProps={{ className: "!opacity-100 text-primary" }}
               activeOptions={{ exact: true }}
             >
@@ -98,10 +98,13 @@ export function Header() {
             </Link>
           ))}
         </nav>
-        <div className="hidden lg:flex items-center gap-3">
-          <div className="flex items-center gap-2.5">
-            <a href={BUSINESS.phoneTel} className="flex items-center gap-2 font-bold">
-              <Phone className="size-4 text-primary" />
+        <div className="hidden lg:flex items-center gap-3 xl:gap-4 shrink-0">
+          <div className="flex items-center gap-2 xl:gap-2.5">
+            <a
+              href={BUSINESS.phoneTel}
+              className="flex items-center gap-1.5 xl:gap-2 font-bold whitespace-nowrap text-sm xl:text-base"
+            >
+              <Phone className="size-4 text-primary shrink-0" />
               {BUSINESS.phoneDisplay}
             </a>
             <a
@@ -125,8 +128,11 @@ export function Header() {
               <Instagram3DIcon className="size-6 sm:size-7" />
             </a>
           </div>
-          <Link to="/contact" className="btn btn-primary !min-h-10 !py-2 text-sm">
-            Demander un devis
+          <Link
+            to="/contact"
+            className="btn btn-primary !min-h-10 !py-2 text-sm whitespace-nowrap shrink-0"
+          >
+            Réserver mon nettoyage
           </Link>
         </div>
         <div className="flex lg:hidden items-center gap-2">
@@ -228,7 +234,7 @@ export function Footer() {
             Formules & tarifs
           </Link>
           <Link to="/contact" className="block opacity-80 hover:opacity-100">
-            Demande de devis
+            Réservation & Devis
           </Link>
         </div>
         <div className="space-y-2 text-sm">

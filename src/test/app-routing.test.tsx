@@ -52,13 +52,13 @@ describe("Business configuration & pricing", () => {
     const depoil = CARES.find((c) => c.id === "depoilage");
 
     expect(intPlast?.name).toBe("Soin & protection des plastiques intérieurs");
-    expect(intPlast?.price).toBe(20);
+    expect(intPlast?.price).toBe(15);
     expect(intPlast?.short).toBe(
       "Application d'un soin protecteur pour raviver l'aspect des plastiques, améliorer leur finition et les protéger au quotidien.",
     );
 
     expect(extPlast?.name).toBe("Soin & protection des plastiques extérieurs");
-    expect(extPlast?.price).toBe(20);
+    expect(extPlast?.price).toBe(15);
     expect(extPlast?.short).toBe(
       "Application d'un soin protecteur pour raviver l'éclat des plastiques extérieurs et leur redonner une finition soignée.",
     );

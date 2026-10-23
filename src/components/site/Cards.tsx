@@ -62,36 +62,48 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
 
 export function CareCards() {
   return (
-    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-      {CARES.map((c) => {
+    <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-6">
+      {CARES.map((c, index) => {
         const IconComponent = CARE_ICONS[c.icon] ?? Sparkles;
+        // 3 cartes sur la 1ère ligne (2 colonnes chacune = 6 cols)
+        // 2 cartes sur la 2nde ligne (3 colonnes chacune = 6 cols)
+        const colSpanClass = index < 3 ? "lg:col-span-2" : "sm:col-span-2 lg:col-span-3";
+
         return (
           <article
             key={c.id}
-            className="group relative flex flex-col justify-between rounded-2xl border border-border/80 bg-card p-6 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg"
+            className={`group relative flex flex-col justify-between rounded-xl sm:rounded-2xl border border-border/80 bg-card p-3.5 sm:p-4 shadow-2xs transition-all duration-200 hover:border-primary/50 hover:shadow-xs hover:-translate-y-0.5 ${colSpanClass}`}
           >
             <div>
-              <div className="flex items-start justify-between gap-3">
-                <span className="grid size-12 place-items-center rounded-xl bg-night text-primary shadow-xs transition-transform duration-200 group-hover:scale-105">
-                  <IconComponent className="size-6" />
+              <div className="flex items-center justify-between gap-2.5">
+                <span className="grid size-8 sm:size-9 shrink-0 place-items-center rounded-lg bg-night text-primary shadow-2xs transition-transform duration-200 group-hover:scale-105">
+                  <IconComponent className="size-4 sm:size-4.5" />
                 </span>
-                <span className="rounded-full bg-primary/10 px-3.5 py-1 font-display text-2xl font-bold tracking-tight text-primary">
+                <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 font-display text-base sm:text-lg font-bold tracking-tight text-primary">
                   {euro(c.price)}
                 </span>
               </div>
-              <h3 className="mt-5 text-2xl tracking-wide text-foreground">{c.name}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{c.short}</p>
-              {c.note && <p className="mt-3 text-xs text-muted-foreground/80 italic">* {c.note}</p>}
+              <h3 className="mt-2.5 font-display text-base sm:text-lg font-bold uppercase tracking-wide text-foreground leading-snug">
+                {c.name}
+              </h3>
+              <p className="mt-1 text-xs sm:text-[13px] leading-relaxed text-muted-foreground">
+                {c.short}
+              </p>
+              {c.note && (
+                <p className="mt-1.5 text-[11px] text-primary font-medium italic leading-tight">
+                  * {c.note}
+                </p>
+              )}
             </div>
-            <div className="mt-6 pt-4 border-t border-border/50 flex items-center justify-between">
-              <span className="text-xs font-semibold text-muted-foreground">
-                En complément d'une formule
+            <div className="mt-3 pt-2.5 border-t border-border/40 flex items-center justify-between text-xs">
+              <span className="text-[11px] font-medium text-muted-foreground">
+                Complément formule
               </span>
               <Link
                 to="/contact"
-                className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-primary group-hover:gap-1.5 transition-all"
+                className="inline-flex items-center gap-1 font-bold uppercase tracking-wider text-primary group-hover:gap-1.5 transition-all text-[11px] sm:text-xs"
               >
-                Choisir <ArrowRight className="size-3.5" />
+                Choisir <ArrowRight className="size-3" />
               </Link>
             </div>
           </article>

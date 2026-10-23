@@ -68,17 +68,22 @@ function Page() {
       </PageHero>
       <section className="container-site py-16 md:py-20">
         <FormulaCards detailed />
-        <p className="mt-8 text-sm text-muted-foreground max-w-2xl">
+        <p className="mt-4 text-xs sm:text-sm text-muted-foreground/90 max-w-2xl italic">
+          * Soins complémentaires et suppléments éventuels annoncés avant confirmation du
+          rendez-vous.
+        </p>
+        <p className="mt-4 text-sm text-muted-foreground max-w-2xl">
           Le nettoyage des tissus vise à atténuer au mieux les taches ; selon leur ancienneté et la
           nature du tissu, certaines peuvent ne pas disparaître complètement.
         </p>
 
         <div id="soins-cibles" className="mt-16 pt-12 border-t border-border">
-          <p className="text-sm font-bold uppercase tracking-widest text-primary">Soins ciblés</p>
-          <h2 className="mt-2 text-4xl sm:text-5xl">Les finitions qui font la différence</h2>
+          <p className="text-sm font-bold uppercase tracking-widest text-primary">
+            Prestations complémentaires
+          </p>
+          <h2 className="mt-2 text-4xl sm:text-5xl">Les petits plus pour votre voiture</h2>
           <p className="mt-2 mb-8 max-w-2xl text-base text-muted-foreground">
-            Des soins ciblés pour aller plus loin dans le détail : soin & protection des plastiques
-            intérieurs et extérieurs, traitement anti-odeurs, soin du cuir et dépoilage intensif.
+            Complétez votre formule avec les soins adaptés à votre véhicule.
           </p>
           <CareCards />
           <div className="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-secondary/60 border p-6">
@@ -87,7 +92,7 @@ function Page() {
               impeccable jusque dans les moindres détails.
             </p>
             <Link to="/contact" className="btn btn-primary">
-              Demander un devis
+              Réservation & Devis
             </Link>
           </div>
         </div>

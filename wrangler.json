@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "bichonnetacaisse",
+  "main": ".output/server/index.mjs",
+  "compatibility_date": "2026-10-22",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": ".output/public"
+  },
+  "vars": {
+    "CONTACT_RECIPIENT_EMAIL": "rudyboudene93@gmail.com",
+    "CONTACT_SENDER_EMAIL": "reservation@bichonnetacaisse.fr"
+  }
+}

@@ -73,7 +73,7 @@ export const CARES: Care[] = [
   {
     id: "plastiques-int",
     name: "Soin & protection des plastiques intérieurs",
-    price: 20,
+    price: 15,
     short:
       "Application d'un soin protecteur pour raviver l'aspect des plastiques, améliorer leur finition et les protéger au quotidien.",
     icon: "layers",
@@ -81,7 +81,7 @@ export const CARES: Care[] = [
   {
     id: "plastiques-ext",
     name: "Soin & protection des plastiques extérieurs",
-    price: 20,
+    price: 15,
     short:
       "Application d'un soin protecteur pour raviver l'éclat des plastiques extérieurs et leur redonner une finition soignée.",
     icon: "shield-check",
@@ -105,7 +105,7 @@ export const CARES: Care[] = [
     name: "Dépoilage intensif",
     price: 15,
     short: "Éliminez les poils d'animaux en quantité sur les sièges et moquettes.",
-    note: "Tarif confirmé avant intervention selon l'état du véhicule.",
+    note: "Supplément obligatoire lorsque l'état du véhicule le justifie.",
     icon: "paw-print",
   },
 ];
