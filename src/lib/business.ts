@@ -101,6 +101,20 @@ export const CARES: Care[] = [
 export const INTENSIVE_DIRT_NOTICE =
   "En cas de dépoilage intensif ou de résidus fortement incrustés dans les tissus et moquettes (épines végétales, débris tenaces, etc.), un devis personnalisé sera établi selon le travail nécessaire.";
 
+export const TRAVEL_CONDITIONS = {
+  freeRadiusKm: 15,
+  ratePerKmRoundTrip: 0.5,
+  referenceCity: "Lille",
+  headline: "Déplacement offert jusqu'à 15 km autour de Lille",
+  subline: "Au-delà, seuls les kilomètres supplémentaires sont facturés à 0,50 €/km, aller-retour.",
+  notice:
+    "Déplacement offert jusqu'à 15 km autour de Lille. Au-delà, seuls les kilomètres supplémentaires sont facturés à 0,50 €/km, aller-retour (selon l'itinéraire routier, communiqué avant confirmation définitive).",
+  calculateFee: (distanceOneWayKm: number) => {
+    const extraKm = Math.max(0, distanceOneWayKm - 15);
+    return Math.round(extraKm * 2 * 0.5 * 100) / 100;
+  },
+};
+
 export const MIN_PRICE = Math.min(...FORMULAS.map((f) => f.price));
 
 export const euro = (n: number) => `${n} €`;

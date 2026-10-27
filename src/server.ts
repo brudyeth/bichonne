@@ -175,6 +175,7 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
       `Lieu de stationnement : ${parking || "Non précisé"}`,
       `Accès à l'eau : ${waterAccess ? "Oui" : "Non"}`,
       `Prise électrique : ${electricityAccess ? "Oui" : "Non"}`,
+      `Déplacement : Offert jusqu'à 15 km autour de Lille (au-delà : 0,50 €/km supp. A/R)`,
       ``,
       `Formule : ${formulaName || "À définir ensemble"} (${formulaPrice ? `${formulaPrice} €` : "—"})`,
       `Soins ciblés : ${selectedCares?.length ? selectedCares.join(", ") : "Aucun"}`,
@@ -184,7 +185,7 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
       `Rendez-vous : ${dateChoice === "date" ? `Date souhaitée : ${preferredDate || "Non sélectionnée"}` : "À convenir ensemble"}`,
       `Créneau horaire : ${timeSlot || "Flexible"}`,
       ``,
-      `Tarif estimé : ${estimatedTotal ? `${estimatedTotal} €` : "À définir"}`,
+      `Tarif estimé : ${estimatedTotal ? `${estimatedTotal} €` : "À définir"} (hors éventuels frais kilométriques au-delà de 15 km)`,
       ``,
       `Message complémentaire :`,
       message || "Aucun message complémentaire.",
@@ -204,6 +205,7 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
       <p><strong>Lieu de stationnement :</strong> ${parking || "Non précisé"}</p>
       <p><strong>Accès à l'eau :</strong> ${waterAccess ? "Oui" : "Non"}</p>
       <p><strong>Prise électrique :</strong> ${electricityAccess ? "Oui" : "Non"}</p>
+      <p><strong>Déplacement :</strong> Offert jusqu'à 15 km autour de Lille (au-delà : 0,50 €/km supp. A/R selon itinéraire routier)</p>
 
       <h3>Prestations & État</h3>
       <p><strong>Formule :</strong> ${formulaName || "À définir ensemble"} ${formulaPrice ? `(${formulaPrice} €)` : ""}</p>

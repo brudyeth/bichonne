@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { MapPin } from "lucide-react";
 import { FormulaCards, CareCards } from "@/components/site/Cards";
 import { ContactBand, PageHero } from "@/components/site/Layout";
 
@@ -63,8 +64,20 @@ function Page() {
         eyebrow="Prestations & Tarifs à domicile"
         title="Formules de nettoyage automobile à domicile à Lille"
       >
-        Les tarifs sont identiques pour tous les types de véhicules (citadine, berline, SUV). Aucun
-        frais caché dans la métropole lilloise.
+        <p>
+          Les tarifs sont identiques pour tous les types de véhicules (citadine, berline, SUV).
+          Aucun frais caché.
+        </p>
+        <div className="mt-4 inline-flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2.5 rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-xs sm:text-sm text-white/95">
+          <div className="flex items-center gap-2 font-semibold text-primary">
+            <MapPin className="size-4 shrink-0" />
+            <span>Déplacement offert jusqu'à 15 km autour de Lille</span>
+          </div>
+          <span className="hidden sm:inline text-white/40">•</span>
+          <span className="text-white/80 text-xs">
+            Au-delà, seuls les kilomètres supplémentaires sont facturés à 0,50 €/km, aller-retour.
+          </span>
+        </div>
       </PageHero>
       <section className="container-site py-16 md:py-20">
         <FormulaCards detailed />
@@ -106,12 +119,22 @@ function Page() {
           <div className="mt-8 grid gap-6 md:grid-cols-2">
             <div className="rounded-2xl border bg-card p-6">
               <h3 className="font-display text-xl font-bold uppercase text-foreground">
-                Où réalisez-vous le nettoyage ?
+                Où réalisez-vous le nettoyage et quels sont les frais de déplacement ?
               </h3>
               <p className="mt-2 text-sm text-muted-foreground">
                 Nous nous déplaçons directement à votre domicile, dans votre cour, allée, garage ou
-                sur le parking privé de votre lieu de travail à Lille et dans toute la métropole.
+                sur le parking de votre lieu de travail à Lille et dans toute la métropole.
               </p>
+              <div className="mt-3 rounded-xl border border-primary/20 bg-secondary/40 p-3.5 space-y-1 text-xs">
+                <p className="font-semibold text-foreground flex items-center gap-1.5">
+                  <MapPin className="size-3.5 text-primary shrink-0" />
+                  Déplacement offert jusqu'à 15 km autour de Lille
+                </p>
+                <p className="text-muted-foreground">
+                  Au-delà de 15 km, seuls les kilomètres supplémentaires sont facturés à 0,50 €/km,
+                  aller-retour (selon l'itinéraire routier, communiqué avant validation).
+                </p>
+              </div>
             </div>
             <div className="rounded-2xl border bg-card p-6">
               <h3 className="font-display text-xl font-bold uppercase text-foreground">

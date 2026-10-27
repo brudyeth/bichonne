@@ -148,7 +148,7 @@ const PERKS = [
   {
     icon: Home,
     title: "À domicile",
-    text: "Nous venons chez vous, vous n'avez pas à vous déplacer.",
+    text: "Nous venons chez vous. Déplacement offert jusqu'à 15 km autour de Lille.",
   },
   {
     icon: Receipt,
@@ -355,33 +355,80 @@ function Index() {
         </div>
       </section>
 
-      <section className="container-site grid gap-8 py-16 md:grid-cols-2 md:items-center">
-        <div className="flex items-start gap-4">
-          <MapPin className="size-10 text-primary shrink-0 mt-1" />
-          <div>
-            <h2 className="text-3xl sm:text-4xl font-display uppercase tracking-wide">
-              Zone d'intervention locale
-            </h2>
-            <p className="mt-1 text-base text-muted-foreground">
-              Lavage et nettoyage automobile à domicile dans toute la métropole lilloise :
-            </p>
-            <p className="mt-2 text-sm font-medium text-foreground/90">
-              Lille, Wambrechies, Lambersart, Marcq-en-Barœul, Bondues, La Madeleine, Tourcoing,
-              Roubaix et communes voisines.
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Intervention directement chez vous, sur votre parking ou sur votre lieu de travail.
-            </p>
+      <section className="container-site py-16 md:py-20" aria-labelledby="zone-heading">
+        <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 md:p-10 shadow-xs">
+          <div className="grid gap-8 lg:grid-cols-12 lg:items-center">
+            <div className="lg:col-span-7 space-y-4">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-primary">
+                <MapPin className="size-3.5" />
+                Zone d'intervention locale
+              </div>
+
+              <div>
+                <h2
+                  id="zone-heading"
+                  className="text-3xl sm:text-4xl font-display font-bold uppercase tracking-wide text-foreground"
+                >
+                  Déplacement offert jusqu'à 15 km autour de Lille
+                </h2>
+                <p className="mt-2 text-base font-medium text-muted-foreground">
+                  Au-delà, seuls les kilomètres supplémentaires sont facturés à 0,50 €/km,
+                  aller-retour.
+                </p>
+              </div>
+
+              <p className="text-sm text-muted-foreground/90 leading-relaxed">
+                Lavage et nettoyage automobile à domicile directement chez vous, sur votre parking
+                ou sur votre lieu de travail à{" "}
+                <span className="font-semibold text-foreground">
+                  Lille, Wambrechies, Lambersart, Marcq-en-Barœul, Bondues, La Madeleine, Tourcoing,
+                  Roubaix
+                </span>{" "}
+                et communes voisines.
+              </p>
+
+              <p className="text-xs text-muted-foreground italic">
+                * Distance calculée selon l'itinéraire routier depuis notre point de référence à
+                Lille.
+              </p>
+            </div>
+
+            <div className="lg:col-span-5 flex flex-col gap-4 lg:items-end">
+              <div className="w-full max-w-sm rounded-xl border border-primary/20 bg-secondary/50 p-4 text-xs space-y-2">
+                <p className="font-bold uppercase tracking-wider text-foreground text-[11px] flex items-center gap-1.5">
+                  <MapPin className="size-3.5 text-primary" />
+                  Barème kilométrique transparent
+                </p>
+                <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-muted-foreground">
+                  <span>
+                    • Jusqu'à 15 km : <strong className="text-foreground">Offert</strong>
+                  </span>
+                  <span>
+                    • 20 km : <strong className="text-foreground">5 €</strong>
+                  </span>
+                  <span>
+                    • 25 km : <strong className="text-foreground">10 €</strong>
+                  </span>
+                  <span>
+                    • 30 km : <strong className="text-foreground">15 €</strong>
+                  </span>
+                </div>
+                <p className="text-[11px] text-muted-foreground/80 pt-1 border-t border-border/50">
+                  Seuls les kilomètres dépassant les 15 km offerts sont facturés.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-3 w-full max-w-sm">
+                <a href={BUSINESS.phoneTel} className="btn btn-outline flex-1 justify-center">
+                  <Phone className="size-4" />
+                  {BUSINESS.phoneDisplay}
+                </a>
+                <Link to="/contact" className="btn btn-primary flex-1 justify-center">
+                  Réservation & Devis
+                </Link>
+              </div>
+            </div>
           </div>
-        </div>
-        <div className="flex flex-wrap gap-3 md:justify-end">
-          <a href={BUSINESS.phoneTel} className="btn btn-outline">
-            <Phone className="size-4" />
-            {BUSINESS.phoneDisplay}
-          </a>
-          <Link to="/contact" className="btn btn-primary">
-            Réservation & Devis
-          </Link>
         </div>
       </section>
 

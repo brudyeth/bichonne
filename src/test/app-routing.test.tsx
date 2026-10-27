@@ -3,7 +3,7 @@ import { createRouter, rootRouteId } from "@tanstack/react-router";
 import { describe, expect, it } from "vitest";
 
 import { routeTree } from "@/routeTree.gen";
-import { BUSINESS, CARES, FORMULAS } from "@/lib/business";
+import { BUSINESS, CARES, FORMULAS, TRAVEL_CONDITIONS } from "@/lib/business";
 
 // Match routes without running loaders or rendering: loaders may need a server or
 // network the test run lacks, and jsdom never loads the stylesheets React waits on.
@@ -70,6 +70,27 @@ describe("Business configuration & pricing", () => {
     expect(cuir?.short).toBe(
       "Application d'un soin spécifique pour nourrir, assouplir et préserver les surfaces en cuir.",
     );
+  });
+
+  it("calculates travel fees correctly according to the 15 km free policy", () => {
+    expect(TRAVEL_CONDITIONS.freeRadiusKm).toBe(15);
+    expect(TRAVEL_CONDITIONS.ratePerKmRoundTrip).toBe(0.5);
+    expect(TRAVEL_CONDITIONS.headline).toBe("Déplacement offert jusqu'à 15 km autour de Lille");
+    expect(TRAVEL_CONDITIONS.subline).toBe(
+      "Au-delà, seuls les kilomètres supplémentaires sont facturés à 0,50 €/km, aller-retour.",
+    );
+
+    // Test cases given in the prompt:
+    // 15 km: gratuit
+    expect(TRAVEL_CONDITIONS.calculateFee(15)).toBe(0);
+    // 20 km: 5 €
+    expect(TRAVEL_CONDITIONS.calculateFee(20)).toBe(5);
+    // 25 km: 10 €
+    expect(TRAVEL_CONDITIONS.calculateFee(25)).toBe(10);
+    // 30 km: 15 €
+    expect(TRAVEL_CONDITIONS.calculateFee(30)).toBe(15);
+    // 40 km: 25 €
+    expect(TRAVEL_CONDITIONS.calculateFee(40)).toBe(25);
   });
 
   it("has exact contact phone number and valid links", () => {

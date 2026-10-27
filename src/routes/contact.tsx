@@ -267,6 +267,7 @@ function Page() {
       `• Stationnement : ${parking}`,
       `• Accès à l'eau : ${hasWater ? "Oui" : "Non"}`,
       `• Prise électrique accessible : ${hasElectricity ? "Oui" : "Non"}`,
+      `• Déplacement : Offert jusqu'à 15 km autour de Lille (au-delà : 0,50 €/km supp. A/R)`,
       "",
       "✨ PRESTATIONS & OPTIONS :",
       `• Formule : ${selectedFormula ? `${selectedFormula.name} (${euro(selectedFormula.price)})` : "À définir ensemble"}`,
@@ -447,13 +448,23 @@ function Page() {
             </div>
           </a>
 
-          <div className="rounded-2xl border border-border/80 bg-secondary/30 p-5 space-y-2 text-sm text-muted-foreground">
-            <p className="font-semibold text-foreground flex items-center gap-2">
-              <MapPin className="size-4 text-primary" /> Intervention à domicile
-            </p>
-            <p className="text-xs leading-relaxed">
-              Nous intervenons dans toute la métropole lilloise : Lille, Lambersart, La Madeleine,
-              Marcq-en-Barœul, Wambrechies, Bondues, Mouvaux, Villeneuve-d'Ascq et alentours.
+          <div className="rounded-2xl border border-primary/20 bg-secondary/40 p-5 space-y-2.5 text-sm">
+            <div className="flex items-start gap-2.5">
+              <MapPin className="size-5 text-primary shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-foreground leading-tight">
+                  Déplacement offert jusqu'à 15 km autour de Lille
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Au-delà, seuls les kilomètres supplémentaires sont facturés à 0,50 €/km,
+                  aller-retour.
+                </p>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground pt-2 border-t border-border/50 leading-relaxed">
+              Intervention directement chez vous, sur votre parking ou sur votre lieu de travail à
+              Lille, Wambrechies, Marcq-en-Barœul, Lambersart, Bondues, La Madeleine, Roubaix,
+              Tourcoing et communes voisines.
             </p>
           </div>
         </div>
@@ -1068,6 +1079,20 @@ function Page() {
                   </label>
                 </div>
 
+                {/* Information conditions de déplacement */}
+                <div className="rounded-xl border border-primary/20 bg-secondary/40 p-4 text-xs space-y-1.5">
+                  <div className="flex items-center gap-2 font-semibold text-foreground">
+                    <MapPin className="size-4 text-primary shrink-0" />
+                    <span>Déplacement offert jusqu'à 15 km autour de Lille</span>
+                  </div>
+                  <p className="text-muted-foreground leading-relaxed pl-6">
+                    Au-delà de 15 km, seuls les kilomètres supplémentaires sont facturés à 0,50
+                    €/km, aller-retour. Les éventuels frais de déplacement seront calculés selon
+                    l'itinéraire routier et vous seront communiqués pour accord avant validation
+                    définitive de votre réservation.
+                  </p>
+                </div>
+
                 <label className="block space-y-1.5">
                   <span className="text-sm font-semibold flex items-center justify-between">
                     <span>Adresse e-mail</span>
@@ -1129,6 +1154,16 @@ function Page() {
                   )}
 
                   <div className="flex justify-between py-1 border-b border-border/50">
+                    <span className="text-muted-foreground">Frais de déplacement :</span>
+                    <span className="font-semibold text-right">
+                      Offert jusqu'à 15 km de Lille
+                      <span className="block text-[11px] font-normal text-muted-foreground">
+                        (0,50 €/km supp. A/R au-delà si applicable)
+                      </span>
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between py-1 border-b border-border/50">
                     <span className="text-muted-foreground">Véhicule :</span>
                     <span className="font-semibold text-right">
                       {vehicle.trim() || "Non précisé"} ({parking})
@@ -1153,7 +1188,7 @@ function Page() {
                       Tarif total estimé
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      Devis indicatif sans mauvaise surprise
+                      Hors éventuels frais de déplacement au-delà de 15 km
                     </span>
                   </div>
                   <span className="font-display text-4xl font-bold text-primary">
