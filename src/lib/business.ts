@@ -13,8 +13,10 @@ export type Formula = {
   id: string;
   name: string;
   price: number;
+  duration: string;
   short: string;
   items: string[];
+  notice?: string;
   highlight?: boolean;
 };
 
@@ -23,39 +25,48 @@ export const FORMULAS: Formula[] = [
     id: "exterieur",
     name: "Nettoyage extérieur",
     price: 49,
-    short:
-      "Lavage professionnel et respectueux de la carrosserie, avec une méthode adaptée pour limiter le risque de micro-rayures. Nettoyage des roues inclus.",
+    duration: "1 h à 1 h 30",
+    short: "Un nettoyage minutieux pour redonner éclat et propreté à votre carrosserie.",
     items: [
-      "Lavage professionnel et respectueux de la carrosserie",
-      "Nettoyage des roues et jantes inclus",
-      "Nettoyage des vitres extérieures",
-      "Séchage soigné",
+      "Prélavage à la mousse active",
+      "Traitement démoustiquant de la carrosserie",
+      "Lavage manuel au gant microfibre",
+      "Nettoyage et dégraissage des jantes",
+      "Rinçage complet de la carrosserie",
+      "Séchage manuel à la microfibre",
     ],
   },
   {
     id: "interieur",
     name: "Nettoyage intérieur",
     price: 69,
-    short:
-      "Un nettoyage minutieux de l'habitacle, des surfaces aux textiles, avec un traitement vapeur si nécessaire, adapté aux matériaux.",
+    duration: "2 à 3 h",
+    short: "Un nettoyage en profondeur pour retrouver un habitacle propre, frais et soigné.",
     items: [
       "Aspiration complète de l'habitacle et du coffre",
-      "Nettoyage soigné des tissus : produit adapté appliqué à la brosse",
-      "Traitement vapeur si nécessaire, adapté aux matériaux",
-      "Dépoussiérage et nettoyage des plastiques",
+      "Nettoyage et dressing des plastiques intérieurs",
+      "Shampoing des sièges, tissus, tapis et moquettes",
+      "Nettoyage adapté des surfaces en cuir et Alcantara",
       "Nettoyage des vitres intérieures",
+      "Nettoyage des intérieurs de portes et des encadrements",
+      "Traitement des mauvaises odeurs",
     ],
+    notice:
+      "En présence de poils d'animaux en grande quantité ou de saletés fortement incrustées dans les tissus et moquettes, un devis personnalisé sera établi. La durée d'intervention pourra être prolongée.",
   },
   {
     id: "complet",
     name: "Nettoyage complet",
     price: 109,
-    short: "L'intérieur et l'extérieur réunis en une seule intervention.",
+    duration: "3 à 5 h",
+    short:
+      "La formule tout-en-un pour prendre soin de votre véhicule, à l'intérieur comme à l'extérieur.",
     items: [
-      "Tout le contenu de la formule intérieur",
-      "Tout le contenu de la formule extérieur",
-      "Une seule intervention à domicile",
+      "Toutes les prestations du Nettoyage Extérieur",
+      "Toutes les prestations du Nettoyage Intérieur",
     ],
+    notice:
+      "Les conditions particulières relatives aux salissures intensives s'appliquent également à cette formule.",
     highlight: true,
   },
 ];
@@ -66,49 +77,29 @@ export type Care = {
   price: number;
   short: string;
   note?: string;
-  icon: "layers" | "shield-check" | "wind" | "sparkles" | "paw-print";
+  icon: "paw-print" | "sparkles";
 };
 
 export const CARES: Care[] = [
   {
-    id: "plastiques-int",
-    name: "Soin & protection des plastiques intérieurs",
+    id: "poils-sale",
+    name: "Poils d'animaux / Véhicule très sale",
     price: 15,
-    short:
-      "Application d'un soin protecteur pour raviver l'aspect des plastiques, améliorer leur finition et les protéger au quotidien.",
-    icon: "layers",
-  },
-  {
-    id: "plastiques-ext",
-    name: "Soin & protection des plastiques extérieurs",
-    price: 15,
-    short:
-      "Application d'un soin protecteur pour raviver l'éclat des plastiques extérieurs et leur redonner une finition soignée.",
-    icon: "shield-check",
-  },
-  {
-    id: "anti-odeurs",
-    name: "Traitement anti-odeurs",
-    price: 15,
-    short: "Ciblez les odeurs persistantes dans l'habitacle.",
-    icon: "wind",
+    short: "Supplément pour un nettoyage nécessitant une attention particulière.",
+    icon: "paw-print",
   },
   {
     id: "soin-cuir",
-    name: "Soin du cuir",
+    name: "Soin nourrissant des cuirs",
     price: 15,
-    short: "Nourrissez et ravivez l'éclat du cuir pour lui redonner une apparence soignée.",
+    short:
+      "Application d'un soin spécifique pour nourrir, assouplir et préserver les surfaces en cuir.",
     icon: "sparkles",
   },
-  {
-    id: "depoilage",
-    name: "Dépoilage intensif",
-    price: 15,
-    short: "Éliminez les poils d'animaux en quantité sur les sièges et moquettes.",
-    note: "Supplément obligatoire lorsque l'état du véhicule le justifie.",
-    icon: "paw-print",
-  },
 ];
+
+export const INTENSIVE_DIRT_NOTICE =
+  "En cas de dépoilage intensif ou de résidus fortement incrustés dans les tissus et moquettes (épines végétales, débris tenaces, etc.), un devis personnalisé sera établi selon le travail nécessaire.";
 
 export const MIN_PRICE = Math.min(...FORMULAS.map((f) => f.price));
 

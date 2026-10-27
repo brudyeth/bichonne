@@ -16,9 +16,10 @@ import {
   ArrowRight,
   ArrowLeft,
   CheckCircle2,
+  Info,
 } from "lucide-react";
 import { PageHero, Facebook3DIcon, Instagram3DIcon } from "@/components/site/Layout";
-import { BUSINESS, FORMULAS, euro, whatsappLink } from "@/lib/business";
+import { BUSINESS, FORMULAS, INTENSIVE_DIRT_NOTICE, euro, whatsappLink } from "@/lib/business";
 
 type Search = { formule?: string | undefined };
 
@@ -87,24 +88,17 @@ const field =
 
 const FORM_CARES = [
   {
-    id: "plastiques-int",
-    name: "Soin et protection des plastiques intérieurs",
+    id: "poils-sale",
+    name: "Poils d'animaux / Véhicule très sale",
     price: 15,
-  },
-  {
-    id: "plastiques-ext",
-    name: "Soin et protection des plastiques extérieurs",
-    price: 15,
-  },
-  {
-    id: "anti-odeurs",
-    name: "Traitement anti-odeurs",
-    price: 15,
+    short: "Supplément pour un nettoyage nécessitant une attention particulière.",
   },
   {
     id: "soin-cuir",
-    name: "Soin des cuirs",
+    name: "Soin nourrissant des cuirs",
     price: 15,
+    short:
+      "Application d'un soin spécifique pour nourrir, assouplir et préserver les surfaces en cuir.",
   },
 ] as const;
 
@@ -134,8 +128,7 @@ function Page() {
   // Étape 1 : Prestation
   const [formula, setFormula] = useState(formule ?? "");
   const [cares, setCares] = useState<string[]>([]);
-  const [isVeryDirty, setIsVeryDirty] = useState(false);
-  const [hasPetHair, setHasPetHair] = useState(false);
+  const [hasIntensiveDirt, setHasIntensiveDirt] = useState(false);
 
   // Étape 2 : Véhicule & Lieu
   const [vehicle, setVehicle] = useState("");
@@ -171,10 +164,8 @@ function Page() {
   const total = useMemo(() => {
     let t = selectedFormula?.price ?? 0;
     t += selectedCaresList.reduce((acc, c) => acc + c.price, 0);
-    if (isVeryDirty) t += 15;
-    if (hasPetHair) t += 15;
     return t;
-  }, [selectedFormula, selectedCaresList, isVeryDirty, hasPetHair]);
+  }, [selectedFormula, selectedCaresList]);
 
   const todayStr = useMemo(() => {
     const now = new Date();
@@ -258,8 +249,8 @@ function Page() {
   // Formatage du message pour WhatsApp et Copie
   const summary = useMemo(() => {
     const careText = selectedCaresList.length
-      ? selectedCaresList.map((c) => `${c.name} (${euro(c.price)})`).join(", ")
-      : "Aucun";
+      ? selectedCaresList.map((c) => `${c.name} (+${euro(c.price)})`).join(", ")
+      : "Aucune";
 
     const lines: (string | null)[] = [
       "Bonjour, je souhaite un devis pour Bichonne ta Caisse.",
@@ -279,13 +270,10 @@ function Page() {
       "",
       "✨ PRESTATIONS & OPTIONS :",
       `• Formule : ${selectedFormula ? `${selectedFormula.name} (${euro(selectedFormula.price)})` : "À définir ensemble"}`,
-      `• Soins ciblés : ${careText}`,
-      isVeryDirty
-        ? "• Véhicule particulièrement sale : Oui (+15 €)"
-        : "• Véhicule particulièrement sale : Non",
-      hasPetHair
-        ? "• Présence de poils d'animaux : Oui (+15 €)"
-        : "• Présence de poils d'animaux : Non",
+      `• Prestations complémentaires : ${careText}`,
+      hasIntensiveDirt
+        ? "• Salissures intensives / Dépoilage extrême : Oui (sur devis personnalisé)"
+        : null,
       "",
       "📅 DISPONIBILITÉ :",
       dateChoice === "calendar" && preferredDate
@@ -293,7 +281,9 @@ function Page() {
         : "• Date : À convenir ensemble",
       `• Créneau horaire : ${timeSlot}`,
       "",
-      total ? `💰 TARIF ESTIMÉ : ${euro(total)}` : "💰 TARIF ESTIMÉ : À définir selon prestations",
+      total
+        ? `💰 TARIF ESTIMÉ : ${euro(total)}${hasIntensiveDirt ? " (+ devis personnalisé pour salissures intensives)" : ""}`
+        : "💰 TARIF ESTIMÉ : À définir selon prestations",
       "",
       message.trim() ? `💬 INFORMATIONS COMPLÉMENTAIRES :\n${message.trim()}` : null,
     ];
@@ -311,8 +301,7 @@ function Page() {
     hasElectricity,
     selectedFormula,
     selectedCaresList,
-    isVeryDirty,
-    hasPetHair,
+    hasIntensiveDirt,
     dateChoice,
     preferredDate,
     timeSlot,
@@ -352,9 +341,12 @@ function Page() {
           electricityAccess: hasElectricity,
           formulaName: selectedFormula?.name,
           formulaPrice: selectedFormula?.price,
-          selectedCares: selectedCaresList.map((c) => `${c.name} (${euro(c.price)})`),
-          isVeryDirty,
-          hasPetHair,
+          selectedCares: [
+            ...selectedCaresList.map((c) => `${c.name} (+${euro(c.price)})`),
+            ...(hasIntensiveDirt ? ["Salissures intensives (sur devis)"] : []),
+          ],
+          isVeryDirty: cares.includes("poils-sale") || hasIntensiveDirt,
+          hasPetHair: cares.includes("poils-sale") || hasIntensiveDirt,
           dateChoice,
           preferredDate: dateChoice === "calendar" ? preferredDate : undefined,
           timeSlot,
@@ -556,8 +548,9 @@ function Page() {
                   <span>Formule de nettoyage</span>
                   {selectedFormula && (
                     <span className="text-xs font-normal text-muted-foreground">
-                      Prix de base :{" "}
-                      <strong className="text-primary">{euro(selectedFormula.price)}</strong>
+                      Prix : <strong className="text-primary">{euro(selectedFormula.price)}</strong>
+                      {" · "}
+                      Durée : <strong>{selectedFormula.duration}</strong>
                     </span>
                   )}
                 </label>
@@ -569,32 +562,37 @@ function Page() {
                   <option value="">À définir ensemble</option>
                   {FORMULAS.map((x) => (
                     <option key={x.id} value={x.id}>
-                      {x.name} — {euro(x.price)}
+                      {x.name} — {euro(x.price)} ({x.duration})
                     </option>
                   ))}
                 </select>
+                {selectedFormula && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {selectedFormula.short} (Durée estimée : {selectedFormula.duration})
+                  </p>
+                )}
               </div>
 
-              {/* Soins ciblés */}
-              <div className="space-y-2.5 pt-1">
+              {/* Prestations complémentaires */}
+              <div className="space-y-3 pt-1">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-semibold text-foreground">
-                    Soins ciblés{" "}
+                    Prestations complémentaires{" "}
                     <span className="text-xs font-normal text-muted-foreground">(facultatif)</span>
                   </span>
                   <span className="text-xs text-muted-foreground">15 € par prestation</span>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                   {FORM_CARES.map((c) => (
                     <label
                       key={c.id}
-                      className="flex cursor-pointer items-center justify-between gap-3 rounded-xl border px-4 py-3 has-[:checked]:border-primary has-[:checked]:bg-secondary transition-colors"
+                      className="flex cursor-pointer items-start justify-between gap-3 rounded-xl border p-4 has-[:checked]:border-primary has-[:checked]:bg-secondary/40 transition-colors"
                     >
-                      <span className="flex items-center gap-3 text-sm font-medium">
+                      <div className="flex items-start gap-3">
                         <input
                           type="checkbox"
-                          className="size-4 accent-primary"
+                          className="size-4 accent-primary mt-1"
                           checked={cares.includes(c.id)}
                           onChange={(e) =>
                             setCares(
@@ -602,105 +600,38 @@ function Page() {
                             )
                           }
                         />
-                        {c.name}
+                        <div>
+                          <p className="text-sm font-semibold text-foreground">{c.name}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">{c.short}</p>
+                        </div>
+                      </div>
+                      <span className="font-bold text-primary shrink-0 text-sm">
+                        +{euro(c.price)}
                       </span>
-                      <span className="font-bold text-primary shrink-0">{euro(c.price)}</span>
                     </label>
                   ))}
                 </div>
-              </div>
 
-              {/* État du véhicule & suppléments */}
-              <div className="space-y-3 pt-1">
-                <span className="text-sm font-semibold text-foreground block">
-                  État du véhicule
-                </span>
-
-                <div className="rounded-xl border p-4 space-y-2.5">
-                  <p className="text-sm font-medium text-foreground">
-                    Votre véhicule est-il particulièrement sale ?
+                {/* Mention informative sur les nettoyages intensifs */}
+                <div className="rounded-xl border border-border/80 bg-secondary/40 p-3.5 sm:p-4 text-xs text-muted-foreground leading-relaxed">
+                  <p className="font-medium text-foreground mb-1 flex items-center gap-1.5">
+                    <Info className="size-3.5 text-primary shrink-0" />
+                    Cas de salissures intensives ou dépoilage extrême
                   </p>
-                  <div className="flex gap-3">
-                    <label
-                      className={`flex-1 flex items-center justify-center py-2.5 px-4 rounded-xl border cursor-pointer text-sm font-semibold transition-colors ${
-                        !isVeryDirty
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "bg-background text-foreground hover:bg-secondary/60"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="isVeryDirty"
-                        className="sr-only"
-                        checked={!isVeryDirty}
-                        onChange={() => setIsVeryDirty(false)}
-                      />
-                      Non
-                    </label>
-                    <label
-                      className={`flex-1 flex items-center justify-center py-2.5 px-4 rounded-xl border cursor-pointer text-sm font-semibold transition-colors ${
-                        isVeryDirty
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "bg-background text-foreground hover:bg-secondary/60"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="isVeryDirty"
-                        className="sr-only"
-                        checked={isVeryDirty}
-                        onChange={() => setIsVeryDirty(true)}
-                      />
-                      Oui
-                    </label>
-                  </div>
+                  <p>{INTENSIVE_DIRT_NOTICE}</p>
+                  <label className="mt-2.5 flex items-start gap-2 pt-2 border-t border-border/50 cursor-pointer text-foreground/90 font-medium">
+                    <input
+                      type="checkbox"
+                      className="size-4 accent-primary mt-0.5"
+                      checked={hasIntensiveDirt}
+                      onChange={(e) => setHasIntensiveDirt(e.target.checked)}
+                    />
+                    <span>
+                      Mon véhicule présente des salissures intensives nécessitant une étude
+                      personnalisée (devis sur mesure).
+                    </span>
+                  </label>
                 </div>
-
-                <div className="rounded-xl border p-4 space-y-2.5">
-                  <p className="text-sm font-medium text-foreground">
-                    Présence importante de poils d'animaux ?
-                  </p>
-                  <div className="flex gap-3">
-                    <label
-                      className={`flex-1 flex items-center justify-center py-2.5 px-4 rounded-xl border cursor-pointer text-sm font-semibold transition-colors ${
-                        !hasPetHair
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "bg-background text-foreground hover:bg-secondary/60"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="hasPetHair"
-                        className="sr-only"
-                        checked={!hasPetHair}
-                        onChange={() => setHasPetHair(false)}
-                      />
-                      Non
-                    </label>
-                    <label
-                      className={`flex-1 flex items-center justify-center py-2.5 px-4 rounded-xl border cursor-pointer text-sm font-semibold transition-colors ${
-                        hasPetHair
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "bg-background text-foreground hover:bg-secondary/60"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="hasPetHair"
-                        className="sr-only"
-                        checked={hasPetHair}
-                        onChange={() => setHasPetHair(true)}
-                      />
-                      Oui
-                    </label>
-                  </div>
-                </div>
-
-                <p className="text-xs text-muted-foreground italic px-1">
-                  * Ces suppléments sont obligatoires lorsque le véhicule est concerné. Un
-                  encrassement important ou des poils incrustés requièrent un temps d'aspiration, de
-                  brossage et des produits dédiés supplémentaires (+15 € chacun).
-                </p>
               </div>
 
               {/* Sous-total estimé étape 1 */}
@@ -1173,28 +1104,26 @@ function Page() {
                     <span className="text-muted-foreground">Prestation :</span>
                     <span className="font-semibold text-right">
                       {selectedFormula
-                        ? `${selectedFormula.name} (${euro(selectedFormula.price)})`
+                        ? `${selectedFormula.name} (${euro(selectedFormula.price)}) · ${selectedFormula.duration}`
                         : "À définir ensemble"}
                     </span>
                   </div>
 
                   {selectedCaresList.length > 0 && (
                     <div className="flex justify-between py-1 border-b border-border/50">
-                      <span className="text-muted-foreground">Soins ciblés :</span>
+                      <span className="text-muted-foreground">Prestations complémentaires :</span>
                       <span className="font-semibold text-right">
-                        {selectedCaresList.map((c) => c.name).join(", ")} (
-                        {euro(selectedCaresList.length * 15)})
+                        {selectedCaresList.map((c) => c.name).join(", ")} (+
+                        {euro(selectedCaresList.reduce((acc, c) => acc + c.price, 0))})
                       </span>
                     </div>
                   )}
 
-                  {(isVeryDirty || hasPetHair) && (
+                  {hasIntensiveDirt && (
                     <div className="flex justify-between py-1 border-b border-border/50">
-                      <span className="text-muted-foreground">Suppléments état :</span>
+                      <span className="text-muted-foreground">Salissures intensives :</span>
                       <span className="font-semibold text-right text-primary">
-                        {[isVeryDirty && "Très sale (+15 €)", hasPetHair && "Poils (+15 €)"]
-                          .filter(Boolean)
-                          .join(", ")}
+                        Sur devis personnalisé
                       </span>
                     </div>
                   )}

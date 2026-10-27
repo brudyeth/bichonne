@@ -58,7 +58,7 @@ const LOCAL_BUSINESS_SCHEMA = {
             "@type": "Offer",
             name: "Nettoyage extérieur",
             description:
-              "Lavage professionnel et respectueux de la carrosserie, avec une méthode adaptée pour limiter le risque de micro-rayures. Nettoyage des roues inclus.",
+              "Un nettoyage minutieux pour redonner éclat et propreté à votre carrosserie. Durée estimée : 1 h à 1 h 30.",
             price: "49",
             priceCurrency: "EUR",
             url: "https://bichonnetacaisse.fr/formules#exterieur",
@@ -67,7 +67,7 @@ const LOCAL_BUSINESS_SCHEMA = {
             "@type": "Offer",
             name: "Nettoyage intérieur",
             description:
-              "Un nettoyage minutieux de l'habitacle, des surfaces aux textiles, avec un traitement vapeur si nécessaire, adapté aux matériaux.",
+              "Un nettoyage en profondeur pour retrouver un habitacle propre, frais et soigné. Durée estimée : 2 à 3 h.",
             price: "69",
             priceCurrency: "EUR",
             url: "https://bichonnetacaisse.fr/formules#interieur",
@@ -75,7 +75,8 @@ const LOCAL_BUSINESS_SCHEMA = {
           {
             "@type": "Offer",
             name: "Nettoyage complet",
-            description: "L'intérieur et l'extérieur réunis en une seule intervention.",
+            description:
+              "La formule tout-en-un pour prendre soin de votre véhicule, à l'intérieur comme à l'extérieur. Durée estimée : 3 à 5 h.",
             price: "109",
             priceCurrency: "EUR",
             url: "https://bichonnetacaisse.fr/formules#complet",

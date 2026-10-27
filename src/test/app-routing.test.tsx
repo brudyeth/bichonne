@@ -24,59 +24,51 @@ describe("App routing", () => {
 });
 
 describe("Business configuration & pricing", () => {
-  it("has exact expected formula prices: 49 €, 69 €, 109 €", () => {
+  it("has exact expected formula prices: 49 €, 69 €, 109 € and new descriptions", () => {
     const ext = FORMULAS.find((f) => f.id === "exterieur");
     const int = FORMULAS.find((f) => f.id === "interieur");
     const comp = FORMULAS.find((f) => f.id === "complet");
 
     expect(ext?.price).toBe(49);
-    expect(ext?.short).toContain("Lavage professionnel et respectueux de la carrosserie");
-    expect(ext?.short).toContain("Nettoyage des roues inclus");
+    expect(ext?.duration).toBe("1 h à 1 h 30");
+    expect(ext?.short).toContain(
+      "Un nettoyage minutieux pour redonner éclat et propreté à votre carrosserie.",
+    );
+    expect(ext?.items).toContain("Prélavage à la mousse active");
 
     expect(int?.price).toBe(69);
-    expect(int?.short).toContain("traitement vapeur si nécessaire, adapté aux matériaux");
+    expect(int?.duration).toBe("2 à 3 h");
+    expect(int?.short).toContain(
+      "Un nettoyage en profondeur pour retrouver un habitacle propre, frais et soigné.",
+    );
+    expect(int?.items).toContain("Shampoing des sièges, tissus, tapis et moquettes");
     // Ensure no injecteur-extracteur is mentioned anywhere in the formulas
     expect(int?.short.toLowerCase()).not.toContain("injecteur");
     expect(int?.items.some((i) => i.toLowerCase().includes("injecteur"))).toBe(false);
 
     expect(comp?.price).toBe(109);
+    expect(comp?.duration).toBe("3 à 5 h");
+    expect(comp?.short).toContain(
+      "La formule tout-en-un pour prendre soin de votre véhicule, à l'intérieur comme à l'extérieur.",
+    );
   });
 
-  it("has the 5 exact care prestations, names, and prices", () => {
-    expect(CARES).toHaveLength(5);
+  it("has the 2 exact complementary prestations, names, and prices", () => {
+    expect(CARES).toHaveLength(2);
 
-    const intPlast = CARES.find((c) => c.id === "plastiques-int");
-    const extPlast = CARES.find((c) => c.id === "plastiques-ext");
-    const odeur = CARES.find((c) => c.id === "anti-odeurs");
+    const poils = CARES.find((c) => c.id === "poils-sale");
     const cuir = CARES.find((c) => c.id === "soin-cuir");
-    const depoil = CARES.find((c) => c.id === "depoilage");
 
-    expect(intPlast?.name).toBe("Soin & protection des plastiques intérieurs");
-    expect(intPlast?.price).toBe(15);
-    expect(intPlast?.short).toBe(
-      "Application d'un soin protecteur pour raviver l'aspect des plastiques, améliorer leur finition et les protéger au quotidien.",
+    expect(poils?.name).toBe("Poils d'animaux / Véhicule très sale");
+    expect(poils?.price).toBe(15);
+    expect(poils?.short).toBe(
+      "Supplément pour un nettoyage nécessitant une attention particulière.",
     );
 
-    expect(extPlast?.name).toBe("Soin & protection des plastiques extérieurs");
-    expect(extPlast?.price).toBe(15);
-    expect(extPlast?.short).toBe(
-      "Application d'un soin protecteur pour raviver l'éclat des plastiques extérieurs et leur redonner une finition soignée.",
-    );
-
-    expect(odeur?.name).toBe("Traitement anti-odeurs");
-    expect(odeur?.price).toBe(15);
-    expect(odeur?.short).toBe("Ciblez les odeurs persistantes dans l'habitacle.");
-
-    expect(cuir?.name).toBe("Soin du cuir");
+    expect(cuir?.name).toBe("Soin nourrissant des cuirs");
     expect(cuir?.price).toBe(15);
     expect(cuir?.short).toBe(
-      "Nourrissez et ravivez l'éclat du cuir pour lui redonner une apparence soignée.",
-    );
-
-    expect(depoil?.name).toBe("Dépoilage intensif");
-    expect(depoil?.price).toBe(15);
-    expect(depoil?.short).toBe(
-      "Éliminez les poils d'animaux en quantité sur les sièges et moquettes.",
+      "Application d'un soin spécifique pour nourrir, assouplir et préserver les surfaces en cuir.",
     );
   });
 
