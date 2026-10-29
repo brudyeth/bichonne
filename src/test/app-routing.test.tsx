@@ -158,4 +158,37 @@ describe("SEO metadata configuration", () => {
     const contactCanonical = contactHead?.links?.find((l) => l["rel"] === "canonical");
     expect(contactCanonical?.href).toBe("https://bichonnetacaisse.fr/contact");
   });
+
+  it("exports BeforeAfterSection component", async () => {
+    const { BeforeAfterSection } = await import("@/components/site/BeforeAfterSection");
+    expect(BeforeAfterSection).toBeDefined();
+    expect(typeof BeforeAfterSection).toBe("function");
+  });
+
+  it("configures official square favicons including 512x512 and 48x48", () => {
+    const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
+    const rootRoute = router.routesById["__root__"];
+    const headResult = (
+      rootRoute.options as unknown as {
+        head?: () => {
+          links?: Array<Record<string, string>>;
+          meta?: Array<Record<string, string>>;
+        };
+      }
+    ).head?.();
+
+    const iconLinks = headResult?.links?.filter((l) => l["rel"] === "icon");
+    expect(iconLinks?.some((l) => l["sizes"] === "512x512" && l["href"] === "/favicon.png")).toBe(
+      true,
+    );
+    expect(iconLinks?.some((l) => l["sizes"] === "48x48" && l["href"] === "/favicon-48.png")).toBe(
+      true,
+    );
+    expect(
+      iconLinks?.some((l) => l["sizes"] === "192x192" && l["href"] === "/favicon-192.png"),
+    ).toBe(true);
+
+    const ogImage = headResult?.meta?.find((m) => m["property"] === "og:image");
+    expect(ogImage?.content).toMatch(/^https:\/\/bichonnetacaisse\.fr\//);
+  });
 });

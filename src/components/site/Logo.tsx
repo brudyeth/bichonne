@@ -5,6 +5,7 @@ export function Logo({
   className = "",
   light = false,
   showIcon = true,
+  alt = "Logo officiel Bichonne ta Caisse - Nettoyage automobile Lille",
 }: {
   className?: string;
   light?: boolean;
@@ -22,7 +23,7 @@ export function Logo({
           <source type="image/webp" srcSet={iconHeaderWebp} />
           <img
             src={iconHeaderPng}
-            alt=""
+            alt={alt}
             width={40}
             height={40}
             loading="eager"

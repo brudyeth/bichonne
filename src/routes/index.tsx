@@ -5,6 +5,7 @@ import heroWebp from "@/assets/hero-car.webp";
 import logoImg from "@/assets/logo-full.png";
 import logoWebp from "@/assets/logo-full.webp";
 import { FormulaCards, CareCards } from "@/components/site/Cards";
+import { BeforeAfterSection } from "@/components/site/BeforeAfterSection";
 import { ContactBand } from "@/components/site/Layout";
 import { BUSINESS, euro, whatsappLink } from "@/lib/business";
 
@@ -12,11 +13,17 @@ const LOCAL_BUSINESS_SCHEMA = {
   "@context": "https://schema.org",
   "@graph": [
     {
-      "@type": ["AutoDetailing", "LocalBusiness"],
+      "@type": ["AutoDetailing", "LocalBusiness", "Organization"],
       "@id": "https://bichonnetacaisse.fr/#organization",
       name: "Bichonne ta Caisse",
       alternateName: "Bichonne Ta Caisse",
       url: "https://bichonnetacaisse.fr/",
+      logo: "https://bichonnetacaisse.fr/brand/logo-rond.png",
+      image: [
+        "https://bichonnetacaisse.fr/brand/partage-reseaux-1200x630.png",
+        "https://bichonnetacaisse.fr/brand/logo-rond.png",
+        "https://bichonnetacaisse.fr/og-image.jpg",
+      ],
       description:
         "Nettoyage intérieur, extérieur et complet de votre véhicule à domicile à Lille, Wambrechies et dans la métropole lilloise. Découvrez nos formules dès 49 €.",
       telephone: "+33659140939",
@@ -118,9 +125,13 @@ export const Route = createFileRoute("/")({
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://bichonnetacaisse.fr/" },
-      { property: "og:image", content: "https://bichonnetacaisse.fr/og-image.jpg" },
-      { property: "og:image:width", content: "1280" },
-      { property: "og:image:height", content: "960" },
+      {
+        property: "og:image",
+        content: "https://bichonnetacaisse.fr/brand/partage-reseaux-1200x630.png",
+      },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:type", content: "image/png" },
       {
         property: "og:image:alt",
         content: "Nettoyage automobile à domicile - Bichonne ta Caisse Lille",
@@ -136,7 +147,10 @@ export const Route = createFileRoute("/")({
         content:
           "Nettoyage intérieur, extérieur et complet de votre véhicule à domicile à Lille, Wambrechies et dans la métropole lilloise. Découvrez nos formules dès 49 €.",
       },
-      { name: "twitter:image", content: "https://bichonnetacaisse.fr/og-image.jpg" },
+      {
+        name: "twitter:image",
+        content: "https://bichonnetacaisse.fr/brand/partage-reseaux-1200x630.png",
+      },
       { name: "robots", content: "index, follow" },
     ],
     links: [{ rel: "canonical", href: "https://bichonnetacaisse.fr/" }],
@@ -354,6 +368,8 @@ function Index() {
           </div>
         </div>
       </section>
+
+      <BeforeAfterSection />
 
       <section className="container-site py-16 md:py-20" aria-labelledby="zone-heading">
         <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 md:p-10 shadow-xs">
