@@ -20,20 +20,22 @@ export const Route = createFileRoute("/mentions-legales")({
   component: () => (
     <>
       <PageHero eyebrow="Informations" title="Mentions légales" />
-      <section className="container-site max-w-3xl space-y-4 py-14 text-sm leading-relaxed">
-        <p>
-          <strong>Éditeur :</strong> {BUSINESS.name} — [forme juridique, SIRET et adresse à
-          compléter]
-        </p>
-        <p>
-          <strong>Téléphone :</strong> {BUSINESS.phoneDisplay}
-        </p>
-        <p>
-          <strong>Directeur de la publication :</strong> [à compléter]
-        </p>
-        <p>
-          <strong>Hébergement :</strong> [à compléter]
-        </p>
+      <section className="container-site max-w-3xl py-14">
+        <div className="rounded-2xl border border-white/10 bg-white p-8 text-[#11114E] shadow-2xl space-y-4 text-sm leading-relaxed">
+          <p>
+            <strong>Éditeur :</strong> {BUSINESS.name} — [forme juridique, SIRET et adresse à
+            compléter]
+          </p>
+          <p>
+            <strong>Téléphone :</strong> {BUSINESS.phoneDisplay}
+          </p>
+          <p>
+            <strong>Directeur de la publication :</strong> [à compléter]
+          </p>
+          <p>
+            <strong>Hébergement :</strong> [à compléter]
+          </p>
+        </div>
       </section>
     </>
   ),

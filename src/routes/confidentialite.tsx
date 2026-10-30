@@ -22,16 +22,20 @@ export const Route = createFileRoute("/confidentialite")({
   component: () => (
     <>
       <PageHero eyebrow="Informations" title="Confidentialité" />
-      <section className="container-site max-w-3xl space-y-4 py-14 text-sm leading-relaxed">
-        <p>
-          Le formulaire de demande de devis ne stocke et n'envoie aucune donnée : il prépare un
-          message que vous transmettez vous-même par WhatsApp ou par copier-coller.
-        </p>
-        <p>Les informations que vous nous envoyez servent uniquement à répondre à votre demande.</p>
-        <p>
-          [Responsable du traitement, durée de conservation et contact pour exercer vos droits : à
-          compléter.]
-        </p>
+      <section className="container-site max-w-3xl py-14">
+        <div className="rounded-2xl border border-white/10 bg-white p-8 text-[#11114E] shadow-2xl space-y-4 text-sm leading-relaxed">
+          <p>
+            Le formulaire de demande de devis ne stocke et n'envoie aucune donnée : il prépare un
+            message que vous transmettez vous-même par WhatsApp ou par copier-coller.
+          </p>
+          <p>
+            Les informations que vous nous envoyez servent uniquement à répondre à votre demande.
+          </p>
+          <p>
+            [Responsable du traitement, durée de conservation et contact pour exercer vos droits : à
+            compléter.]
+          </p>
+        </div>
       </section>
     </>
   ),

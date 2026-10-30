@@ -76,38 +76,53 @@ export function BeforeAfterSection() {
 
   return (
     <section
-      className="relative overflow-hidden bg-night text-night-foreground py-16 md:py-20 border-t border-night-foreground/10"
+      className="relative overflow-hidden bg-gradient-to-b from-[#FAFBFD] via-[#F4F6FB] to-[#EDF1F7] text-[#11114E] py-16 md:py-24"
       aria-labelledby="before-after-heading"
     >
-      <div className="container-site max-w-5xl">
+      {/* Reflets diffus nacrés/argentés très doux */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-24 -right-20 size-[540px] rounded-full bg-blue-100/40 blur-[130px]"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -bottom-24 -left-20 size-[520px] rounded-full bg-indigo-100/40 blur-[125px]"
+      />
+      {/* Texture tactile subtile */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-noise opacity-[0.04] mix-blend-multiply"
+      />
+
+      <div className="container-site max-w-5xl relative z-10">
         {/* En-tête sobre et épuré */}
         <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
-          <p className="text-xs sm:text-sm font-bold uppercase tracking-widest text-primary mb-2">
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-primary mb-2.5">
             Avant / Après
-          </p>
+          </div>
           <h2
             id="before-after-heading"
-            className="text-3xl sm:text-4xl md:text-5xl font-display font-bold uppercase tracking-wide text-white"
+            className="text-3xl sm:text-4xl md:text-5xl font-display font-bold uppercase tracking-wide text-[#11114E]"
           >
             Le résultat parle de lui-même.
           </h2>
-          <p className="mt-2 text-sm sm:text-base text-white/80">
+          <p className="mt-2 text-sm sm:text-base text-slate-600">
             Découvrez la différence avant et après notre passage.
           </p>
         </div>
 
         {/* Bloc réalisation avec comparaison côte à côte */}
         <div
-          className="rounded-2xl border border-white/10 bg-white/[0.03] p-3 sm:p-5 md:p-6 shadow-xl"
+          className="rounded-2xl border border-slate-200/90 bg-white/95 p-4 sm:p-6 md:p-8 shadow-xl shadow-slate-200/50 backdrop-blur-xs"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
           {/* Titre & Description de la réalisation en cours */}
-          <div className="text-center mb-4 sm:mb-5">
-            <h3 className="font-display text-lg sm:text-xl md:text-2xl font-bold uppercase tracking-wide text-white">
+          <div className="text-center mb-4 sm:mb-6">
+            <h3 className="font-display text-xl sm:text-2xl md:text-3xl font-bold uppercase tracking-wide text-[#11114E]">
               {current.title}
             </h3>
-            <p className="mt-1 text-xs sm:text-sm text-white/70 max-w-xl mx-auto leading-relaxed">
+            <p className="mt-1.5 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto leading-relaxed">
               {current.description}
             </p>
           </div>
@@ -115,7 +130,7 @@ export function BeforeAfterSection() {
           {/* Comparaison côte à côte (2 colonnes préservées sur mobile et desktop) */}
           <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6">
             {/* Photo AVANT (à gauche) */}
-            <div className="group relative aspect-[3/4] sm:aspect-[4/5] w-full overflow-hidden rounded-xl border border-white/15 bg-black shadow-md">
+            <div className="group relative aspect-[3/4] sm:aspect-[4/5] w-full overflow-hidden rounded-xl border border-slate-200 bg-slate-900 shadow-md">
               <picture>
                 <source type="image/webp" srcSet={current.beforeWebp} />
                 <img
@@ -134,7 +149,7 @@ export function BeforeAfterSection() {
             </div>
 
             {/* Photo APRÈS (à droite) */}
-            <div className="group relative aspect-[3/4] sm:aspect-[4/5] w-full overflow-hidden rounded-xl border border-white/15 bg-black shadow-md">
+            <div className="group relative aspect-[3/4] sm:aspect-[4/5] w-full overflow-hidden rounded-xl border border-slate-200 bg-slate-900 shadow-md">
               <picture>
                 <source type="image/webp" srcSet={current.afterWebp} />
                 <img
@@ -159,7 +174,7 @@ export function BeforeAfterSection() {
               type="button"
               onClick={handlePrev}
               aria-label="Réalisation précédente"
-              className="grid size-8 sm:size-9 place-items-center rounded-lg bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition-colors border border-white/10 active:scale-95"
+              className="grid size-9 sm:size-10 place-items-center rounded-xl bg-slate-100 text-[#11114E] hover:bg-slate-200 transition-colors border border-slate-200/80 active:scale-95 shadow-xs"
             >
               <ChevronLeft className="size-4 sm:size-5" />
             </button>
@@ -171,8 +186,8 @@ export function BeforeAfterSection() {
                   key={i}
                   type="button"
                   onClick={() => setCurrentIndex(i)}
-                  className={`h-2 rounded-full transition-all ${
-                    currentIndex === i ? "w-6 bg-primary" : "w-2 bg-white/30 hover:bg-white/50"
+                  className={`h-2.5 rounded-full transition-all ${
+                    currentIndex === i ? "w-7 bg-primary" : "w-2.5 bg-slate-300 hover:bg-slate-400"
                   }`}
                   aria-label={`Afficher la réalisation ${i + 1}`}
                 />
@@ -183,7 +198,7 @@ export function BeforeAfterSection() {
               type="button"
               onClick={handleNext}
               aria-label="Réalisation suivante"
-              className="grid size-8 sm:size-9 place-items-center rounded-lg bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition-colors border border-white/10 active:scale-95"
+              className="grid size-9 sm:size-10 place-items-center rounded-xl bg-slate-100 text-[#11114E] hover:bg-slate-200 transition-colors border border-slate-200/80 active:scale-95 shadow-xs"
             >
               <ChevronRight className="size-4 sm:size-5" />
             </button>
@@ -199,7 +214,7 @@ export function BeforeAfterSection() {
             <span>Réserver mon nettoyage</span>
             <ArrowRight className="size-4.5" />
           </Link>
-          <p className="text-xs text-white/60">
+          <p className="text-xs text-slate-500">
             Devis gratuit et sans engagement · Intervention à domicile dans toute la métropole
             lilloise
           </p>
