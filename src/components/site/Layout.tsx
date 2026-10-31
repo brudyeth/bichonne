@@ -88,31 +88,9 @@ export function HeaderReservationButton({
     <Link
       to="/contact"
       onClick={onClick}
-      className={`group relative inline-flex items-center justify-center font-display font-bold uppercase tracking-wider text-white select-none rounded-xl px-5 py-2.5 sm:px-6 sm:py-2.5 text-sm sm:text-[15px]
-        /* Base orange officiel avec dégradé subtil */
-        bg-gradient-to-b from-[#ff8533] via-[#F47721] to-[#df640f]
-        /* Bords physiques : reflet blanc fin en haut, lèvre 2px chaude en bas */
-        border-t border-white/35 border-b-2 border-[#b54300] border-x border-[#d95908]
-        /* Ombre douce avec halo chaud sous le bouton */
-        shadow-[0_4px_14px_rgba(244,119,33,0.38),0_2px_4px_rgba(17,17,78,0.22),inset_0_1px_0_rgba(255,255,255,0.45)]
-        /* Transitions micro-interactions douces */
-        transition-all duration-200 ease-out
-        /* Survol : remonte de 2px max et renforce légèrement son ombre */
-        hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[0_6px_20px_rgba(244,119,33,0.52),0_3px_6px_rgba(17,17,78,0.26),inset_0_1px_0_rgba(255,255,255,0.55)]
-        /* Clic : effet d'enfoncement tactile naturel */
-        active:translate-y-0.5 active:shadow-[0_1px_4px_rgba(244,119,33,0.3),inset_0_2px_4px_rgba(0,0,0,0.25)] active:border-b active:brightness-95
-        /* Focus clavier visible */
-        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#11114E]
-        shrink-0 ${className}`}
+      className={`btn btn-primary !min-h-10 px-5 py-2 sm:px-6 sm:py-2.5 text-sm sm:text-[15px] shrink-0 ${className}`}
     >
-      {/* Léger reflet lumineux diffus sur la partie supérieure */}
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-2 top-0 h-[45%] rounded-t-[10px] bg-gradient-to-b from-white/25 to-transparent opacity-85"
-      />
-      <span className="relative z-10 drop-shadow-[0_1px_1.5px_rgba(0,0,0,0.35)] flex items-center gap-1.5">
-        Réserver mon nettoyage
-      </span>
+      <span>Réserver mon nettoyage</span>
     </Link>
   );
 }
@@ -134,15 +112,16 @@ export function Header() {
     <header
       className={`sticky top-0 z-50 text-white transition-all duration-300 ease-out ${
         scrolled
-          ? "bg-[#11114E]/92 backdrop-blur-md shadow-[0_8px_30px_rgba(17,17,78,0.28)] border-b border-white/[0.06]"
-          : "bg-[#11114E]/40 backdrop-blur-md border-b border-transparent shadow-none"
+          ? "bg-[#11114E]/95 backdrop-blur-md shadow-md shadow-[#11114E]/30"
+          : "bg-[#11114E]/20 backdrop-blur-xs shadow-none"
       }`}
     >
-      {/* Halos lumineux d'ambiance intégrés au décor pour une continuité parfaite avec le fond */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-10 right-[10%] size-64 rounded-full bg-[#3448D8]/22 blur-2xl transition-opacity duration-300" />
-        <div className="absolute -top-10 left-[5%] size-60 rounded-full bg-[#4440A0]/24 blur-2xl transition-opacity duration-300" />
-        <div className="absolute -top-8 left-[35%] size-40 rounded-full bg-[#F47721]/[0.08] blur-2xl transition-opacity duration-300" />
+      {/* Ligne de séparation discrète : 1 px, lumineuse et semi-transparente, centrée à ~78% avec fondu aux deux extrémités */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute bottom-0 inset-x-0 flex justify-center"
+      >
+        <div className="h-[1px] w-[78%] max-w-5xl bg-gradient-to-r from-transparent via-white/18 to-transparent" />
       </div>
 
       <div className="container-site relative z-10 flex h-16 sm:h-[68px] items-center justify-between gap-3 sm:gap-4 py-2.5 sm:py-3">

@@ -209,7 +209,7 @@ export function BeforeAfterSection() {
         <div className="mt-8 sm:mt-10 text-center space-y-2.5">
           <Link
             to="/contact"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#F47721] hover:bg-[#F47721]/90 text-white font-display text-base sm:text-lg font-bold uppercase tracking-wide px-7 py-3 shadow-md transition-transform hover:scale-[1.02] active:scale-[0.98]"
+            className="btn btn-primary text-base sm:text-lg font-bold px-7 py-3.5"
           >
             <span>Réserver mon nettoyage</span>
             <ArrowRight className="size-4.5" />

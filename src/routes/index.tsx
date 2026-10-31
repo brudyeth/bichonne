@@ -218,18 +218,18 @@ function Index() {
       />
       {/* SECTION 1 : HÉRO / PREMIER ÉCRAN (Bleu nuit officiel #11114E avec halos lumineux) */}
       <section className="relative overflow-hidden bg-[#11114E] text-white pt-24 sm:pt-[104px] md:pt-28 pb-12 sm:pb-16 md:pb-20">
-        {/* Halos lumineux diffus en superposition */}
+        {/* Halos lumineux diffus localisés sur les côtés, préservant la profondeur du bleu nuit #11114E */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-24 -right-24 size-[650px] sm:size-[800px] lg:size-[950px] rounded-full bg-[#3448D8]/36 blur-[140px] sm:blur-[170px]"
+          className="pointer-events-none absolute -top-24 -right-24 size-[620px] sm:size-[760px] lg:size-[900px] rounded-full bg-[#3448D8]/26 blur-[150px] sm:blur-[180px]"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-20 -left-20 size-[600px] sm:size-[750px] lg:size-[880px] rounded-full bg-[#4440A0]/35 blur-[135px] sm:blur-[165px]"
+          className="pointer-events-none absolute -top-20 -left-20 size-[580px] sm:size-[720px] lg:size-[840px] rounded-full bg-[#4440A0]/25 blur-[145px] sm:blur-[175px]"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute top-[25%] left-[8%] size-[320px] sm:size-[400px] rounded-full bg-[#F47721]/11 blur-[105px] sm:blur-[125px]"
+          className="pointer-events-none absolute top-[25%] left-[8%] size-[300px] sm:size-[380px] rounded-full bg-[#F47721]/[0.08] blur-[110px] sm:blur-[130px]"
         />
         {/* Texture de grain tactile fine */}
         <div
@@ -287,10 +287,7 @@ function Index() {
 
               {/* Boutons d'action et lien WhatsApp */}
               <div className="flex flex-wrap items-center gap-3 pt-2">
-                <Link
-                  to="/contact"
-                  className="btn btn-primary text-base font-bold px-7 shadow-md hover:scale-[1.02]"
-                >
+                <Link to="/contact" className="btn btn-primary text-base px-7">
                   Demander mon nettoyage
                 </Link>
                 <Link to="/formules" className="btn btn-outline-light">

@@ -159,11 +159,7 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
 
             {/* Bouton de réservation */}
             <div className="mt-7 pt-2 space-y-2">
-              <Link
-                to="/contact"
-                search={{ formule: f.id }}
-                className="btn btn-primary text-white font-bold w-full shadow-xs hover:scale-[1.01]"
-              >
+              <Link to="/contact" search={{ formule: f.id }} className="btn btn-primary w-full">
                 Choisir cette formule
               </Link>
               {!detailed && (

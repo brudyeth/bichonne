@@ -29,20 +29,20 @@ export function Logo({
           height={44}
           loading="eager"
           decoding="async"
-          className="size-9 sm:size-10 md:size-11 object-contain shrink-0 drop-shadow-sm transition-transform duration-200 ease-out group-hover:scale-105"
+          className="size-9 sm:size-10 md:size-11 object-contain shrink-0 drop-shadow-xs transition-transform duration-200 ease-out group-hover:scale-105"
         />
       </picture>
 
-      {/* 2. Nom « BICHONNE TA CAISSE » sur une seule ligne avec typographie fidèle au lettrage officiel */}
+      {/* 2. Nom « Bichonne TA CAISSE » sur une seule ligne avec Manrope ExtraBold (800) droit */}
       <div className="inline-flex items-baseline gap-1.5 sm:gap-2 leading-none">
-        {/* « Bichonne » : épaisse, légèrement inclinée, arrondie et dynamique */}
+        {/* « Bichonne » : Manrope ExtraBold (800) droit, sobre, moderne et professionnel */}
         <span
-          className={`font-logo font-black italic tracking-tight text-[18px] sm:text-[20px] md:text-[22px] drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)] ${textColor}`}
+          className={`font-sans font-extrabold tracking-tight text-[19px] sm:text-[21px] md:text-[22px] leading-none ${textColor}`}
         >
           Bichonne
         </span>
-        {/* « TA CAISSE » : en orange officiel #F47721, compacte et structurée */}
-        <span className="font-sans font-extrabold uppercase text-[#F47721] text-[12px] sm:text-[13px] md:text-[14px] tracking-[0.14em] drop-shadow-[0_1px_2px_rgba(0,0,0,0.25)]">
+        {/* « TA CAISSE » : en orange officiel #F47721, droit, cohérent et harmonieux */}
+        <span className="font-sans font-extrabold uppercase text-[#F47721] text-[15px] sm:text-[16px] md:text-[17px] tracking-tight leading-none">
           TA CAISSE
         </span>
       </div>
