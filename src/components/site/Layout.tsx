@@ -265,26 +265,26 @@ export function Header() {
 export function Footer() {
   return (
     <footer className="relative overflow-hidden bg-[#11114E] text-white">
-      {/* Halos lumineux localisés très diffus en superposition sur le fond bleu nuit officiel #11114E */}
-      {/* 1. Grand halo bleu indigo diffus #4440A0 */}
+      {/* Halos lumineux subtils et maîtrisés en superposition sur le fond bleu nuit officiel #11114E (-30% d'intensité, teintes bleu profond & indigo sombre) */}
+      {/* 1. Halo indigo sombre #282A74 */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-16 -left-16 size-[420px] rounded-full bg-[#4440A0]/28 blur-[140px]"
+        className="pointer-events-none absolute -top-16 -left-16 size-[420px] rounded-full bg-[#282A74]/18 blur-[140px]"
       />
-      {/* 2. Halo bleu électrique vibrant #3448D8 */}
+      {/* 2. Halo bleu profond #243888 */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute bottom-0 right-[5%] size-[380px] rounded-full bg-[#3448D8]/26 blur-[130px]"
+        className="pointer-events-none absolute bottom-0 right-[5%] size-[380px] rounded-full bg-[#243888]/18 blur-[130px]"
       />
-      {/* 3. Halo violet bleuté #5140A0 */}
+      {/* 3. Halo indigo nocturne #2C3275 */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute top-1/2 right-[25%] size-[300px] rounded-full bg-[#5140A0]/22 blur-[125px]"
+        className="pointer-events-none absolute top-1/2 right-[25%] size-[300px] rounded-full bg-[#2C3275]/15 blur-[125px]"
       />
       {/* 4. Touche subtile d'orange #F47721 */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute bottom-0 left-[20%] size-[240px] rounded-full bg-[#F47721]/[0.08] blur-[95px]"
+        className="pointer-events-none absolute bottom-0 left-[20%] size-[240px] rounded-full bg-[#F47721]/[0.05] blur-[95px]"
       />
       <div
         aria-hidden="true"
@@ -398,26 +398,26 @@ export function PageHero({
 
   return (
     <section className="relative overflow-hidden bg-[#11114E] text-white">
-      {/* Halos lumineux localisés très diffus en superposition sur le fond bleu nuit d'origine #11114E */}
-      {/* 1. Grand halo bleu électrique #3448D8 */}
+      {/* Halos lumineux subtils et maîtrisés en superposition sur le fond bleu nuit d'origine #11114E (-30% d'intensité) */}
+      {/* 1. Halo bleu profond #243888 */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-24 -right-16 size-[460px] sm:size-[540px] rounded-full bg-[#3448D8]/35 blur-[150px] sm:blur-[170px]"
+        className="pointer-events-none absolute -top-24 -right-16 size-[460px] sm:size-[540px] rounded-full bg-[#243888]/22 blur-[150px] sm:blur-[170px]"
       />
-      {/* 2. Grand halo indigo profond #4440A0 */}
+      {/* 2. Halo indigo sombre #282A74 */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-20 -left-20 size-[440px] sm:size-[500px] rounded-full bg-[#4440A0]/35 blur-[145px] sm:blur-[160px]"
+        className="pointer-events-none absolute -top-20 -left-20 size-[440px] sm:size-[500px] rounded-full bg-[#282A74]/22 blur-[145px] sm:blur-[160px]"
       />
-      {/* 3. Halo violet bleuté #5140A0 */}
+      {/* 3. Halo indigo nocturne #2C3275 */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute top-1/2 left-[30%] size-[360px] rounded-full bg-[#5140A0]/28 blur-[135px]"
+        className="pointer-events-none absolute top-1/2 left-[30%] size-[360px] rounded-full bg-[#2C3275]/18 blur-[135px]"
       />
       {/* 4. Touche orange #F47721 discrète */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -bottom-16 right-[15%] size-[260px] sm:size-[320px] rounded-full bg-[#F47721]/[0.11] blur-[110px]"
+        className="pointer-events-none absolute -bottom-16 right-[15%] size-[260px] sm:size-[320px] rounded-full bg-[#F47721]/[0.06] blur-[110px]"
       />
 
       {/* Texture de grain ultra-fine pour casser l'effet aplat sans blanchir le fond */}

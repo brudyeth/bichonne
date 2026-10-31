@@ -218,18 +218,18 @@ function Index() {
       />
       {/* SECTION 1 : HÉRO / PREMIER ÉCRAN (Bleu nuit officiel #11114E avec halos lumineux) */}
       <section className="relative overflow-hidden bg-[#11114E] text-white pt-24 sm:pt-[104px] md:pt-28 pb-12 sm:pb-16 md:pb-20">
-        {/* Halos lumineux diffus localisés sur les côtés, préservant la profondeur du bleu nuit #11114E */}
+        {/* Halos lumineux profonds et subtils, préservant la dominance du bleu nuit officiel #11114E */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-24 -right-24 size-[620px] sm:size-[760px] lg:size-[900px] rounded-full bg-[#3448D8]/26 blur-[150px] sm:blur-[180px]"
+          className="pointer-events-none absolute -top-24 -right-24 size-[620px] sm:size-[760px] lg:size-[900px] rounded-full bg-[#243888]/18 blur-[150px] sm:blur-[180px]"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-20 -left-20 size-[580px] sm:size-[720px] lg:size-[840px] rounded-full bg-[#4440A0]/25 blur-[145px] sm:blur-[175px]"
+          className="pointer-events-none absolute -top-20 -left-20 size-[580px] sm:size-[720px] lg:size-[840px] rounded-full bg-[#282A74]/18 blur-[145px] sm:blur-[175px]"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute top-[25%] left-[8%] size-[300px] sm:size-[380px] rounded-full bg-[#F47721]/[0.08] blur-[110px] sm:blur-[130px]"
+          className="pointer-events-none absolute top-[25%] left-[8%] size-[300px] sm:size-[380px] rounded-full bg-[#F47721]/[0.06] blur-[110px] sm:blur-[130px]"
         />
         {/* Texture de grain tactile fine */}
         <div
@@ -443,22 +443,22 @@ function Index() {
 
       {/* CONTENEUR FORMULES + SOINS : Arrière-plan bleu nuit continu #11114E avec halos continus sans rupture */}
       <div className="relative overflow-hidden bg-[#11114E] text-white">
-        {/* Halos continus partagés */}
+        {/* Halos continus partagés en bleu profond et indigo sombre (intensité maîtrisée) */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-24 -left-24 size-[700px] sm:size-[850px] lg:size-[950px] rounded-full bg-[#3448D8]/34 blur-[150px] sm:blur-[180px]"
+          className="pointer-events-none absolute -top-24 -left-24 size-[700px] sm:size-[850px] lg:size-[950px] rounded-full bg-[#243888]/22 blur-[150px] sm:blur-[180px]"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute top-[25%] -right-24 size-[650px] sm:size-[800px] lg:size-[920px] rounded-full bg-[#5140A0]/30 blur-[145px] sm:blur-[175px]"
+          className="pointer-events-none absolute top-[25%] -right-24 size-[650px] sm:size-[800px] lg:size-[920px] rounded-full bg-[#282A74]/20 blur-[145px] sm:blur-[175px]"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute top-[55%] -left-20 size-[680px] sm:size-[820px] lg:size-[940px] rounded-full bg-[#4440A0]/33 blur-[145px] sm:blur-[175px]"
+          className="pointer-events-none absolute top-[55%] -left-20 size-[680px] sm:size-[820px] lg:size-[940px] rounded-full bg-[#2C3275]/21 blur-[145px] sm:blur-[175px]"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute top-[65%] right-[10%] size-[320px] sm:size-[400px] rounded-full bg-[#F47721]/10 blur-[115px] sm:blur-[135px]"
+          className="pointer-events-none absolute top-[65%] right-[10%] size-[320px] sm:size-[400px] rounded-full bg-[#F47721]/[0.06] blur-[115px] sm:blur-[135px]"
         />
         {/* Texture de grain tactile fine */}
         <div
@@ -538,18 +538,18 @@ function Index() {
         className="relative overflow-hidden bg-[#11114E] text-white py-16 md:py-24"
         aria-labelledby="zone-heading"
       >
-        {/* Halos lumineux zone d'intervention */}
+        {/* Halos lumineux zone d'intervention bleu profond et indigo sombre */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-20 -right-20 size-[680px] sm:size-[820px] lg:size-[920px] rounded-full bg-[#3448D8]/33 blur-[145px] sm:blur-[175px]"
+          className="pointer-events-none absolute -top-20 -right-20 size-[680px] sm:size-[820px] lg:size-[920px] rounded-full bg-[#243888]/22 blur-[145px] sm:blur-[175px]"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -bottom-20 -left-20 size-[640px] sm:size-[780px] lg:size-[880px] rounded-full bg-[#4440A0]/32 blur-[140px] sm:blur-[170px]"
+          className="pointer-events-none absolute -bottom-20 -left-20 size-[640px] sm:size-[780px] lg:size-[880px] rounded-full bg-[#282A74]/20 blur-[140px] sm:blur-[170px]"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute top-1/2 left-[20%] size-[300px] rounded-full bg-[#F47721]/[0.08] blur-[110px]"
+          className="pointer-events-none absolute top-1/2 left-[20%] size-[300px] rounded-full bg-[#F47721]/[0.05] blur-[110px]"
         />
         {/* Texture de grain */}
         <div

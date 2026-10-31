@@ -389,26 +389,26 @@ function Page() {
   return (
     <>
       <div className="relative overflow-hidden bg-[#11114E] text-white">
-        {/* Halos continus partagés */}
+        {/* Halos continus partagés subtils et maîtrisés (-30% d'intensité) */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-24 -left-20 size-[650px] lg:size-[850px] rounded-full bg-[#4440A0]/35 blur-[150px] lg:blur-[175px]"
+          className="pointer-events-none absolute -top-24 -left-20 size-[650px] lg:size-[850px] rounded-full bg-[#282A74]/22 blur-[150px] lg:blur-[175px]"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-20 -right-20 size-[620px] lg:size-[800px] rounded-full bg-[#3448D8]/35 blur-[145px] lg:blur-[170px]"
+          className="pointer-events-none absolute -top-20 -right-20 size-[620px] lg:size-[800px] rounded-full bg-[#243888]/22 blur-[145px] lg:blur-[170px]"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute top-[35%] -right-20 size-[640px] lg:size-[850px] rounded-full bg-[#3448D8]/32 blur-[145px] lg:blur-[175px]"
+          className="pointer-events-none absolute top-[35%] -right-20 size-[640px] lg:size-[850px] rounded-full bg-[#243888]/20 blur-[145px] lg:blur-[175px]"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute top-[50%] right-[15%] size-[300px] lg:size-[380px] rounded-full bg-[#F47721]/10 blur-[110px]"
+          className="pointer-events-none absolute top-[50%] right-[15%] size-[300px] lg:size-[380px] rounded-full bg-[#F47721]/[0.06] blur-[110px]"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute bottom-10 left-1/4 size-[600px] lg:size-[780px] rounded-full bg-[#5140A0]/26 blur-[130px] lg:blur-[160px]"
+          className="pointer-events-none absolute bottom-10 left-1/4 size-[600px] lg:size-[780px] rounded-full bg-[#2C3275]/17 blur-[130px] lg:blur-[160px]"
         />
         <div
           aria-hidden="true"
