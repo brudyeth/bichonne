@@ -10,8 +10,8 @@ import {
   Sparkles,
   Check,
 } from "lucide-react";
-import heroImg from "@/assets/hero-car.jpg";
-import heroWebp from "@/assets/hero-car.webp";
+import heroShampouineuseWebp from "@/assets/hero-shampouineuse.webp";
+import heroShampouineusePng from "@/assets/hero-shampouineuse.png";
 import { FormulaCards, CareCards } from "@/components/site/Cards";
 import { BeforeAfterSection } from "@/components/site/BeforeAfterSection";
 import { FaqSection, FAQ_ITEMS } from "@/components/site/FaqSection";
@@ -328,25 +328,46 @@ function Index() {
               </div>
             </div>
 
-            {/* Colonne droite : Grande photographie verticale avec coins arrondis et encadré de prix superposé */}
-            <div className="lg:col-span-5 flex justify-center lg:justify-end mt-4 lg:mt-0">
-              <div className="relative w-full max-w-[340px] sm:max-w-[380px] lg:max-w-[420px] aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl border border-white/10">
-                <picture>
-                  <source type="image/webp" srcSet={heroWebp} />
-                  <img
-                    src={heroImg}
-                    alt="Nettoyage et detailing automobile complet à domicile à Lille - Bichonne ta Caisse"
-                    width={960}
-                    height={1200}
-                    loading="eager"
-                    fetchPriority="high"
-                    decoding="async"
-                    className="size-full object-cover"
-                  />
-                </picture>
+            {/* Colonne droite : Photographie immersive de la shampouineuse (+10-15% de taille, fondu atténué et détails préservés) */}
+            <div className="lg:col-span-5 flex justify-center lg:justify-end mt-6 lg:mt-0">
+              <div className="relative w-full max-w-[400px] sm:max-w-[500px] md:max-w-[560px] lg:max-w-[610px] xl:max-w-[650px] aspect-[4/3] sm:aspect-[5/4] lg:aspect-[4/3] xl:aspect-[5/4]">
+                {/* Conteneur avec masque progressif préservant 70% de la zone centrale nette et lumineuse */}
+                <div className="relative size-full overflow-hidden rounded-3xl [-webkit-mask-image:radial-gradient(ellipse_94%_88%_at_52%_46%,black_70%,transparent_100%)] [mask-image:radial-gradient(ellipse_94%_88%_at_52%_46%,black_70%,transparent_100%)]">
+                  <picture>
+                    <source type="image/webp" srcSet={heroShampouineuseWebp} />
+                    <img
+                      src={heroShampouineusePng}
+                      alt="Nettoyage et extraction par shampouineuse en profondeur d'un siège automobile - Bichonne ta Caisse Lille"
+                      width={1536}
+                      height={1024}
+                      loading="eager"
+                      fetchPriority="high"
+                      decoding="async"
+                      className="size-full object-cover object-[52%_45%]"
+                    />
+                  </picture>
 
-                {/* Petit encadré de prix superposé en bas de la photographie */}
-                <div className="absolute bottom-4 left-4 right-4 sm:bottom-5 sm:left-5 sm:right-auto inline-flex items-center gap-3.5 rounded-2xl bg-[#11114E]/90 border border-white/15 backdrop-blur-md px-4 py-3 shadow-2xl z-10">
+                  {/* Fondus directionnels affinés et réduits aux bordures extrêmes pour préserver toute la clarté de l'image */}
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-[#11114E] via-[#11114E]/40 to-transparent"
+                  />
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-y-0 left-0 w-10 sm:w-16 bg-gradient-to-r from-[#11114E]/75 via-[#11114E]/25 to-transparent"
+                  />
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-y-0 right-0 w-10 sm:w-16 bg-gradient-to-l from-[#11114E]/75 via-[#11114E]/25 to-transparent"
+                  />
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-x-0 top-0 h-8 sm:h-12 bg-gradient-to-b from-[#11114E]/60 to-transparent"
+                  />
+                </div>
+
+                {/* Petit encadré tarifaire superposé en bas à gauche, net et au premier plan */}
+                <div className="absolute bottom-2 left-2 sm:bottom-4 sm:left-4 inline-flex items-center gap-3 sm:gap-3.5 rounded-xl sm:rounded-2xl bg-[#11114E]/90 border border-white/20 backdrop-blur-md px-3.5 py-2.5 sm:px-4 sm:py-3 shadow-2xl z-20">
                   <span className="font-display text-2xl sm:text-3xl font-bold text-primary tracking-tight">
                     69 €
                   </span>
