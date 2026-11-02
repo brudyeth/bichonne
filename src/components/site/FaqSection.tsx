@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, HelpCircle, Phone, MessageCircle } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { ChevronDown, ChevronUp, HelpCircle, Phone, MessageCircle } from "lucide-react";
 import { BUSINESS, whatsappLink } from "@/lib/business";
 
 export interface FaqItem {
@@ -63,87 +62,92 @@ export function FaqSection({ className = "" }: { className?: string }) {
         className="pointer-events-none absolute inset-0 bg-noise opacity-[0.04] mix-blend-multiply"
       />
 
-      <div className="container-site max-w-3xl relative z-10">
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-primary mb-3">
-            <HelpCircle className="size-3.5" />
-            Questions fréquentes
-          </div>
-          <h2
-            id="faq-heading"
-            className="text-3xl sm:text-4xl md:text-5xl font-display font-bold uppercase tracking-wide text-[#11114E]"
-          >
-            Tout savoir sur nos prestations
-          </h2>
-          <p className="mt-2 text-sm sm:text-base text-slate-600">
-            Des réponses claires et précises pour préparer votre nettoyage en toute sérénité.
-          </p>
-        </div>
-
-        <div className="space-y-3">
-          {FAQ_ITEMS.map((item, index) => {
-            const isOpen = openIndex === index;
-            return (
-              <div
-                key={item.question}
-                className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
-                  isOpen
-                    ? "border-primary/40 bg-white shadow-xs"
-                    : "border-slate-200/90 bg-white hover:border-slate-300"
-                }`}
-              >
-                <button
-                  type="button"
-                  onClick={() => toggle(index)}
-                  className="w-full text-left px-5 py-4 sm:px-6 sm:py-5 flex items-center justify-between gap-4 font-display text-lg sm:text-xl font-bold uppercase tracking-wide text-[#11114E] cursor-pointer"
-                  aria-expanded={isOpen}
-                >
-                  <span className="leading-snug">{item.question}</span>
-                  <span
-                    className={`grid size-8 shrink-0 place-items-center rounded-full transition-transform duration-200 ${
-                      isOpen ? "bg-primary text-white rotate-180" : "bg-slate-100 text-slate-600"
-                    }`}
-                  >
-                    <ChevronDown className="size-4.5" />
-                  </span>
-                </button>
-                {isOpen && (
-                  <div className="px-5 pb-5 sm:px-6 sm:pb-6 text-sm text-slate-600 leading-relaxed pt-1 border-t border-slate-100 animate-in fade-in-50 duration-150">
-                    {item.answer}
-                  </div>
-                )}
+      <div className="container-site relative z-10">
+        {/* COMPOSITION ASYMÉTRIQUE : 35% titre & carte contact à gauche, 65% accordéon à droite */}
+        <div className="grid gap-10 lg:grid-cols-12 lg:items-start">
+          {/* Colonne gauche : Surtitre, Titre compact, description et carte bleu nuit de contact */}
+          <div className="lg:col-span-5 space-y-6">
+            <div>
+              <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-3">
+                <span className="w-6 h-[2px] bg-primary"></span>
+                <span>Questions fréquentes</span>
               </div>
-            );
-          })}
-        </div>
+              <h2
+                id="faq-heading"
+                className="text-4xl sm:text-5xl lg:text-[46px] font-display font-bold uppercase tracking-tight leading-[0.98] text-[#11114E]"
+              >
+                Tout savoir sur nos prestations
+              </h2>
+              <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed max-w-md">
+                Des réponses claires pour préparer votre nettoyage en toute sérénité.
+              </p>
+            </div>
 
-        {/* Contact direct rapide sous la FAQ */}
-        <div className="mt-8 rounded-2xl border border-primary/20 bg-white p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-center sm:text-left shadow-2xs">
-          <div>
-            <p className="font-display text-lg font-bold uppercase text-[#11114E]">
-              Une autre question ?
-            </p>
-            <p className="text-xs sm:text-sm text-slate-600">
-              Nous répondons rapidement par téléphone ou par message WhatsApp.
-            </p>
+            {/* Carte bleu nuit compacte de contact direct */}
+            <div className="rounded-2xl bg-[#11114E] text-white p-5 sm:p-6 shadow-xl space-y-3.5 max-w-md">
+              <div className="flex items-center gap-2 font-display text-base font-bold uppercase tracking-wide text-white">
+                <HelpCircle className="size-4.5 text-primary" />
+                <span>Une autre question ?</span>
+              </div>
+              <p className="text-xs sm:text-sm text-white/80 leading-relaxed">
+                Nous répondons rapidement par téléphone ou sur WhatsApp.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-2.5 pt-1">
+                <a
+                  href={BUSINESS.phoneTel}
+                  className="btn border border-white/20 bg-white/[0.08] hover:bg-white/15 text-white text-xs flex-1 justify-center py-2.5 font-bold"
+                >
+                  <Phone className="size-3.5" />
+                  {BUSINESS.phoneDisplay}
+                </a>
+                <a
+                  href={whatsappLink()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-whatsapp text-xs flex-1 justify-center py-2.5 font-bold"
+                >
+                  <MessageCircle className="size-3.5" />
+                  WhatsApp
+                </a>
+              </div>
+            </div>
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-2.5">
-            <a
-              href={BUSINESS.phoneTel}
-              className="btn border-2 border-[#11114E] text-[#11114E] hover:bg-[#11114E] hover:text-white text-xs h-10 px-4 py-2"
-            >
-              <Phone className="size-3.5" />
-              {BUSINESS.phoneDisplay}
-            </a>
-            <a
-              href={whatsappLink()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-whatsapp text-xs h-10 px-4 py-2"
-            >
-              <MessageCircle className="size-3.5" />
-              WhatsApp
-            </a>
+
+          {/* Colonne droite : Grand accordéon blanc avec séparateurs fins */}
+          <div className="lg:col-span-7">
+            <div className="rounded-2xl border border-slate-200/90 bg-white shadow-xl shadow-slate-200/50 divide-y divide-slate-100 overflow-hidden">
+              {FAQ_ITEMS.map((item, index) => {
+                const isOpen = openIndex === index;
+                return (
+                  <div key={item.question} className="transition-colors">
+                    <button
+                      type="button"
+                      onClick={() => toggle(index)}
+                      className="w-full text-left p-4 sm:p-5 flex items-center justify-between gap-4 font-display text-lg sm:text-xl font-bold uppercase tracking-wide text-[#11114E] hover:text-primary transition-colors cursor-pointer"
+                      aria-expanded={isOpen}
+                    >
+                      <span className="leading-snug">{item.question}</span>
+                      <span
+                        className={`grid size-8 shrink-0 place-items-center rounded-full transition-transform duration-200 ${
+                          isOpen ? "bg-primary text-white shadow-xs" : "bg-slate-100 text-slate-500"
+                        }`}
+                      >
+                        {isOpen ? (
+                          <ChevronUp className="size-4.5" />
+                        ) : (
+                          <ChevronDown className="size-4.5" />
+                        )}
+                      </span>
+                    </button>
+                    {isOpen && (
+                      <div className="px-4 pb-5 sm:px-5 sm:pb-6 text-xs sm:text-sm text-slate-600 leading-relaxed pt-0">
+                        {item.answer}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>

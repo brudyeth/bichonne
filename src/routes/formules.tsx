@@ -125,24 +125,29 @@ function Page() {
             </p>
 
             <div id="soins-cibles" className="mt-16 pt-12 border-t border-white/10">
-              <p className="text-sm font-bold uppercase tracking-widest text-primary">
-                Prestations complémentaires
-              </p>
-              <h2 className="mt-2 text-4xl sm:text-5xl font-display font-bold uppercase tracking-wide text-white">
-                Les petits plus pour votre voiture
-              </h2>
-              <p className="mt-2 mb-8 max-w-2xl text-base text-white/80">
-                Complétez votre formule avec les soins adaptés à votre véhicule.
-              </p>
-              <CareCards />
-              <div className="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-white text-[#11114E] border border-white/20 p-6 shadow-xl">
-                <p className="text-sm text-slate-700 max-w-xl">
-                  Ces prestations s'ajoutent facilement à votre formule de nettoyage pour un rendu
-                  impeccable jusque dans les moindres détails.
-                </p>
-                <Link to="/contact" className="btn btn-primary text-white font-bold shadow-md">
-                  Réservation & Devis
-                </Link>
+              <div className="grid gap-8 lg:grid-cols-12 lg:items-center">
+                <div className="lg:col-span-5 space-y-4">
+                  <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest">
+                    <span className="w-6 h-[2px] bg-primary"></span>
+                    <span>Prestations complémentaires</span>
+                  </div>
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold uppercase tracking-tight text-white">
+                    Les petits plus pour votre voiture
+                  </h2>
+                  <p className="text-sm sm:text-base text-white/80 leading-relaxed max-w-md">
+                    Complétez votre formule avec les soins adaptés à votre véhicule pour un rendu
+                    impeccable jusque dans les moindres détails.
+                  </p>
+                  <div className="pt-2">
+                    <Link to="/contact" className="btn btn-primary text-white font-bold shadow-md">
+                      Réservation & Devis
+                    </Link>
+                  </div>
+                </div>
+
+                <div className="lg:col-span-7">
+                  <CareCards />
+                </div>
               </div>
             </div>
 

@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 
 interface Realization {
   id: number;
+  number: string;
   title: string;
   description: string;
   beforeWebp: string;
@@ -17,6 +18,7 @@ interface Realization {
 const REALIZATIONS: Realization[] = [
   {
     id: 1,
+    number: "01",
     title: "Pédalier & Moquette conducteur",
     description:
       "Aspiration en profondeur des fibres textiles, élimination des poils d'animaux et dégraissage du pédalier.",
@@ -31,6 +33,7 @@ const REALIZATIONS: Realization[] = [
   },
   {
     id: 2,
+    number: "02",
     title: "Plancher arrière & Seuil de porte",
     description:
       "Aspiration minutieuse de la moquette arrière, décrassage et rénovation des plastiques et seuils de porte.",
@@ -94,130 +97,145 @@ export function BeforeAfterSection() {
         className="pointer-events-none absolute inset-0 bg-noise opacity-[0.04] mix-blend-multiply"
       />
 
-      <div className="container-site max-w-5xl relative z-10">
-        {/* En-tête sobre et épuré */}
-        <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-primary mb-2.5">
-            Avant / Après
-          </div>
-          <h2
-            id="before-after-heading"
-            className="text-3xl sm:text-4xl md:text-5xl font-display font-bold uppercase tracking-wide text-[#11114E]"
-          >
-            Le résultat parle de lui-même.
-          </h2>
-          <p className="mt-2 text-sm sm:text-base text-slate-600">
-            Découvrez la différence avant et après notre passage.
-          </p>
-        </div>
+      <div className="container-site relative z-10">
+        {/* COMPOSITION ASYMÉTRIQUE : 35-40% titre & sélecteur à gauche, 60-65% galerie à droite */}
+        <div className="grid gap-10 lg:grid-cols-12 lg:items-center">
+          {/* Colonne gauche : Surtitre, Titre compact, description, sélecteur vertical et bouton */}
+          <div className="lg:col-span-5 space-y-6">
+            <div>
+              <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-3">
+                <span className="w-6 h-[2px] bg-primary"></span>
+                <span>Avant / Après</span>
+              </div>
+              <h2
+                id="before-after-heading"
+                className="text-4xl sm:text-5xl lg:text-[46px] font-display font-bold uppercase tracking-tight leading-[0.98] text-[#11114E]"
+              >
+                Le résultat parle de lui-même.
+              </h2>
+              <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed max-w-md">
+                Découvrez la différence avant et après notre passage. Photos réelles, sans retouche.
+              </p>
+            </div>
 
-        {/* Bloc réalisation avec comparaison côte à côte */}
-        <div
-          className="rounded-2xl border border-slate-200/90 bg-white/95 p-4 sm:p-6 md:p-8 shadow-xl shadow-slate-200/50 backdrop-blur-xs"
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-        >
-          {/* Titre & Description de la réalisation en cours */}
-          <div className="text-center mb-4 sm:mb-6">
-            <h3 className="font-display text-xl sm:text-2xl md:text-3xl font-bold uppercase tracking-wide text-[#11114E]">
-              {current.title}
-            </h3>
-            <p className="mt-1.5 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto leading-relaxed">
-              {current.description}
-            </p>
+            {/* Liste numérotée interactive des réalisations */}
+            <div className="space-y-2.5 max-w-md">
+              {REALIZATIONS.map((r, index) => {
+                const isActive = currentIndex === index;
+                return (
+                  <button
+                    key={r.id}
+                    type="button"
+                    onClick={() => setCurrentIndex(index)}
+                    className={`w-full text-left rounded-xl p-3.5 sm:p-4 font-bold text-sm sm:text-base flex items-center gap-3.5 transition-all cursor-pointer ${
+                      isActive
+                        ? "border-2 border-primary bg-white text-[#11114E] shadow-sm"
+                        : "border border-transparent bg-transparent text-slate-600 hover:text-[#11114E] hover:bg-white/60"
+                    }`}
+                  >
+                    <span
+                      className={`font-mono text-sm font-extrabold ${
+                        isActive ? "text-primary" : "text-slate-400"
+                      }`}
+                    >
+                      {r.number}
+                    </span>
+                    <span className="font-display uppercase tracking-wide">{r.title}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Bouton de réservation principal */}
+            <div className="pt-2">
+              <Link to="/contact" className="btn btn-primary text-sm sm:text-base px-6 py-3">
+                <span>Réserver mon nettoyage</span>
+                <ArrowRight className="size-4" />
+              </Link>
+            </div>
           </div>
 
-          {/* Comparaison côte à côte (2 colonnes préservées sur mobile et desktop) */}
-          <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6">
-            {/* Photo AVANT (à gauche) */}
-            <div className="group relative aspect-[3/4] sm:aspect-[4/5] w-full overflow-hidden rounded-xl border border-slate-200 bg-slate-900 shadow-md">
-              <picture>
-                <source type="image/webp" srcSet={current.beforeWebp} />
-                <img
-                  src={current.beforeJpg}
-                  alt={current.altBefore}
-                  loading="lazy"
-                  decoding="async"
-                  className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                />
-              </picture>
-              <div className="absolute top-2 left-2 sm:top-3 sm:left-3 z-10">
-                <span className="inline-flex items-center rounded-md bg-black/80 px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-white shadow-xs backdrop-blur-xs border border-white/20">
-                  AVANT
-                </span>
+          {/* Colonne droite : Grande carte blanche contenant la comparaison côte à côte */}
+          <div className="lg:col-span-7">
+            <div
+              className="rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-6 shadow-xl shadow-slate-200/50"
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+            >
+              {/* Deux photographies côte à côte */}
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                {/* Photo AVANT */}
+                <div className="relative aspect-[3/4] sm:aspect-[4/5] w-full overflow-hidden rounded-xl border border-slate-200 bg-slate-900 shadow-sm">
+                  <picture>
+                    <source type="image/webp" srcSet={current.beforeWebp} />
+                    <img
+                      src={current.beforeJpg}
+                      alt={current.altBefore}
+                      loading="lazy"
+                      decoding="async"
+                      className="size-full object-cover"
+                    />
+                  </picture>
+                  <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 z-10">
+                    <span className="inline-flex items-center rounded-md bg-[#11114E]/90 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-white shadow-xs backdrop-blur-xs border border-white/20">
+                      AVANT
+                    </span>
+                  </div>
+                </div>
+
+                {/* Photo APRÈS */}
+                <div className="relative aspect-[3/4] sm:aspect-[4/5] w-full overflow-hidden rounded-xl border border-slate-200 bg-slate-900 shadow-sm">
+                  <picture>
+                    <source type="image/webp" srcSet={current.afterWebp} />
+                    <img
+                      src={current.afterJpg}
+                      alt={current.altAfter}
+                      loading="lazy"
+                      decoding="async"
+                      className="size-full object-cover"
+                    />
+                  </picture>
+                  <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 z-10">
+                    <span className="inline-flex items-center rounded-md bg-primary px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-white shadow-xs">
+                      APRÈS
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Ligne inférieure : Détail de la prestation & Flèches de navigation */}
+              <div className="mt-5 pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h3 className="font-display text-lg sm:text-xl font-bold uppercase tracking-wide text-[#11114E]">
+                    {current.title}
+                  </h3>
+                  <p className="mt-1 text-xs sm:text-sm text-slate-600 leading-relaxed max-w-lg">
+                    {current.description}
+                  </p>
+                </div>
+
+                {/* Boutons de navigation précédent / suivant */}
+                <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                  <button
+                    type="button"
+                    onClick={handlePrev}
+                    aria-label="Réalisation précédente"
+                    className="grid size-10 place-items-center rounded-full border border-slate-200 hover:border-primary hover:text-primary transition-colors cursor-pointer text-slate-600"
+                  >
+                    <ChevronLeft className="size-4.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleNext}
+                    aria-label="Réalisation suivante"
+                    className="grid size-10 place-items-center rounded-full border border-slate-200 hover:border-primary hover:text-primary transition-colors cursor-pointer text-slate-600"
+                  >
+                    <ChevronRight className="size-4.5" />
+                  </button>
+                </div>
               </div>
             </div>
-
-            {/* Photo APRÈS (à droite) */}
-            <div className="group relative aspect-[3/4] sm:aspect-[4/5] w-full overflow-hidden rounded-xl border border-slate-200 bg-slate-900 shadow-md">
-              <picture>
-                <source type="image/webp" srcSet={current.afterWebp} />
-                <img
-                  src={current.afterJpg}
-                  alt={current.altAfter}
-                  loading="lazy"
-                  decoding="async"
-                  className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                />
-              </picture>
-              <div className="absolute top-2 right-2 sm:top-3 sm:right-3 z-10">
-                <span className="inline-flex items-center rounded-md bg-[#F47721] px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-white shadow-xs font-display">
-                  APRÈS
-                </span>
-              </div>
-            </div>
           </div>
-
-          {/* Navigation du carrousel : Flèches discrètes & Indicateurs sous les photos */}
-          <div className="mt-5 sm:mt-6 flex items-center justify-center gap-4">
-            <button
-              type="button"
-              onClick={handlePrev}
-              aria-label="Réalisation précédente"
-              className="grid size-9 sm:size-10 place-items-center rounded-xl bg-slate-100 text-[#11114E] hover:bg-slate-200 transition-colors border border-slate-200/80 active:scale-95 shadow-xs"
-            >
-              <ChevronLeft className="size-4 sm:size-5" />
-            </button>
-
-            {/* Petits indicateurs discrets */}
-            <div className="flex items-center gap-2">
-              {REALIZATIONS.map((_, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => setCurrentIndex(i)}
-                  className={`h-2.5 rounded-full transition-all ${
-                    currentIndex === i ? "w-7 bg-primary" : "w-2.5 bg-slate-300 hover:bg-slate-400"
-                  }`}
-                  aria-label={`Afficher la réalisation ${i + 1}`}
-                />
-              ))}
-            </div>
-
-            <button
-              type="button"
-              onClick={handleNext}
-              aria-label="Réalisation suivante"
-              className="grid size-9 sm:size-10 place-items-center rounded-xl bg-slate-100 text-[#11114E] hover:bg-slate-200 transition-colors border border-slate-200/80 active:scale-95 shadow-xs"
-            >
-              <ChevronRight className="size-4 sm:size-5" />
-            </button>
-          </div>
-        </div>
-
-        {/* Bouton de conversion sous les réalisations */}
-        <div className="mt-8 sm:mt-10 text-center space-y-2.5">
-          <Link
-            to="/contact"
-            className="btn btn-primary text-base sm:text-lg font-bold px-7 py-3.5"
-          >
-            <span>Réserver mon nettoyage</span>
-            <ArrowRight className="size-4.5" />
-          </Link>
-          <p className="text-xs text-slate-500">
-            Devis gratuit et sans engagement · Intervention à domicile dans toute la métropole
-            lilloise
-          </p>
         </div>
       </div>
     </section>

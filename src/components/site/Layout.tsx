@@ -388,9 +388,14 @@ export function PageHero({
     return (
       <section className="relative z-10 text-white">
         <div className="container-site pt-28 pb-14 md:pt-36 md:pb-16 animate-rise relative z-10">
-          <p className="text-sm font-bold uppercase tracking-widest text-primary">{eyebrow}</p>
-          <h1 className="mt-3 text-5xl md:text-6xl">{title}</h1>
-          {children && <div className="mt-4 max-w-2xl opacity-80">{children}</div>}
+          <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-3">
+            <span className="w-6 h-[2px] bg-primary"></span>
+            <span>{eyebrow}</span>
+          </div>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-bold uppercase tracking-tight text-white leading-[0.98]">
+            {title}
+          </h1>
+          {children && <div className="mt-4 max-w-2xl opacity-85 leading-relaxed">{children}</div>}
         </div>
       </section>
     );
@@ -427,9 +432,14 @@ export function PageHero({
       />
 
       <div className="container-site pt-28 pb-14 md:pt-36 md:pb-20 animate-rise relative z-10">
-        <p className="text-sm font-bold uppercase tracking-widest text-primary">{eyebrow}</p>
-        <h1 className="mt-3 text-5xl md:text-6xl">{title}</h1>
-        {children && <div className="mt-4 max-w-2xl opacity-80">{children}</div>}
+        <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-3">
+          <span className="w-6 h-[2px] bg-primary"></span>
+          <span>{eyebrow}</span>
+        </div>
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-bold uppercase tracking-tight text-white leading-[0.98]">
+          {title}
+        </h1>
+        {children && <div className="mt-4 max-w-2xl opacity-85 leading-relaxed">{children}</div>}
       </div>
     </section>
   );
@@ -438,26 +448,31 @@ export function PageHero({
 export function ContactBand() {
   return (
     <section className="bg-primary">
-      <div className="container-site flex flex-col gap-6 py-12 md:flex-row md:items-center md:justify-between">
+      <div className="container-site flex flex-col gap-6 py-10 md:py-12 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 className="text-4xl md:text-5xl text-night">On s'occupe de votre caisse ?</h2>
-          <p className="mt-2 font-medium text-night/80">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold uppercase tracking-tight text-[#11114E]">
+            On s'occupe de votre caisse ?
+          </h2>
+          <p className="mt-1.5 text-sm sm:text-base font-medium text-[#11114E]/85">
             Contactez-nous pour organiser votre nettoyage à domicile.
           </p>
         </div>
-        <div className="flex flex-wrap gap-3">
-          <a href={BUSINESS.phoneTel} className="btn bg-night text-night-foreground">
+        <div className="flex flex-wrap items-center gap-3">
+          <a
+            href={BUSINESS.phoneTel}
+            className="btn bg-[#11114E] text-white hover:bg-[#11114E]/90 text-xs sm:text-sm font-bold uppercase tracking-wider px-5 py-3 shadow-md"
+          >
             <Phone className="size-4" />
-            {BUSINESS.phoneDisplay}
+            <span>{BUSINESS.phoneDisplay}</span>
           </a>
           <a
             href={whatsappLink()}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn btn-whatsapp"
+            className="btn btn-whatsapp text-xs sm:text-sm font-bold uppercase tracking-wider px-5 py-3 shadow-md"
           >
             <MessageCircle className="size-4" />
-            WhatsApp
+            <span>WhatsApp</span>
           </a>
         </div>
       </div>
