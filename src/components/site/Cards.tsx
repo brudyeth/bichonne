@@ -3,28 +3,26 @@ import { Check, Clock, Sparkles, PawPrint, Info, Plus } from "lucide-react";
 import { CARES, FORMULAS, INTENSIVE_DIRT_NOTICE, euro } from "@/lib/business";
 
 export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
-  const exteriorFormula = FORMULAS.find((f) => f.id === "exterieur");
-  const interiorFormula = FORMULAS.find((f) => f.id === "interieur");
+  const premiumFormula = FORMULAS.find((f) => f.id === "interieur-premium");
 
   return (
     <div className="grid gap-6 lg:gap-8 md:grid-cols-3 items-stretch">
       {FORMULAS.map((f) => {
-        const isInterior = f.id === "interieur";
+        const isPremium = f.id === "interieur-premium";
         const isComplet = f.id === "complet";
-        const isExterior = f.id === "exterieur";
 
-        if (isInterior) {
-          // CARTE BLANCHE AU CENTRE : NETTOYAGE INTÉRIEUR (NOTRE SPÉCIALITÉ)
+        if (isPremium) {
+          // CARTE BLANCHE AU CENTRE : INTÉRIEUR PREMIUM (LA PLUS POPULAIRE)
           return (
             <article
               key={f.id}
               id={f.id}
               className="relative flex flex-col justify-between rounded-2xl bg-white text-[#11114E] border border-slate-200/90 p-6 sm:p-7 shadow-2xl transition-all duration-200 lg:-translate-y-2 z-10"
             >
-              {/* Badge supérieur orange : NOTRE SPÉCIALITÉ */}
+              {/* Badge supérieur orange : LA PLUS POPULAIRE */}
               <div className="absolute -top-3.5 left-6 sm:left-7">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-white shadow-md">
-                  <Sparkles className="size-3" /> Notre spécialité
+                  <Sparkles className="size-3" /> La plus populaire
                 </span>
               </div>
 
@@ -55,7 +53,7 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
 
                 {/* Encadré spécial Shampoing inclus */}
                 <div className="mt-4 rounded-xl bg-[#FFF6EE] border border-primary/20 p-3 sm:p-3.5 text-xs sm:text-[13px] font-semibold text-[#11114E] leading-snug">
-                  Shampoing des sièges, tissus, tapis et moquettes{" "}
+                  Shampoing des sièges et tapis{" "}
                   <span className="text-primary font-bold">inclus</span>
                 </div>
 
@@ -120,17 +118,17 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
         }
 
         if (isComplet) {
-          // CARTE BLEU NUIT : NETTOYAGE COMPLET (109 €)
+          // CARTE BLEU NUIT : FORMULE COMPLÈTE (119 €)
           return (
             <article
               key={f.id}
               id={f.id}
               className="relative flex flex-col justify-between rounded-2xl bg-[#13144d]/90 text-white border border-white/10 p-6 sm:p-7 shadow-lg transition-all duration-200"
             >
-              {/* Badge supérieur : FORMULE TOUT-EN-UN */}
+              {/* Badge supérieur : LE SOIN INTÉGRAL */}
               <div className="absolute -top-3.5 left-6 sm:left-7">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/20 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-white backdrop-blur-xs shadow-sm">
-                  Formule tout-en-un
+                  Soin intégral
                 </span>
               </div>
 
@@ -163,11 +161,11 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
                 {/* Deux blocs distincts séparés par un symbole + orange */}
                 <div className="space-y-2.5">
                   <div className="rounded-xl bg-white/[0.05] border border-white/10 p-3.5 space-y-1.5">
-                    <p className="font-display text-xs font-bold uppercase tracking-wider text-white">
-                      Toutes les prestations du nettoyage extérieur
+                    <p className="font-display text-xs font-bold uppercase tracking-wider text-primary">
+                      Intégralité de la formule Intérieur Premium
                     </p>
                     <p className="text-xs text-white/70 leading-relaxed">
-                      {exteriorFormula?.items.join(" · ")}
+                      {premiumFormula?.items.join(" · ")}
                     </p>
                   </div>
 
@@ -179,11 +177,26 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
 
                   <div className="rounded-xl bg-white/[0.05] border border-white/10 p-3.5 space-y-1.5">
                     <p className="font-display text-xs font-bold uppercase tracking-wider text-white">
-                      Toutes les prestations du nettoyage intérieur
+                      Prestations carrosserie & extérieur
                     </p>
-                    <p className="text-xs text-white/70 leading-relaxed">
-                      {interiorFormula?.items.join(" · ")}
-                    </p>
+                    <ul className="space-y-1.5 text-xs text-white/80">
+                      <li className="flex items-center gap-2">
+                        <Check className="size-3.5 text-primary shrink-0" strokeWidth={2.5} />
+                        <span>Prélavage à la mousse active</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Check className="size-3.5 text-primary shrink-0" strokeWidth={2.5} />
+                        <span>Lavage manuel de la carrosserie</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Check className="size-3.5 text-primary shrink-0" strokeWidth={2.5} />
+                        <span>Nettoyage des jantes</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Check className="size-3.5 text-primary shrink-0" strokeWidth={2.5} />
+                        <span>Rinçage et séchage manuel à la microfibre</span>
+                      </li>
+                    </ul>
                   </div>
                 </div>
 
@@ -219,7 +232,7 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
           );
         }
 
-        // CARTE BLEU NUIT : NETTOYAGE EXTÉRIEUR (49 €)
+        // CARTE BLEU NUIT : INTÉRIEUR EXPRESS (49 €)
         return (
           <article
             key={f.id}

@@ -24,33 +24,31 @@ describe("App routing", () => {
 });
 
 describe("Business configuration & pricing", () => {
-  it("has exact expected formula prices: 49 €, 69 €, 109 € and new descriptions", () => {
-    const ext = FORMULAS.find((f) => f.id === "exterieur");
-    const int = FORMULAS.find((f) => f.id === "interieur");
+  it("has exact expected formula prices: 49 €, 79 €, 119 € and new descriptions", () => {
+    const express = FORMULAS.find((f) => f.id === "interieur-express");
+    const premium = FORMULAS.find((f) => f.id === "interieur-premium");
     const comp = FORMULAS.find((f) => f.id === "complet");
 
-    expect(ext?.price).toBe(49);
-    expect(ext?.duration).toBe("1 h à 1 h 30");
-    expect(ext?.short).toContain(
-      "Un nettoyage minutieux pour redonner éclat et propreté à votre carrosserie.",
-    );
-    expect(ext?.items).toContain("Prélavage à la mousse active");
+    expect(express?.price).toBe(49);
+    expect(express?.duration).toBe("1 h à 1 h 30");
+    expect(express?.short).toBe("Pour un entretien rapide de votre habitacle.");
+    expect(express?.items).toContain("Aspiration de l'habitacle et du coffre");
+    expect(express?.items).toContain("Nettoyage des plastiques intérieurs");
 
-    expect(int?.price).toBe(69);
-    expect(int?.duration).toBe("2 à 3 h");
-    expect(int?.short).toContain(
-      "Un nettoyage en profondeur pour retrouver un habitacle propre, frais et soigné.",
-    );
-    expect(int?.items).toContain("Shampoing des sièges, tissus, tapis et moquettes");
-    // Ensure no injecteur-extracteur is mentioned anywhere in the formulas
-    expect(int?.short.toLowerCase()).not.toContain("injecteur");
-    expect(int?.items.some((i) => i.toLowerCase().includes("injecteur"))).toBe(false);
+    expect(premium?.price).toBe(79);
+    expect(premium?.duration).toBe("2 à 3 h");
+    expect(premium?.short).toBe("Pour un nettoyage intérieur en profondeur.");
+    expect(premium?.highlight).toBe(true);
+    expect(premium?.items).toContain("Shampoing des sièges et tapis");
+    expect(premium?.items).toContain("Finitions soignées");
 
-    expect(comp?.price).toBe(109);
+    expect(comp?.price).toBe(119);
     expect(comp?.duration).toBe("3 à 5 h");
-    expect(comp?.short).toContain(
-      "La formule tout-en-un pour prendre soin de votre véhicule, à l'intérieur comme à l'extérieur.",
-    );
+    expect(comp?.short).toBe("Le soin intégral de votre véhicule, intérieur et extérieur.");
+    expect(comp?.items).toContain("Intégralité de la formule Intérieur Premium");
+    expect(comp?.items).toContain("Prélavage à la mousse active");
+    expect(comp?.items).toContain("Lavage manuel de la carrosserie");
+    expect(comp?.items).toContain("Nettoyage des jantes");
   });
 
   it("has the 2 exact complementary prestations, names, and prices", () => {
@@ -121,7 +119,7 @@ describe("SEO metadata configuration", () => {
 
     expect(titleMeta?.title).toBe("Nettoyage voiture à domicile Lille | Bichonne ta Caisse");
     expect(descMeta?.content).toBe(
-      "Nettoyage intérieur, extérieur et complet de votre véhicule à domicile à Lille, Wambrechies et dans la métropole lilloise. Découvrez nos formules dès 49 €.",
+      "Nettoyage automobile à domicile à Lille et métropole lilloise dès 49 € : Intérieur Express, Intérieur Premium et Formule Complète. Déplacement offert jusqu'à 15 km.",
     );
     expect(canonicalLink?.href).toBe("https://bichonnetacaisse.fr/");
   });
@@ -148,7 +146,7 @@ describe("SEO metadata configuration", () => {
 
     const formulesDesc = formulesHead?.meta?.find((m) => m["name"] === "description");
     expect(formulesDesc?.content).toBe(
-      "Découvrez nos formules de nettoyage auto à domicile à Lille : extérieur 49 €, intérieur 69 € et complet 109 €. Intervention dans la métropole lilloise.",
+      "Découvrez nos formules de nettoyage auto à domicile à Lille : Intérieur Express 49 €, Intérieur Premium 79 € et Formule Complète 119 €. Intervention dans la métropole lilloise.",
     );
 
     const contactRoute = router.routesById["/contact"];

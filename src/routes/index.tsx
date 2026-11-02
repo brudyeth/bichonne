@@ -10,8 +10,8 @@ import {
   Sparkles,
   Check,
 } from "lucide-react";
-import heroShampouineuseWebp from "@/assets/hero-shampouineuse.webp";
-import heroShampouineusePng from "@/assets/hero-shampouineuse.png";
+import heroDetailingWebp from "@/assets/hero-detailing.webp";
+import heroDetailingPng from "@/assets/hero-detailing.png";
 import { FormulaCards, CareCards } from "@/components/site/Cards";
 import { BeforeAfterSection } from "@/components/site/BeforeAfterSection";
 import { FaqSection, FAQ_ITEMS } from "@/components/site/FaqSection";
@@ -34,9 +34,9 @@ const LOCAL_BUSINESS_SCHEMA = {
         "https://bichonnetacaisse.fr/og-image.jpg",
       ],
       description:
-        "Nettoyage intérieur, extérieur et complet de votre véhicule à domicile à Lille, Wambrechies et dans la métropole lilloise. Découvrez nos formules dès 49 €.",
+        "Nettoyage automobile professionnel à domicile à Lille et métropole lilloise : Intérieur Express dès 49 €, Intérieur Premium 79 € et Formule Complète 119 €.",
       telephone: "+33659140939",
-      priceRange: "49 € - 109 €",
+      priceRange: "49 € - 119 €",
       currenciesAccepted: "EUR",
       paymentAccepted: "Espèces, Virement bancaire, Carte bancaire",
       address: {
@@ -72,28 +72,28 @@ const LOCAL_BUSINESS_SCHEMA = {
         itemListElement: [
           {
             "@type": "Offer",
-            name: "Nettoyage extérieur",
+            name: "Intérieur Express",
             description:
-              "Un nettoyage minutieux pour redonner éclat et propreté à votre carrosserie. Durée estimée : 1 h à 1 h 30.",
+              "Pour un entretien rapide de votre habitacle. Aspiration habitacle/coffre et plastiques intérieurs. Durée estimée : 1 h à 1 h 30.",
             price: "49",
             priceCurrency: "EUR",
-            url: "https://bichonnetacaisse.fr/formules#exterieur",
+            url: "https://bichonnetacaisse.fr/formules#interieur-express",
           },
           {
             "@type": "Offer",
-            name: "Nettoyage intérieur",
+            name: "Intérieur Premium",
             description:
-              "Un nettoyage en profondeur pour retrouver un habitacle propre, frais et soigné. Durée estimée : 2 à 3 h.",
-            price: "69",
+              "Pour un nettoyage intérieur en profondeur avec shampoing des sièges et tapis. Durée estimée : 2 à 3 h.",
+            price: "79",
             priceCurrency: "EUR",
-            url: "https://bichonnetacaisse.fr/formules#interieur",
+            url: "https://bichonnetacaisse.fr/formules#interieur-premium",
           },
           {
             "@type": "Offer",
-            name: "Nettoyage complet",
+            name: "Formule Complète",
             description:
-              "La formule tout-en-un pour prendre soin de votre véhicule, à l'intérieur comme à l'extérieur. Durée estimée : 3 à 5 h.",
-            price: "109",
+              "Le soin intégral de votre véhicule, intérieur et extérieur. Durée estimée : 3 à 5 h.",
+            price: "119",
             priceCurrency: "EUR",
             url: "https://bichonnetacaisse.fr/formules#complet",
           },
@@ -132,7 +132,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Nettoyage intérieur, extérieur et complet de votre véhicule à domicile à Lille, Wambrechies et dans la métropole lilloise. Découvrez nos formules dès 49 €.",
+          "Nettoyage automobile à domicile à Lille et métropole lilloise dès 49 € : Intérieur Express, Intérieur Premium et Formule Complète. Déplacement offert jusqu'à 15 km.",
       },
       { property: "og:site_name", content: "Bichonne ta Caisse" },
       {
@@ -142,7 +142,7 @@ export const Route = createFileRoute("/")({
       {
         property: "og:description",
         content:
-          "Nettoyage intérieur, extérieur et complet de votre véhicule à domicile à Lille, Wambrechies et dans la métropole lilloise. Découvrez nos formules dès 49 €.",
+          "Nettoyage automobile à domicile à Lille et métropole lilloise dès 49 € : Intérieur Express, Intérieur Premium et Formule Complète. Déplacement offert jusqu'à 15 km.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://bichonnetacaisse.fr/" },
@@ -166,7 +166,7 @@ export const Route = createFileRoute("/")({
       {
         name: "twitter:description",
         content:
-          "Nettoyage intérieur, extérieur et complet de votre véhicule à domicile à Lille, Wambrechies et dans la métropole lilloise. Découvrez nos formules dès 49 €.",
+          "Nettoyage automobile à domicile à Lille et métropole lilloise dès 49 € : Intérieur Express, Intérieur Premium et Formule Complète. Déplacement offert jusqu'à 15 km.",
       },
       {
         name: "twitter:image",
@@ -231,7 +231,7 @@ function Index() {
         {/* Halos lumineux profonds et subtils */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-24 -right-24 size-[620px] sm:size-[760px] lg:size-[900px] rounded-full bg-[#243888]/18 blur-[150px] sm:blur-[180px]"
+          className="pointer-events-none absolute -top-24 -right-24 size-[620px] sm:size-[760px] lg:size-[900px] rounded-full bg-[#2a44a6]/25 blur-[150px] sm:blur-[180px]"
         />
         <div
           aria-hidden="true"
@@ -247,136 +247,171 @@ function Index() {
           className="pointer-events-none absolute inset-0 bg-noise opacity-12 mix-blend-overlay"
         />
 
+        {/* ZONE DROITE IMMERSIVE DESKTOP : Fusion organique par masque de transparence multi-points, sans dégradé opaque rapporté */}
+        <div
+          aria-hidden="true"
+          className="hidden lg:block absolute right-0 top-0 bottom-0 w-[58%] xl:w-[62%] 2xl:w-[65%] pointer-events-none select-none z-0"
+          style={{
+            maskImage:
+              "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.01) 10%, rgba(0,0,0,0.05) 20%, rgba(0,0,0,0.16) 32%, rgba(0,0,0,0.38) 46%, rgba(0,0,0,0.68) 60%, rgba(0,0,0,0.9) 74%, rgba(0,0,0,0.98) 88%, black 100%)",
+            WebkitMaskImage:
+              "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.01) 10%, rgba(0,0,0,0.05) 20%, rgba(0,0,0,0.16) 32%, rgba(0,0,0,0.38) 46%, rgba(0,0,0,0.68) 60%, rgba(0,0,0,0.9) 74%, rgba(0,0,0,0.98) 88%, black 100%)",
+          }}
+        >
+          <div
+            className="size-full"
+            style={{
+              maskImage:
+                "radial-gradient(ellipse 100% 92% at 75% 48%, black 50%, rgba(0,0,0,0.94) 66%, rgba(0,0,0,0.72) 80%, rgba(0,0,0,0.28) 92%, transparent 100%)",
+              WebkitMaskImage:
+                "radial-gradient(ellipse 100% 92% at 75% 48%, black 50%, rgba(0,0,0,0.94) 66%, rgba(0,0,0,0.72) 80%, rgba(0,0,0,0.28) 92%, transparent 100%)",
+            }}
+          >
+            <div
+              className="size-full"
+              style={{
+                maskImage:
+                  "linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.96) 8%, black 20%, black 72%, rgba(0,0,0,0.9) 82%, rgba(0,0,0,0.45) 92%, transparent 100%)",
+                WebkitMaskImage:
+                  "linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.96) 8%, black 20%, black 72%, rgba(0,0,0,0.9) 82%, rgba(0,0,0,0.45) 92%, transparent 100%)",
+              }}
+            >
+              <picture className="size-full">
+                <source type="image/webp" srcSet={heroDetailingWebp} />
+                <img
+                  src={heroDetailingPng}
+                  alt="Matériel de detailing automobile professionnel Bichonne ta Caisse avec microfibre brodée, flacon de soin et carrosserie au soleil"
+                  width={1672}
+                  height={941}
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                  className="size-full object-cover object-[66%_48%]"
+                  style={{
+                    filter: "contrast(1.04) brightness(1.12) saturate(1.04)",
+                  }}
+                />
+              </picture>
+            </div>
+          </div>
+        </div>
+
         <div className="container-site relative z-10">
-          {/* GRILLE ASYMÉTRIQUE DU HERO : 7 colonnes gauche (texte + cartes + boutons), 5 colonnes droite (photo verticale) */}
-          <div className="grid lg:grid-cols-12 items-center gap-8 lg:gap-10 xl:gap-14">
-            {/* Colonne gauche : Surtitre, Titre compact avec À LILLE en orange, paragraphe, 2 cartes d'avantages, boutons */}
-            <div className="lg:col-span-7 space-y-5 animate-rise">
-              {/* Petit surtitre orange précédé d'un trait horizontal */}
-              <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest">
-                <span className="w-6 h-[2px] bg-primary"></span>
-                <span>Lille & Métropole lilloise</span>
-              </div>
+          {/* Colonne gauche (desktop) / Contenu principal (mobile) */}
+          <div className="max-w-xl lg:max-w-2xl lg:w-[52%] xl:w-[48%] space-y-5 animate-rise">
+            {/* Petit surtitre orange précédé d'un trait horizontal */}
+            <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest">
+              <span className="w-6 h-[2px] bg-primary"></span>
+              <span>Lille & Métropole lilloise</span>
+            </div>
 
-              {/* Grand titre blanc compact avec À LILLE en orange */}
-              <h1 className="text-4xl sm:text-5xl lg:text-[54px] xl:text-[60px] font-display font-bold uppercase tracking-tight leading-[0.98] text-white">
-                Nettoyage automobile
-                <br />à domicile <span className="text-primary">à Lille</span> et
-                <br />
-                métropole lilloise
-              </h1>
+            {/* Grand titre blanc compact avec À LILLE en orange */}
+            <h1 className="text-4xl sm:text-5xl lg:text-[54px] xl:text-[60px] font-display font-bold uppercase tracking-tight leading-[0.98] text-white">
+              Nettoyage automobile
+              <br />à domicile <span className="text-primary">à Lille</span> et
+              <br />
+              métropole lilloise
+            </h1>
 
-              {/* Paragraphe commercial court */}
-              <p className="text-base sm:text-lg text-white/85 leading-relaxed max-w-xl">
-                Nous venons chez vous ou au travail avec tout le matériel. Notre spécialité :
-                l'intérieur en profondeur, sièges et tapis shampouinés.
-              </p>
+            {/* Paragraphe commercial court */}
+            <p className="text-base sm:text-lg text-white/85 leading-relaxed max-w-xl">
+              Nous venons chez vous ou au travail avec tout le matériel. Notre spécialité :
+              l'intérieur en profondeur, sièges et tapis shampouinés.
+            </p>
 
-              {/* Deux cartes d'avantages côte à côte */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1 max-w-xl">
-                {/* Carte avantage 1 */}
-                <div className="rounded-xl border border-white/10 bg-white/[0.05] p-3.5 flex items-start gap-3 backdrop-blur-xs">
-                  <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-white/10 text-primary">
-                    <Sparkles className="size-4.5" />
-                  </span>
-                  <div className="text-left leading-tight">
-                    <p className="text-sm font-bold text-white">Intérieur dès 69 €</p>
-                    <p className="text-xs text-white/70 mt-0.5">Shampoing sièges et tapis inclus</p>
-                  </div>
-                </div>
-
-                {/* Carte avantage 2 */}
-                <div className="rounded-xl border border-white/10 bg-white/[0.05] p-3.5 flex items-start gap-3 backdrop-blur-xs">
-                  <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-white/10 text-primary">
-                    <MapPin className="size-4.5" />
-                  </span>
-                  <div className="text-left leading-tight">
-                    <p className="text-sm font-bold text-white">Déplacement offert</p>
-                    <p className="text-xs text-white/70 mt-0.5">Jusqu'à 15 km autour de Lille</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Boutons d'action */}
-              <div className="flex flex-wrap items-center gap-3.5 pt-2">
-                <Link
-                  to="/contact"
-                  className="btn btn-primary text-sm sm:text-base px-6 sm:px-7 py-3"
-                >
-                  <span>Réserver mon nettoyage</span>
-                  <ArrowRight className="size-4" />
-                </Link>
-                <Link
-                  to="/formules"
-                  className="btn border border-white/20 bg-white/[0.04] text-white hover:bg-white/10 text-xs sm:text-sm font-bold uppercase tracking-wider px-5 py-3"
-                >
-                  Découvrir les formules
-                </Link>
-              </div>
-
-              {/* Lien WhatsApp discret */}
-              <div className="pt-1">
-                <a
-                  href={whatsappLink()}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-xs sm:text-sm text-white/80 hover:text-white transition-colors"
-                >
-                  <MessageCircle className="size-4 text-whatsapp" />
-                  <span>Une question ? Écrivez-nous sur WhatsApp</span>
-                </a>
+            {/* IMMERSION MOBILE & TABLETTE : Fusion organique sans cadre, coins adoucis et transparence naturelle */}
+            <div
+              className="lg:hidden relative -mx-4 sm:-mx-6 w-[calc(100%+2rem)] sm:w-[calc(100%+3rem)] max-w-none aspect-[16/10] sm:aspect-[16/9] my-6"
+              style={{
+                maskImage:
+                  "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.18) 5%, rgba(0,0,0,0.6) 12%, rgba(0,0,0,0.92) 20%, black 28%, black 74%, rgba(0,0,0,0.9) 82%, rgba(0,0,0,0.45) 92%, transparent 100%)",
+                WebkitMaskImage:
+                  "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.18) 5%, rgba(0,0,0,0.6) 12%, rgba(0,0,0,0.92) 20%, black 28%, black 74%, rgba(0,0,0,0.9) 82%, rgba(0,0,0,0.45) 92%, transparent 100%)",
+              }}
+            >
+              <div
+                className="size-full"
+                style={{
+                  maskImage:
+                    "radial-gradient(ellipse 100% 92% at 65% 52%, black 54%, rgba(0,0,0,0.92) 70%, rgba(0,0,0,0.55) 85%, rgba(0,0,0,0.18) 95%, transparent 100%)",
+                  WebkitMaskImage:
+                    "radial-gradient(ellipse 100% 92% at 65% 52%, black 54%, rgba(0,0,0,0.92) 70%, rgba(0,0,0,0.55) 85%, rgba(0,0,0,0.18) 95%, transparent 100%)",
+                }}
+              >
+                <picture className="size-full">
+                  <source type="image/webp" srcSet={heroDetailingWebp} />
+                  <img
+                    src={heroDetailingPng}
+                    alt="Matériel de detailing automobile professionnel Bichonne ta Caisse avec microfibre brodée, flacon de soin et carrosserie au soleil"
+                    width={1672}
+                    height={941}
+                    loading="eager"
+                    fetchPriority="high"
+                    decoding="async"
+                    className="size-full object-cover object-[66%_52%]"
+                    style={{
+                      filter: "contrast(1.04) brightness(1.12) saturate(1.04)",
+                    }}
+                  />
+                </picture>
               </div>
             </div>
 
-            {/* Colonne droite : Photographie immersive de la shampouineuse (+10-15% de taille, fondu atténué et détails préservés) */}
-            <div className="lg:col-span-5 flex justify-center lg:justify-end mt-6 lg:mt-0">
-              <div className="relative w-full max-w-[400px] sm:max-w-[500px] md:max-w-[560px] lg:max-w-[610px] xl:max-w-[650px] aspect-[4/3] sm:aspect-[5/4] lg:aspect-[4/3] xl:aspect-[5/4]">
-                {/* Conteneur avec masque progressif préservant 70% de la zone centrale nette et lumineuse */}
-                <div className="relative size-full overflow-hidden rounded-3xl [-webkit-mask-image:radial-gradient(ellipse_94%_88%_at_52%_46%,black_70%,transparent_100%)] [mask-image:radial-gradient(ellipse_94%_88%_at_52%_46%,black_70%,transparent_100%)]">
-                  <picture>
-                    <source type="image/webp" srcSet={heroShampouineuseWebp} />
-                    <img
-                      src={heroShampouineusePng}
-                      alt="Nettoyage et extraction par shampouineuse en profondeur d'un siège automobile - Bichonne ta Caisse Lille"
-                      width={1536}
-                      height={1024}
-                      loading="eager"
-                      fetchPriority="high"
-                      decoding="async"
-                      className="size-full object-cover object-[52%_45%]"
-                    />
-                  </picture>
-
-                  {/* Fondus directionnels affinés et réduits aux bordures extrêmes pour préserver toute la clarté de l'image */}
-                  <div
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-[#11114E] via-[#11114E]/40 to-transparent"
-                  />
-                  <div
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-y-0 left-0 w-10 sm:w-16 bg-gradient-to-r from-[#11114E]/75 via-[#11114E]/25 to-transparent"
-                  />
-                  <div
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-y-0 right-0 w-10 sm:w-16 bg-gradient-to-l from-[#11114E]/75 via-[#11114E]/25 to-transparent"
-                  />
-                  <div
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-x-0 top-0 h-8 sm:h-12 bg-gradient-to-b from-[#11114E]/60 to-transparent"
-                  />
-                </div>
-
-                {/* Petit encadré tarifaire superposé en bas à gauche, net et au premier plan */}
-                <div className="absolute bottom-2 left-2 sm:bottom-4 sm:left-4 inline-flex items-center gap-3 sm:gap-3.5 rounded-xl sm:rounded-2xl bg-[#11114E]/90 border border-white/20 backdrop-blur-md px-3.5 py-2.5 sm:px-4 sm:py-3 shadow-2xl z-20">
-                  <span className="font-display text-2xl sm:text-3xl font-bold text-primary tracking-tight">
-                    69 €
-                  </span>
-                  <div className="text-left leading-tight">
-                    <p className="font-bold text-xs sm:text-sm text-white">Nettoyage intérieur</p>
-                    <p className="text-[11px] text-white/75 mt-0.5">Shampoing inclus · 2 à 3 h</p>
-                  </div>
+            {/* Deux cartes d'avantages côte à côte */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1 max-w-xl">
+              {/* Carte avantage 1 */}
+              <div className="rounded-xl border border-white/10 bg-white/[0.05] p-3.5 flex items-start gap-3 backdrop-blur-xs">
+                <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-white/10 text-primary">
+                  <Sparkles className="size-4.5" />
+                </span>
+                <div className="text-left leading-tight">
+                  <p className="text-sm font-bold text-white">Dès 49 €</p>
+                  <p className="text-xs text-white/70 mt-0.5">
+                    Intérieur express, premium ou complet
+                  </p>
                 </div>
               </div>
+
+              {/* Carte avantage 2 */}
+              <div className="rounded-xl border border-white/10 bg-white/[0.05] p-3.5 flex items-start gap-3 backdrop-blur-xs">
+                <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-white/10 text-primary">
+                  <MapPin className="size-4.5" />
+                </span>
+                <div className="text-left leading-tight">
+                  <p className="text-sm font-bold text-white">Déplacement offert</p>
+                  <p className="text-xs text-white/70 mt-0.5">Jusqu'à 15 km autour de Lille</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Boutons d'action */}
+            <div className="flex flex-wrap items-center gap-3.5 pt-2">
+              <Link
+                to="/contact"
+                className="btn btn-primary text-sm sm:text-base px-6 sm:px-7 py-3"
+              >
+                <span>Réserver mon nettoyage</span>
+                <ArrowRight className="size-4" />
+              </Link>
+              <Link
+                to="/formules"
+                className="btn border border-white/20 bg-white/[0.04] text-white hover:bg-white/10 text-xs sm:text-sm font-bold uppercase tracking-wider px-5 py-3"
+              >
+                Découvrir les formules
+              </Link>
+            </div>
+
+            {/* Lien WhatsApp discret */}
+            <div className="pt-1">
+              <a
+                href={whatsappLink()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-xs sm:text-sm text-white/80 hover:text-white transition-colors"
+              >
+                <MessageCircle className="size-4 text-whatsapp" />
+                <span>Une question ? Écrivez-nous sur WhatsApp</span>
+              </a>
             </div>
           </div>
 
@@ -507,7 +542,7 @@ function Index() {
               </div>
             </div>
 
-            {/* 3 cartes : Nettoyage extérieur 49€ (bleu nuit), Nettoyage intérieur 69€ (blanche au centre), Nettoyage complet 109€ (bleu nuit) */}
+            {/* 3 cartes : Intérieur Express 49€ (bleu nuit), Intérieur Premium 79€ (blanche au centre - la plus populaire), Formule Complète 119€ (bleu nuit) */}
             <FormulaCards />
 
             <p className="mt-4 text-xs sm:text-sm text-white/70 max-w-2xl italic">

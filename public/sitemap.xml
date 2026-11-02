@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Pages Principales -->
   <url>
     <loc>https://bichonnetacaisse.fr/</loc>
     <changefreq>weekly</changefreq>
@@ -13,7 +14,61 @@
   <url>
     <loc>https://bichonnetacaisse.fr/contact</loc>
     <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://bichonnetacaisse.fr/entreprises</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- Pages Dédiées Services & SEO Local -->
+  <url>
+    <loc>https://bichonnetacaisse.fr/services/nettoyage-interieur-voiture-lille</loc>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://bichonnetacaisse.fr/services/shampoing-sieges-tapis-voiture-lille</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://bichonnetacaisse.fr/services/nettoyage-voiture-domicile-wambrechies</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://bichonnetacaisse.fr/services/nettoyage-voiture-domicile-marcq-en-baroeul</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://bichonnetacaisse.fr/services/nettoyage-voiture-domicile-lambersart</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://bichonnetacaisse.fr/services/nettoyage-voiture-domicile-la-madeleine</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://bichonnetacaisse.fr/services/nettoyage-voiture-domicile-roubaix</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://bichonnetacaisse.fr/services/nettoyage-voiture-domicile-tourcoing</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Pages Légales & Conformité -->
+  <url>
+    <loc>https://bichonnetacaisse.fr/cgv</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
   </url>
   <url>
     <loc>https://bichonnetacaisse.fr/mentions-legales</loc>

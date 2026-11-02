@@ -113,7 +113,7 @@ export function Header() {
       className={`sticky top-0 z-50 text-white transition-all duration-300 ease-out ${
         scrolled
           ? "bg-[#11114E]/95 backdrop-blur-md shadow-md shadow-[#11114E]/30"
-          : "bg-[#11114E]/20 backdrop-blur-xs shadow-none"
+          : "bg-[#11114E]/25 backdrop-blur-sm sm:backdrop-blur-md shadow-none"
       }`}
     >
       {/* Ligne de séparation discrète : 1 px, lumineuse et semi-transparente, centrée à ~78% avec fondu aux deux extrémités */}
@@ -342,6 +342,9 @@ export function Footer() {
               <Instagram3DIcon className="size-4.5" />
               <span>Suivez-nous sur Instagram</span>
             </a>
+            <Link to="/entreprises" className="block opacity-80 hover:opacity-100">
+              Entreprises & Flottes
+            </Link>
             <p className="opacity-80">{BUSINESS.area}</p>
           </div>
         </div>
@@ -350,12 +353,47 @@ export function Footer() {
             <span suppressHydrationWarning>
               © {new Date().getFullYear()} {BUSINESS.name}
             </span>
-            <Link to="/mentions-legales">Mentions légales</Link>
-            <Link to="/confidentialite">Politique de confidentialité</Link>
+            <Link to="/cgv" className="hover:underline">
+              Conditions Générales de Vente (CGV)
+            </Link>
+            <Link to="/mentions-legales" className="hover:underline">
+              Mentions légales
+            </Link>
+            <Link to="/confidentialite" className="hover:underline">
+              Politique de confidentialité
+            </Link>
           </div>
         </div>
       </div>
     </footer>
+  );
+}
+
+export function MobileStickyBar() {
+  return (
+    <aside
+      aria-label="Actions rapides mobiles"
+      className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-[#11114E]/95 backdrop-blur-lg border-t border-white/15 px-3 py-2.5 shadow-2xl safe-area-pb"
+    >
+      <div className="grid grid-cols-2 gap-2 max-w-md mx-auto">
+        <a
+          href={BUSINESS.phoneTel}
+          className="btn border border-white/20 bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider py-2.5 flex items-center justify-center gap-2"
+        >
+          <Phone className="size-4 text-primary" />
+          <span>Appeler</span>
+        </a>
+        <a
+          href={whatsappLink()}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn btn-whatsapp text-white font-bold text-xs uppercase tracking-wider py-2.5 flex items-center justify-center gap-2"
+        >
+          <MessageCircle className="size-4" />
+          <span>WhatsApp</span>
+        </a>
+      </div>
+    </aside>
   );
 }
 
@@ -366,7 +404,7 @@ export function WhatsAppFab() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Nous écrire sur WhatsApp"
-      className="fixed bottom-5 right-5 z-50 grid size-14 place-items-center rounded-full btn-whatsapp shadow-lg"
+      className="hidden lg:grid fixed bottom-5 right-5 z-50 size-14 place-items-center rounded-full btn-whatsapp shadow-lg"
     >
       <MessageCircle className="size-7" />
     </a>

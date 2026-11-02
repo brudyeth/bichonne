@@ -24,12 +24,14 @@ import { BUSINESS, FORMULAS, INTENSIVE_DIRT_NOTICE, euro, whatsappLink } from "@
 type Search = { formule?: string | undefined };
 
 export const Route = createFileRoute("/contact")({
-  validateSearch: (s: Record<string, unknown>): Search => ({
-    formule:
-      typeof s["formule"] === "string" && FORMULAS.some((f) => f.id === s["formule"])
-        ? s["formule"]
-        : undefined,
-  }),
+  validateSearch: (s: Record<string, unknown>): Search => {
+    const raw = typeof s["formule"] === "string" ? s["formule"] : undefined;
+    if (!raw) return { formule: undefined };
+    if (FORMULAS.some((f) => f.id === raw)) return { formule: raw };
+    if (raw === "interieur") return { formule: "interieur-premium" };
+    if (raw === "exterieur") return { formule: "interieur-express" };
+    return { formule: undefined };
+  },
   head: () => ({
     meta: [
       { title: "Devis Nettoyage Voiture à Domicile Lille | Bichonne ta Caisse" },
@@ -619,19 +621,44 @@ function Page() {
                       </p>
                     )}
 
-                    {/* Proposition discrète de passage Intérieur vers Complet pour +40 € */}
-                    {formula === "interieur" && (
+                    {/* Suggestion de montée en gamme */}
+                    {formula === "interieur-express" && (
                       <div className="mt-3 rounded-xl border border-primary/30 bg-primary/5 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-200">
                         <div className="space-y-1">
                           <p className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
-                            <Sparkles className="size-3.5" /> Suggestion confort
+                            <Sparkles className="size-3.5" /> Suggestion confort · Formule la plus
+                            populaire
                           </p>
                           <p className="text-sm font-semibold text-foreground">
-                            Passez au Nettoyage Complet pour +40 € seulement
+                            Passez à l'Intérieur Premium pour +30 € seulement
                           </p>
                           <p className="text-xs text-muted-foreground leading-relaxed">
-                            Profitez d'un véhicule impeccable à l'extérieur comme à l'intérieur (109
-                            € au total).
+                            Profitez du shampoing complet des sièges et tapis, dressing des
+                            plastiques, vitres intérieures et finitions soignées (79 € au total).
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setFormula("interieur-premium")}
+                          className="self-start sm:self-center shrink-0 rounded-lg bg-primary px-3.5 py-2 text-xs font-bold text-primary-foreground uppercase tracking-wide hover:bg-primary/90 transition-colors shadow-xs"
+                        >
+                          Passer au Premium (+30 €)
+                        </button>
+                      </div>
+                    )}
+                    {formula === "interieur-premium" && (
+                      <div className="mt-3 rounded-xl border border-primary/30 bg-primary/5 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-200">
+                        <div className="space-y-1">
+                          <p className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
+                            <Sparkles className="size-3.5" /> Suggestion confort · Soin intégral
+                          </p>
+                          <p className="text-sm font-semibold text-foreground">
+                            Passez à la Formule Complète pour +40 € seulement
+                          </p>
+                          <p className="text-xs text-muted-foreground leading-relaxed">
+                            Profitez d'un véhicule impeccable à l'extérieur comme à l'intérieur :
+                            mousse active, lavage manuel carrosserie, jantes et séchage microfibre
+                            (119 € au total).
                           </p>
                         </div>
                         <button
@@ -646,14 +673,15 @@ function Page() {
                     {formula === "complet" && (
                       <div className="mt-2.5 rounded-xl border border-border/80 bg-secondary/50 px-3.5 py-2.5 flex items-center justify-between gap-3 text-xs">
                         <span className="text-muted-foreground">
-                          Formule Complète sélectionnée (intérieur + carrosserie).
+                          Formule Complète sélectionnée (intérieur complet + carrosserie
+                          extérieure).
                         </span>
                         <button
                           type="button"
-                          onClick={() => setFormula("interieur")}
+                          onClick={() => setFormula("interieur-premium")}
                           className="text-primary font-semibold hover:underline shrink-0"
                         >
-                          Revenir à l'Intérieur seul (69 €)
+                          Revenir à l'Intérieur Premium (79 €)
                         </button>
                       </div>
                     )}
