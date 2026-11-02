@@ -22,3 +22,4 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+Test synchronisation Cloudflare - 02/11/2026
