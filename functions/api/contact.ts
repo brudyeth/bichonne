@@ -325,7 +325,6 @@ export async function onRequestPost(context: EventContext): Promise<Response> {
             : "Véhicule particulier standard"
       }`,
       utilitySurcharge ? `Supplément utilitaire : +${utilitySurcharge} €` : null,
-      isGrandUtility ? `Grand utilitaire : Sur devis personnalisé` : null,
       `Adresse d'intervention : ${address?.trim() || "Non précisée"}`,
       `Ville d'intervention : ${city?.trim() || "Non précisée"}`,
       `Lieu de stationnement : ${parking?.trim() || "Non précisé"}`,
@@ -343,7 +342,7 @@ export async function onRequestPost(context: EventContext): Promise<Response> {
       ``,
       `Tarif estimé : ${typeof estimatedTotal === "number" ? `${estimatedTotal} €` : "À définir"}${
         utilitySurcharge ? ` (dont supplément utilitaire +${utilitySurcharge} €)` : ""
-      }${isGrandUtility ? " (+ devis grand utilitaire)" : ""}`,
+      }`,
       ``,
       `Message complémentaire :`,
       message?.trim() || "Aucun message complémentaire.",
@@ -362,11 +361,10 @@ export async function onRequestPost(context: EventContext): Promise<Response> {
         vehicleCategory === "utilitaire"
           ? "Véhicule utilitaire"
           : vehicleCategory === "grand-utilitaire"
-            ? "Grand utilitaire (sur devis)"
+            ? "Grand utilitaire"
             : "Véhicule particulier standard"
       }</p>
       ${utilitySurcharge ? `<p><strong>Supplément utilitaire :</strong> +${utilitySurcharge} €</p>` : ""}
-      ${isGrandUtility ? `<p><strong>Grand utilitaire :</strong> Sur devis personnalisé</p>` : ""}
       <p><strong>Adresse :</strong> ${safeAddress}</p>
       <p><strong>Ville :</strong> ${safeCity}</p>
       <p><strong>Lieu de stationnement :</strong> ${safeParking}</p>
@@ -386,7 +384,7 @@ export async function onRequestPost(context: EventContext): Promise<Response> {
       <h3>Tarif estimé</h3>
       <p style="font-size: 1.25rem; font-weight: bold; color: #ea580c;">${typeof estimatedTotal === "number" ? `${estimatedTotal} €` : "À définir"}${
         utilitySurcharge ? ` (dont utilitaire +${utilitySurcharge} €)` : ""
-      }${isGrandUtility ? " (+ devis grand utilitaire)" : ""}</p>
+      }</p>
 
       <h3>Message complémentaire</h3>
       <p>${safeMessage}</p>

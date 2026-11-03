@@ -77,6 +77,9 @@ export const FORMULAS: Formula[] = [
   },
 ];
 
+// Supplément fixe pour tous les véhicules utilitaires (petits, moyens et grands)
+export const UTILITY_VEHICLE_SURCHARGE = 20;
+
 export type Care = {
   id: string;
   name: string;

@@ -92,3 +92,47 @@ describe("Intervention location requirement", () => {
     expect(hasValidLocation(undefined, undefined)).toBe(false);
   });
 });
+
+describe("Utility vehicle pricing rules", () => {
+  function calculateTotal(
+    formulaPrice: number,
+    vehicleCategory: "standard" | "utilitaire" | "grand-utilitaire",
+    caresPrices: number[] = [],
+  ): number {
+    const isUtilityVehicle =
+      vehicleCategory === "utilitaire" || vehicleCategory === "grand-utilitaire";
+    let total = formulaPrice;
+    total += caresPrices.reduce((acc, p) => acc + p, 0);
+    if (isUtilityVehicle) {
+      total += 20;
+    }
+    return total;
+  }
+
+  it("calculates Intérieur Express (49 €) correctly for all vehicle types", () => {
+    expect(calculateTotal(49, "standard")).toBe(49);
+    expect(calculateTotal(49, "utilitaire")).toBe(69);
+    expect(calculateTotal(49, "grand-utilitaire")).toBe(69);
+  });
+
+  it("calculates Intérieur Premium (69 €) correctly for all vehicle types", () => {
+    expect(calculateTotal(69, "standard")).toBe(69);
+    expect(calculateTotal(69, "utilitaire")).toBe(89);
+    expect(calculateTotal(69, "grand-utilitaire")).toBe(89);
+  });
+
+  it("calculates Formule Complète (109 €) correctly for all vehicle types, including utilitaires (+20 € = 129 €)", () => {
+    expect(calculateTotal(109, "standard")).toBe(109);
+    expect(calculateTotal(109, "utilitaire")).toBe(129);
+    expect(calculateTotal(109, "grand-utilitaire")).toBe(129);
+  });
+
+  it("correctly combines utility surcharge (+20 €) with care options", () => {
+    // Formule Complète 109 € + Utilitaire 20 € + Soin cuir 15 € = 144 €
+    expect(calculateTotal(109, "utilitaire", [15])).toBe(144);
+    // Formule Complète 109 € + Grand utilitaire 20 € + Poils 15 € + Cuir 15 € = 159 €
+    expect(calculateTotal(109, "grand-utilitaire", [15, 15])).toBe(159);
+    // Intérieur Premium 69 € + Utilitaire 20 € + Poils 15 € = 104 €
+    expect(calculateTotal(69, "utilitaire", [15])).toBe(104);
+  });
+});

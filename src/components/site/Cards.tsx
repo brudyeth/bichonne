@@ -315,8 +315,7 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
           <span className="text-primary font-display text-lg sm:text-xl font-bold">+20 €</span>
         </p>
         <p className="text-xs text-white/70 mt-0.5">
-          Applicable aux formules Intérieur Express et Intérieur Premium. Grands utilitaires sur
-          devis.
+          Applicable à toutes les formules (petits, moyens et grands utilitaires).
         </p>
       </div>
     </div>
