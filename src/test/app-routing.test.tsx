@@ -158,10 +158,54 @@ describe("SEO metadata configuration", () => {
     expect(contactCanonical?.["href"]).toBe("https://bichonnetacaisse.fr/contact");
   });
 
-  it("exports BeforeAfterSection component", async () => {
-    const { BeforeAfterSection } = await import("@/components/site/BeforeAfterSection");
+  it("exports BeforeAfterSection component and organizes realizations by vehicle", async () => {
+    const { BeforeAfterSection, REALIZATIONS } =
+      await import("@/components/site/BeforeAfterSection");
     expect(BeforeAfterSection).toBeDefined();
     expect(typeof BeforeAfterSection).toBe("function");
+    expect(REALIZATIONS).toHaveLength(2);
+
+    const clio = REALIZATIONS.find((r) => r.id === 1);
+    expect(clio).toBeDefined();
+    expect(clio?.title).toBe("Renault Clio 5 – Nettoyage intérieur");
+    expect(clio?.views).toHaveLength(2);
+    expect(clio?.views.map((v) => v.label)).toEqual([
+      "Pédalier & Moquette",
+      "Plancher arrière & Seuil",
+    ]);
+
+    const p208 = REALIZATIONS.find((r) => r.id === 2);
+    expect(p208).toBeDefined();
+    expect(p208?.title).toBe("Peugeot 208 – Nettoyage intérieur");
+    expect(p208?.views).toHaveLength(4);
+
+    const labels = p208?.views.map((v) => v.label);
+    expect(labels).toEqual([
+      "Poste de conduite",
+      "Tapis conducteur",
+      "Banquette et sol arrière",
+      "Habitacle côté passager",
+    ]);
+
+    // Check that each view of Peugeot 208 has valid avant and apres paths
+    for (const view of p208?.views ?? []) {
+      expect(view.beforeJpg).toContain("208-");
+      expect(view.afterJpg).toContain("208-");
+      expect(view.beforeWebp).toContain(".webp");
+      expect(view.afterWebp).toContain(".webp");
+      expect(view.altBefore).toContain("Peugeot 208");
+      expect(view.altAfter).toContain("Peugeot 208");
+    }
+
+    // Check that each view of Clio 5 has valid avant and apres paths
+    for (const view of clio?.views ?? []) {
+      expect(view.beforeJpg).toBeTruthy();
+      expect(view.afterJpg).toBeTruthy();
+      expect(view.beforeWebp).toContain(".webp");
+      expect(view.afterWebp).toContain(".webp");
+      expect(view.altBefore).toContain("Renault Clio 5");
+      expect(view.altAfter).toContain("Renault Clio 5");
+    }
   });
 
   it("configures official square favicons including 512x512 and 48x48", () => {
