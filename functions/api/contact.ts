@@ -26,6 +26,32 @@ function escapeHtml(str: string): string {
     .replace(/'/g, "&#39;");
 }
 
+function isValidFrenchPhoneNumber(input?: string): boolean {
+  if (!input) return false;
+  let cleaned = input.trim().replace(/[\s\u00A0.\-_/()]/g, "");
+
+  if (cleaned.startsWith("+330")) {
+    cleaned = "+33" + cleaned.slice(4);
+  } else if (cleaned.startsWith("00330")) {
+    cleaned = "0033" + cleaned.slice(5);
+  }
+
+  if (cleaned.startsWith("+33")) {
+    cleaned = "0" + cleaned.slice(3);
+  } else if (cleaned.startsWith("0033")) {
+    cleaned = "0" + cleaned.slice(4);
+  }
+
+  return /^0[1-9]\d{8}$/.test(cleaned);
+}
+
+function isValidEmail(input?: string): boolean {
+  if (!input) return true;
+  const trimmed = input.trim();
+  if (!trimmed) return true;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(trimmed);
+}
+
 function getCorsOrigin(request: Request): string {
   const origin = request.headers.get("origin");
   if (!origin) return "https://bichonnetacaisse.fr";
@@ -145,6 +171,57 @@ export async function onRequestPost(context: EventContext): Promise<Response> {
       );
     }
 
+    if (!isValidFrenchPhoneNumber(phone)) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error:
+            "Veuillez renseigner un numéro de téléphone valide (ex. : 06 12 34 56 78 ou +33 6 12 34 56 78).",
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+          },
+        },
+      );
+    }
+
+    if (!city?.trim() && !address?.trim()) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error:
+            "Veuillez renseigner votre ville ou adresse d'intervention dans la métropole lilloise.",
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+          },
+        },
+      );
+    }
+
+    if (email?.trim() && !isValidEmail(email)) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error:
+            "Veuillez renseigner une adresse e-mail valide (ex. : jean.dupont@email.fr) ou laisser le champ vide.",
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+          },
+        },
+      );
+    }
+
     // Contrôle anti-abus de taille de contenu
     if (
       name.length > 100 ||
@@ -191,7 +268,7 @@ export async function onRequestPost(context: EventContext): Promise<Response> {
           success: false,
           configured: false,
           message:
-            "Le service d'envoi d'e-mail direct n'est pas encore configuré sur le serveur Cloudflare (clé API RESEND_API_KEY requise). Veuillez transmettre votre demande via WhatsApp en un clic ou par téléphone au 06 59 14 09 39.",
+            "L'envoi de votre demande est temporairement indisponible. Veuillez nous contacter directement par WhatsApp ou par téléphone.",
         }),
         {
           status: 503,
@@ -236,10 +313,11 @@ export async function onRequestPost(context: EventContext): Promise<Response> {
       ``,
       `Formule : ${formulaName?.trim() || "À définir ensemble"} (${typeof formulaPrice === "number" ? `${formulaPrice} €` : "—"})`,
       `Soins ciblés : ${selectedCares?.length ? selectedCares.join(", ") : "Aucun"}`,
-      `Véhicule particulièrement sale : ${isVeryDirty ? "Oui (+15 €)" : "Non"}`,
-      `Présence de poils d'animaux : ${hasPetHair ? "Oui (+15 €)" : "Non"}`,
+      `Véhicule particulièrement sale : ${isVeryDirty ? "Oui" : "Non"}`,
+      `Présence de poils d'animaux : ${hasPetHair ? "Oui" : "Non"}`,
+      `Supplément saleté / poils : ${isVeryDirty || hasPetHair ? "+15 € (une seule fois)" : "Aucun"}`,
       ``,
-      `Rendez-vous : ${dateChoice === "date" ? `Date souhaitée : ${preferredDate || "Non sélectionnée"}` : "À convenir ensemble"}`,
+      `Rendez-vous : ${dateChoice === "calendar" ? `Date souhaitée : ${preferredDate || "Non sélectionnée"}` : "À convenir ensemble"}`,
       `Créneau horaire : ${timeSlot || "Flexible"}`,
       ``,
       `Tarif estimé : ${typeof estimatedTotal === "number" ? `${estimatedTotal} €` : "À définir"}`,
@@ -266,11 +344,11 @@ export async function onRequestPost(context: EventContext): Promise<Response> {
       <h3>Prestations & État</h3>
       <p><strong>Formule :</strong> ${safeFormula} ${typeof formulaPrice === "number" ? `(${formulaPrice} €)` : ""}</p>
       <p><strong>Soins ciblés :</strong> ${safeCares}</p>
-      <p><strong>Particulièrement sale :</strong> ${isVeryDirty ? "Oui (+15 €)" : "Non"}</p>
-      <p><strong>Poils d'animaux :</strong> ${hasPetHair ? "Oui (+15 €)" : "Non"}</p>
-
+      <p><strong>Particulièrement sale :</strong> ${isVeryDirty ? "Oui" : "Non"}</p>
+<p><strong>Poils d'animaux :</strong> ${hasPetHair ? "Oui" : "Non"}</p>
+<p><strong>Supplément saleté / poils :</strong> ${isVeryDirty || hasPetHair ? "+15 € (une seule fois)" : "Aucun"}</p>
       <h3>Disponibilité</h3>
-      <p><strong>Date :</strong> ${dateChoice === "date" ? `Date souhaitée : ${safeDate}` : "À convenir ensemble"}</p>
+      <p><strong>Date :</strong> ${dateChoice === "calendar" ? `Date souhaitée : ${safeDate}` : "À convenir ensemble"}</p>
       <p><strong>Créneau :</strong> ${safeTimeSlot}</p>
 
       <h3>Tarif estimé</h3>
@@ -289,7 +367,7 @@ export async function onRequestPost(context: EventContext): Promise<Response> {
       body: JSON.stringify({
         from: `Bichonne ta Caisse <${senderEmail}>`,
         to: [recipientEmail],
-        reply_to: safeEmail || undefined,
+        reply_to: safeEmail && isValidEmail(email) ? safeEmail : undefined,
         subject: `Demande de devis - ${safeName} (${city?.trim() || "Métropole lilloise"})`,
         text: textLines.join("\n"),
         html: htmlBody,

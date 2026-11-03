@@ -73,6 +73,32 @@ function escapeHtml(str: string): string {
     .replace(/'/g, "&#39;");
 }
 
+function isValidFrenchPhoneNumber(input?: string): boolean {
+  if (!input) return false;
+  let cleaned = input.trim().replace(/[\s\u00A0.\-_/()]/g, "");
+
+  if (cleaned.startsWith("+330")) {
+    cleaned = "+33" + cleaned.slice(4);
+  } else if (cleaned.startsWith("00330")) {
+    cleaned = "0033" + cleaned.slice(5);
+  }
+
+  if (cleaned.startsWith("+33")) {
+    cleaned = "0" + cleaned.slice(3);
+  } else if (cleaned.startsWith("0033")) {
+    cleaned = "0" + cleaned.slice(4);
+  }
+
+  return /^0[1-9]\d{8}$/.test(cleaned);
+}
+
+function isValidEmail(input?: string): boolean {
+  if (!input) return true;
+  const trimmed = input.trim();
+  if (!trimmed) return true;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(trimmed);
+}
+
 function getCorsOrigin(request: Request): string {
   const origin = request.headers.get("origin");
   if (!origin) return "https://bichonnetacaisse.fr";
@@ -189,6 +215,57 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
         JSON.stringify({
           success: false,
           error: "Le nom et le numéro de téléphone sont obligatoires.",
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+          },
+        },
+      );
+    }
+
+    if (!isValidFrenchPhoneNumber(phone)) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error:
+            "Veuillez renseigner un numéro de téléphone valide (ex. : 06 12 34 56 78 ou +33 6 12 34 56 78).",
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+          },
+        },
+      );
+    }
+
+    if (!city?.trim() && !address?.trim()) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error:
+            "Veuillez renseigner votre ville ou adresse d'intervention dans la métropole lilloise.",
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+          },
+        },
+      );
+    }
+
+    if (email?.trim() && !isValidEmail(email)) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error:
+            "Veuillez renseigner une adresse e-mail valide (ex. : jean.dupont@email.fr) ou laisser le champ vide.",
         }),
         {
           status: 400,
@@ -337,7 +414,7 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
       body: JSON.stringify({
         from: `Bichonne ta Caisse <${senderEmail}>`,
         to: [recipientEmail],
-        reply_to: safeEmail || undefined,
+        reply_to: safeEmail && isValidEmail(email) ? safeEmail : undefined,
         subject: `Demande de devis - ${safeName} (${city?.trim() || "Métropole lilloise"})`,
         text: textLines.join("\n"),
         html: htmlBody,

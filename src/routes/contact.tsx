@@ -227,6 +227,33 @@ function Page() {
     }
   };
 
+  // Validation d'un numéro de téléphone français (+33, 0033, 06, 07, 03, etc.)
+  function isValidFrenchPhoneNumber(input: string): boolean {
+    if (!input) return false;
+    let cleaned = input.trim().replace(/[\s\u00A0.\-_/()]/g, "");
+
+    if (cleaned.startsWith("+330")) {
+      cleaned = "+33" + cleaned.slice(4);
+    } else if (cleaned.startsWith("00330")) {
+      cleaned = "0033" + cleaned.slice(5);
+    }
+
+    if (cleaned.startsWith("+33")) {
+      cleaned = "0" + cleaned.slice(3);
+    } else if (cleaned.startsWith("0033")) {
+      cleaned = "0" + cleaned.slice(4);
+    }
+
+    return /^0[1-9]\d{8}$/.test(cleaned);
+  }
+
+  // Validation d'une adresse e-mail (facultative mais format valide si renseignée)
+  function isValidEmail(input: string): boolean {
+    const trimmed = input.trim();
+    if (!trimmed) return true;
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(trimmed);
+  }
+
   // Validation finale (Étape 4)
   const validateFinal = () => {
     if (!name.trim()) {
@@ -239,9 +266,21 @@ function Page() {
       );
       return false;
     }
+    if (!isValidFrenchPhoneNumber(phone)) {
+      setStepError(
+        "Veuillez renseigner un numéro de téléphone valide (ex. : 06 12 34 56 78 ou +33 6 12 34 56 78).",
+      );
+      return false;
+    }
     if (!city.trim() && !address.trim()) {
       setStepError(
         "Veuillez renseigner votre ville ou adresse d'intervention dans la métropole lilloise.",
+      );
+      return false;
+    }
+    if (email.trim() && !isValidEmail(email)) {
+      setStepError(
+        "Veuillez renseigner une adresse e-mail valide (ex. : jean.dupont@email.fr) ou laisser le champ vide.",
       );
       return false;
     }
@@ -1229,7 +1268,10 @@ function Page() {
                         type="email"
                         className={field}
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+                          if (stepError) setStepError("");
+                        }}
                         placeholder="Ex. : jean.dupont@email.fr"
                         autoComplete="email"
                       />
@@ -1383,7 +1425,7 @@ function Page() {
                       <button
                         type="button"
                         onClick={sendEmail}
-                        disabled={emailStatus.type === "loading"}
+                        disabled={emailStatus.type === "loading" || emailStatus.type === "success"}
                         className="btn btn-primary flex-1 py-3.5 text-base justify-center shadow-sm disabled:opacity-60"
                       >
                         <Mail className="size-5 shrink-0" />
