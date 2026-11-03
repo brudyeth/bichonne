@@ -134,6 +134,9 @@ function Page() {
 
   // Étape 2 : Véhicule & Lieu
   const [vehicle, setVehicle] = useState("");
+  const [vehicleCategory, setVehicleCategory] = useState<
+    "standard" | "utilitaire" | "grand-utilitaire"
+  >("standard");
   const [parking, setParking] = useState<string>("Cour ou allée privée");
   const [hasWater, setHasWater] = useState(true);
   const [hasElectricity, setHasElectricity] = useState(true);
@@ -163,12 +166,21 @@ function Page() {
   const selectedFormula = FORMULAS.find((x) => x.id === formula);
   const selectedCaresList = FORM_CARES.filter((c) => cares.includes(c.id));
 
+  // Éligibilité du supplément utilitaire : applicable uniquement aux formules Intérieur Express et Intérieur Premium
+  const isUtilitySurchargeApplicable =
+    formula === "interieur-express" || formula === "interieur-premium";
+  const isUtilityVehicle = vehicleCategory === "utilitaire";
+  const isGrandUtility = vehicleCategory === "grand-utilitaire";
+
   // Calcul dynamique du tarif total estimé
   const total = useMemo(() => {
     let t = selectedFormula?.price ?? 0;
     t += selectedCaresList.reduce((acc, c) => acc + c.price, 0);
+    if (vehicleCategory === "utilitaire" && isUtilitySurchargeApplicable) {
+      t += 20;
+    }
     return t;
-  }, [selectedFormula, selectedCaresList]);
+  }, [selectedFormula, selectedCaresList, vehicleCategory, isUtilitySurchargeApplicable]);
 
   const todayStr = useMemo(() => {
     const now = new Date();
@@ -305,7 +317,15 @@ function Page() {
       email.trim() ? `• E-mail : ${email.trim()}` : null,
       "",
       "🚗 VÉHICULE & INTERVENTION :",
-      `• Modèle : ${vehicle.trim() || "Non précisé"}`,
+      `• Modèle : ${vehicle.trim() || "Non précisé"}${
+        vehicleCategory === "utilitaire"
+          ? isUtilitySurchargeApplicable
+            ? " (Véhicule utilitaire - supplément +20 €)"
+            : " (Véhicule utilitaire)"
+          : vehicleCategory === "grand-utilitaire"
+            ? " (Grand utilitaire - sur devis)"
+            : ""
+      }`,
       `• Stationnement : ${parking}`,
       `• Accès à l'eau : ${hasWater ? "Oui" : "Non"}`,
       `• Prise électrique accessible : ${hasElectricity ? "Oui" : "Non"}`,
@@ -313,6 +333,10 @@ function Page() {
       "",
       "✨ PRESTATIONS & OPTIONS :",
       `• Formule : ${selectedFormula ? `${selectedFormula.name} (${euro(selectedFormula.price)})` : "À définir ensemble"}`,
+      vehicleCategory === "utilitaire" && isUtilitySurchargeApplicable
+        ? "• Supplément véhicule utilitaire : +20 €"
+        : null,
+      vehicleCategory === "grand-utilitaire" ? "• Grand utilitaire : Sur devis personnalisé" : null,
       `• Prestations complémentaires : ${careText}`,
       hasIntensiveDirt
         ? "• Salissures intensives / Dépoilage extrême : Oui (sur devis personnalisé)"
@@ -325,7 +349,13 @@ function Page() {
       `• Créneau horaire : ${timeSlot}`,
       "",
       total
-        ? `💰 TARIF ESTIMÉ : ${euro(total)}${hasIntensiveDirt ? " (+ devis personnalisé pour salissures intensives)" : ""}`
+        ? `💰 TARIF ESTIMÉ : ${euro(total)}${
+            vehicleCategory === "utilitaire" && isUtilitySurchargeApplicable
+              ? " (dont supplément utilitaire +20 €)"
+              : ""
+          }${vehicleCategory === "grand-utilitaire" ? " (+ devis personnalisé grand utilitaire)" : ""}${
+            hasIntensiveDirt ? " (+ devis personnalisé pour salissures intensives)" : ""
+          }`
         : "💰 TARIF ESTIMÉ : À définir selon prestations",
       "",
       message.trim() ? `💬 INFORMATIONS COMPLÉMENTAIRES :\n${message.trim()}` : null,
@@ -339,6 +369,8 @@ function Page() {
     city,
     email,
     vehicle,
+    vehicleCategory,
+    isUtilitySurchargeApplicable,
     parking,
     hasWater,
     hasElectricity,
@@ -377,6 +409,10 @@ function Page() {
           phone: phone.trim(),
           email: email.trim() || undefined,
           vehicle: vehicle.trim() || undefined,
+          vehicleCategory,
+          utilitySurcharge:
+            vehicleCategory === "utilitaire" && isUtilitySurchargeApplicable ? 20 : undefined,
+          isGrandUtility: vehicleCategory === "grand-utilitaire",
           address: address.trim() || undefined,
           city: city.trim() || undefined,
           parking,
@@ -671,11 +707,11 @@ function Page() {
                             populaire
                           </p>
                           <p className="text-sm font-semibold text-foreground">
-                            Passez à l'Intérieur Premium pour +30 € seulement
+                            Passez à l'Intérieur Premium pour +20 € seulement
                           </p>
                           <p className="text-xs text-muted-foreground leading-relaxed">
                             Profitez du shampoing complet des sièges et tapis, dressing des
-                            plastiques, vitres intérieures et finitions soignées (79 € au total).
+                            plastiques, vitres intérieures et finitions soignées (69 € au total).
                           </p>
                         </div>
                         <button
@@ -683,7 +719,7 @@ function Page() {
                           onClick={() => setFormula("interieur-premium")}
                           className="self-start sm:self-center shrink-0 rounded-lg bg-primary px-3.5 py-2 text-xs font-bold text-primary-foreground uppercase tracking-wide hover:bg-primary/90 transition-colors shadow-xs"
                         >
-                          Passer au Premium (+30 €)
+                          Passer au Premium (+20 €)
                         </button>
                       </div>
                     )}
@@ -699,7 +735,7 @@ function Page() {
                           <p className="text-xs text-muted-foreground leading-relaxed">
                             Profitez d'un véhicule impeccable à l'extérieur comme à l'intérieur :
                             mousse active, lavage manuel carrosserie, jantes et séchage microfibre
-                            (119 € au total).
+                            (109 € au total).
                           </p>
                         </div>
                         <button
@@ -722,7 +758,7 @@ function Page() {
                           onClick={() => setFormula("interieur-premium")}
                           className="text-primary font-semibold hover:underline shrink-0"
                         >
-                          Revenir à l'Intérieur Premium (79 €)
+                          Revenir à l'Intérieur Premium (69 €)
                         </button>
                       </div>
                     )}
@@ -852,6 +888,111 @@ function Page() {
                       placeholder="Ex. : Peugeot 208, Renault Clio 5, Tesla Model 3..."
                     />
                   </label>
+
+                  {/* Catégorie du véhicule */}
+                  <div className="space-y-2 pt-1">
+                    <span className="text-sm font-semibold text-foreground block">
+                      Catégorie du véhicule
+                    </span>
+                    <div className="grid gap-2.5 sm:grid-cols-3">
+                      <label
+                        className={`flex flex-col justify-between p-3.5 rounded-xl border cursor-pointer transition-all ${
+                          vehicleCategory === "standard"
+                            ? "border-primary bg-primary/10 text-foreground ring-1 ring-primary"
+                            : "border-border bg-background text-foreground hover:bg-secondary/60"
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="vehicleCategory"
+                          value="standard"
+                          checked={vehicleCategory === "standard"}
+                          onChange={() => setVehicleCategory("standard")}
+                          className="sr-only"
+                        />
+                        <div>
+                          <span className="text-sm font-bold block">Véhicule standard</span>
+                          <span className="text-xs text-muted-foreground mt-0.5 block">
+                            Citadine, berline, break, SUV...
+                          </span>
+                        </div>
+                        <span className="text-xs font-semibold text-muted-foreground mt-2">
+                          Tarif standard
+                        </span>
+                      </label>
+
+                      <label
+                        className={`flex flex-col justify-between p-3.5 rounded-xl border cursor-pointer transition-all ${
+                          vehicleCategory === "utilitaire"
+                            ? "border-primary bg-primary/10 text-foreground ring-1 ring-primary"
+                            : "border-border bg-background text-foreground hover:bg-secondary/60"
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="vehicleCategory"
+                          value="utilitaire"
+                          checked={vehicleCategory === "utilitaire"}
+                          onChange={() => setVehicleCategory("utilitaire")}
+                          className="sr-only"
+                        />
+                        <div>
+                          <span className="text-sm font-bold block">Véhicule utilitaire</span>
+                          <span className="text-xs text-muted-foreground mt-0.5 block">
+                            Kangoo, Berlingo, Trafic, Expert...
+                          </span>
+                        </div>
+                        <span className="text-xs font-bold text-primary mt-2">
+                          {isUtilitySurchargeApplicable
+                            ? "+20 €"
+                            : "Tarif standard sur cette formule"}
+                        </span>
+                      </label>
+
+                      <label
+                        className={`flex flex-col justify-between p-3.5 rounded-xl border cursor-pointer transition-all ${
+                          vehicleCategory === "grand-utilitaire"
+                            ? "border-primary bg-primary/10 text-foreground ring-1 ring-primary"
+                            : "border-border bg-background text-foreground hover:bg-secondary/60"
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="vehicleCategory"
+                          value="grand-utilitaire"
+                          checked={vehicleCategory === "grand-utilitaire"}
+                          onChange={() => setVehicleCategory("grand-utilitaire")}
+                          className="sr-only"
+                        />
+                        <div>
+                          <span className="text-sm font-bold block">Grand utilitaire</span>
+                          <span className="text-xs text-muted-foreground mt-0.5 block">
+                            Master, Boxer, Crafter, Ducato...
+                          </span>
+                        </div>
+                        <span className="text-xs font-bold text-primary mt-2">Sur devis</span>
+                      </label>
+                    </div>
+
+                    {vehicleCategory === "utilitaire" && isUtilitySurchargeApplicable && (
+                      <div className="rounded-lg bg-primary/10 border border-primary/20 p-2.5 text-xs text-foreground flex items-center gap-2 animate-in fade-in duration-200">
+                        <Info className="size-3.5 text-primary shrink-0" />
+                        <span>
+                          Supplément utilitaire de <strong>+20 €</strong> appliqué à votre formule (
+                          {selectedFormula?.name}).
+                        </span>
+                      </div>
+                    )}
+
+                    {vehicleCategory === "grand-utilitaire" && (
+                      <div className="rounded-lg bg-primary/10 border border-primary/20 p-2.5 text-xs text-foreground flex items-center gap-2 animate-in fade-in duration-200">
+                        <Info className="size-3.5 text-primary shrink-0" />
+                        <span>
+                          Grand utilitaire : tarif établi sur devis personnalisé selon le gabarit.
+                        </span>
+                      </div>
+                    )}
+                  </div>
 
                   {/* Emplacement stationnement */}
                   <label className="block space-y-1.5">
@@ -1337,9 +1478,27 @@ function Page() {
                       <div className="flex justify-between py-1 border-b border-border/50">
                         <span className="text-muted-foreground">Véhicule :</span>
                         <span className="font-semibold text-right">
-                          {vehicle.trim() || "Non précisé"} ({parking})
+                          {vehicle.trim() || "Non précisé"}
+                          {vehicleCategory === "utilitaire" && " (Utilitaire)"}
+                          {vehicleCategory === "grand-utilitaire" && " (Grand utilitaire)"}
+                          {" · "}
+                          {parking}
                         </span>
                       </div>
+
+                      {vehicleCategory === "utilitaire" && isUtilitySurchargeApplicable && (
+                        <div className="flex justify-between py-1 border-b border-border/50 text-primary">
+                          <span>Supplément véhicule utilitaire :</span>
+                          <span className="font-semibold text-right">+20 €</span>
+                        </div>
+                      )}
+
+                      {vehicleCategory === "grand-utilitaire" && (
+                        <div className="flex justify-between py-1 border-b border-border/50 text-primary">
+                          <span>Grand utilitaire :</span>
+                          <span className="font-semibold text-right">Sur devis personnalisé</span>
+                        </div>
+                      )}
 
                       <div className="flex justify-between py-1 border-b border-border/50">
                         <span className="text-muted-foreground">Date souhaitée :</span>
@@ -1359,12 +1518,21 @@ function Page() {
                           Tarif total estimé
                         </span>
                         <span className="text-xs text-muted-foreground">
-                          Hors éventuels frais de déplacement au-delà de 15 km
+                          {vehicleCategory === "grand-utilitaire"
+                            ? "Base hors devis grand utilitaire et hors déplacement > 15 km"
+                            : "Hors éventuels frais de déplacement au-delà de 15 km"}
                         </span>
                       </div>
-                      <span className="font-display text-4xl font-bold text-primary">
-                        {total ? euro(total) : "—"}
-                      </span>
+                      <div className="text-right">
+                        <span className="font-display text-4xl font-bold text-primary">
+                          {total ? euro(total) : "—"}
+                        </span>
+                        {vehicleCategory === "grand-utilitaire" && (
+                          <span className="text-xs text-primary font-semibold block">
+                            + devis grand utilitaire
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
 

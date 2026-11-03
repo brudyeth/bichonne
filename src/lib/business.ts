@@ -32,12 +32,16 @@ export const FORMULAS: Formula[] = [
     price: 49,
     duration: "1 h à 1 h 30",
     short: "Pour un entretien rapide de votre habitacle.",
-    items: ["Aspiration de l'habitacle et du coffre", "Nettoyage des plastiques intérieurs"],
+    items: [
+      "Aspiration de l'habitacle et du coffre",
+      "Nettoyage des plastiques intérieurs",
+      "Nettoyage de surface des sièges et tissus",
+    ],
   },
   {
     id: "interieur-premium",
     name: "Intérieur Premium",
-    price: 79,
+    price: 69,
     duration: "2 à 3 h",
     short: "Pour un nettoyage intérieur en profondeur.",
     items: [
@@ -57,7 +61,7 @@ export const FORMULAS: Formula[] = [
   {
     id: "complet",
     name: "Formule Complète",
-    price: 119,
+    price: 109,
     duration: "3 à 5 h",
     short: "Le soin intégral de votre véhicule, intérieur et extérieur.",
     items: [

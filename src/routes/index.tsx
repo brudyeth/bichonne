@@ -34,9 +34,9 @@ const LOCAL_BUSINESS_SCHEMA = {
         "https://bichonnetacaisse.fr/og-image.jpg",
       ],
       description:
-        "Nettoyage automobile professionnel à domicile à Lille et métropole lilloise : Intérieur Express dès 49 €, Intérieur Premium 79 € et Formule Complète 119 €.",
+        "Nettoyage automobile professionnel à domicile à Lille et métropole lilloise : Intérieur Express dès 49 €, Intérieur Premium 69 € et Formule Complète 109 €.",
       telephone: "+33659140939",
-      priceRange: "49 € - 119 €",
+      priceRange: "49 € - 109 €",
       currenciesAccepted: "EUR",
       paymentAccepted: "Espèces, Virement bancaire, Carte bancaire",
       address: {
@@ -84,7 +84,7 @@ const LOCAL_BUSINESS_SCHEMA = {
             name: "Intérieur Premium",
             description:
               "Pour un nettoyage intérieur en profondeur avec shampoing des sièges et tapis. Durée estimée : 2 à 3 h.",
-            price: "79",
+            price: "69",
             priceCurrency: "EUR",
             url: "https://bichonnetacaisse.fr/formules#interieur-premium",
           },
@@ -93,7 +93,7 @@ const LOCAL_BUSINESS_SCHEMA = {
             name: "Formule Complète",
             description:
               "Le soin intégral de votre véhicule, intérieur et extérieur. Durée estimée : 3 à 5 h.",
-            price: "119",
+            price: "109",
             priceCurrency: "EUR",
             url: "https://bichonnetacaisse.fr/formules#complet",
           },
@@ -542,7 +542,7 @@ function Index() {
               </div>
             </div>
 
-            {/* 3 cartes : Intérieur Express 49€ (bleu nuit), Intérieur Premium 79€ (blanche au centre - la plus populaire), Formule Complète 119€ (bleu nuit) */}
+            {/* 3 cartes : Intérieur Express 49€ (bleu nuit), Intérieur Premium 69€ (blanche au centre - la plus populaire), Formule Complète 109€ (bleu nuit) */}
             <FormulaCards />
 
             <p className="mt-4 text-xs sm:text-sm text-white/70 max-w-2xl italic">

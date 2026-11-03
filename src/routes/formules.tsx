@@ -10,7 +10,7 @@ export const Route = createFileRoute("/formules")({
       {
         name: "description",
         content:
-          "Découvrez nos formules de nettoyage auto à domicile à Lille : Intérieur Express 49 €, Intérieur Premium 79 € et Formule Complète 119 €. Intervention dans la métropole lilloise.",
+          "Découvrez nos formules de nettoyage auto à domicile à Lille : Intérieur Express 49 €, Intérieur Premium 69 € et Formule Complète 109 €. Intervention dans la métropole lilloise.",
       },
       { property: "og:site_name", content: "Bichonne ta Caisse" },
       {
@@ -20,7 +20,7 @@ export const Route = createFileRoute("/formules")({
       {
         property: "og:description",
         content:
-          "Découvrez nos formules de nettoyage auto à domicile à Lille : Intérieur Express 49 €, Intérieur Premium 79 € et Formule Complète 119 €. Intervention dans la métropole lilloise.",
+          "Découvrez nos formules de nettoyage auto à domicile à Lille : Intérieur Express 49 €, Intérieur Premium 69 € et Formule Complète 109 €. Intervention dans la métropole lilloise.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://bichonnetacaisse.fr/formules" },
@@ -44,7 +44,7 @@ export const Route = createFileRoute("/formules")({
       {
         name: "twitter:description",
         content:
-          "Découvrez nos formules de nettoyage auto à domicile à Lille : Intérieur Express 49 €, Intérieur Premium 79 € et Formule Complète 119 €. Intervention dans la métropole lilloise.",
+          "Découvrez nos formules de nettoyage auto à domicile à Lille : Intérieur Express 49 €, Intérieur Premium 69 € et Formule Complète 109 €. Intervention dans la métropole lilloise.",
       },
       {
         name: "twitter:image",
@@ -198,8 +198,8 @@ function Page() {
                     Le prix varie-t-il selon la taille du véhicule ?
                   </h3>
                   <p className="mt-2 text-sm text-slate-600">
-                    Non ! Nos tarifs sont fixes et transparents : 49 € pour l'Intérieur Express, 79
-                    € pour l'Intérieur Premium, 119 € pour la Formule Complète, que vous ayez une
+                    Non ! Nos tarifs sont fixes et transparents : 49 € pour l'Intérieur Express, 69
+                    € pour l'Intérieur Premium, 109 € pour la Formule Complète, que vous ayez une
                     citadine, une berline ou un SUV. Nos tarifs peuvent également être revus à la
                     baisse dans le cadre d'offres promotionnelles ponctuelles.
                   </p>

@@ -95,6 +95,9 @@ export async function onRequestPost(context: EventContext): Promise<Response> {
       phone?: string;
       email?: string;
       vehicle?: string;
+      vehicleCategory?: string;
+      utilitySurcharge?: number;
+      isGrandUtility?: boolean;
       address?: string;
       city?: string;
       parking?: string;
@@ -119,6 +122,9 @@ export async function onRequestPost(context: EventContext): Promise<Response> {
       phone,
       email,
       vehicle,
+      vehicleCategory,
+      utilitySurcharge,
+      isGrandUtility,
       address,
       city,
       parking,
@@ -304,7 +310,22 @@ export async function onRequestPost(context: EventContext): Promise<Response> {
       `Téléphone : ${phone.trim()}`,
       `E-mail : ${email?.trim() || "Non renseigné"}`,
       ``,
-      `Véhicule : ${vehicle?.trim() || "Non précisé"}`,
+      `Véhicule : ${vehicle?.trim() || "Non précisé"}${
+        vehicleCategory === "utilitaire"
+          ? " (Utilitaire)"
+          : vehicleCategory === "grand-utilitaire"
+            ? " (Grand utilitaire)"
+            : ""
+      }`,
+      `Catégorie : ${
+        vehicleCategory === "utilitaire"
+          ? "Véhicule utilitaire"
+          : vehicleCategory === "grand-utilitaire"
+            ? "Grand utilitaire"
+            : "Véhicule particulier standard"
+      }`,
+      utilitySurcharge ? `Supplément utilitaire : +${utilitySurcharge} €` : null,
+      isGrandUtility ? `Grand utilitaire : Sur devis personnalisé` : null,
       `Adresse d'intervention : ${address?.trim() || "Non précisée"}`,
       `Ville d'intervention : ${city?.trim() || "Non précisée"}`,
       `Lieu de stationnement : ${parking?.trim() || "Non précisé"}`,
@@ -320,11 +341,13 @@ export async function onRequestPost(context: EventContext): Promise<Response> {
       `Rendez-vous : ${dateChoice === "calendar" ? `Date souhaitée : ${preferredDate || "Non sélectionnée"}` : "À convenir ensemble"}`,
       `Créneau horaire : ${timeSlot || "Flexible"}`,
       ``,
-      `Tarif estimé : ${typeof estimatedTotal === "number" ? `${estimatedTotal} €` : "À définir"}`,
+      `Tarif estimé : ${typeof estimatedTotal === "number" ? `${estimatedTotal} €` : "À définir"}${
+        utilitySurcharge ? ` (dont supplément utilitaire +${utilitySurcharge} €)` : ""
+      }${isGrandUtility ? " (+ devis grand utilitaire)" : ""}`,
       ``,
       `Message complémentaire :`,
       message?.trim() || "Aucun message complémentaire.",
-    ];
+    ].filter((l): l is string => l !== null);
 
     const htmlBody = `
       <h2>Nouvelle demande de devis - Bichonne ta Caisse</h2>
@@ -335,6 +358,15 @@ export async function onRequestPost(context: EventContext): Promise<Response> {
       
       <h3>Véhicule & Intervention</h3>
       <p><strong>Marque et modèle :</strong> ${safeVehicle}</p>
+      <p><strong>Catégorie :</strong> ${
+        vehicleCategory === "utilitaire"
+          ? "Véhicule utilitaire"
+          : vehicleCategory === "grand-utilitaire"
+            ? "Grand utilitaire (sur devis)"
+            : "Véhicule particulier standard"
+      }</p>
+      ${utilitySurcharge ? `<p><strong>Supplément utilitaire :</strong> +${utilitySurcharge} €</p>` : ""}
+      ${isGrandUtility ? `<p><strong>Grand utilitaire :</strong> Sur devis personnalisé</p>` : ""}
       <p><strong>Adresse :</strong> ${safeAddress}</p>
       <p><strong>Ville :</strong> ${safeCity}</p>
       <p><strong>Lieu de stationnement :</strong> ${safeParking}</p>
@@ -352,7 +384,9 @@ export async function onRequestPost(context: EventContext): Promise<Response> {
       <p><strong>Créneau :</strong> ${safeTimeSlot}</p>
 
       <h3>Tarif estimé</h3>
-      <p style="font-size: 1.25rem; font-weight: bold; color: #ea580c;">${typeof estimatedTotal === "number" ? `${estimatedTotal} €` : "À définir"}</p>
+      <p style="font-size: 1.25rem; font-weight: bold; color: #ea580c;">${typeof estimatedTotal === "number" ? `${estimatedTotal} €` : "À définir"}${
+        utilitySurcharge ? ` (dont utilitaire +${utilitySurcharge} €)` : ""
+      }${isGrandUtility ? " (+ devis grand utilitaire)" : ""}</p>
 
       <h3>Message complémentaire</h3>
       <p>${safeMessage}</p>

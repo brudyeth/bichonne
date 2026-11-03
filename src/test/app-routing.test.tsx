@@ -24,7 +24,7 @@ describe("App routing", () => {
 });
 
 describe("Business configuration & pricing", () => {
-  it("has exact expected formula prices: 49 €, 79 €, 119 € and new descriptions", () => {
+  it("has exact expected formula prices: 49 €, 69 €, 109 € and new descriptions", () => {
     const express = FORMULAS.find((f) => f.id === "interieur-express");
     const premium = FORMULAS.find((f) => f.id === "interieur-premium");
     const comp = FORMULAS.find((f) => f.id === "complet");
@@ -34,15 +34,16 @@ describe("Business configuration & pricing", () => {
     expect(express?.short).toBe("Pour un entretien rapide de votre habitacle.");
     expect(express?.items).toContain("Aspiration de l'habitacle et du coffre");
     expect(express?.items).toContain("Nettoyage des plastiques intérieurs");
+    expect(express?.items).toContain("Nettoyage de surface des sièges et tissus");
 
-    expect(premium?.price).toBe(79);
+    expect(premium?.price).toBe(69);
     expect(premium?.duration).toBe("2 à 3 h");
     expect(premium?.short).toBe("Pour un nettoyage intérieur en profondeur.");
     expect(premium?.highlight).toBe(true);
     expect(premium?.items).toContain("Shampoing des sièges et tapis");
     expect(premium?.items).toContain("Finitions soignées");
 
-    expect(comp?.price).toBe(119);
+    expect(comp?.price).toBe(109);
     expect(comp?.duration).toBe("3 à 5 h");
     expect(comp?.short).toBe("Le soin intégral de votre véhicule, intérieur et extérieur.");
     expect(comp?.items).toContain("Intégralité de la formule Intérieur Premium");
@@ -146,7 +147,7 @@ describe("SEO metadata configuration", () => {
 
     const formulesDesc = formulesHead?.meta?.find((m) => m["name"] === "description");
     expect(formulesDesc?.["content"]).toBe(
-      "Découvrez nos formules de nettoyage auto à domicile à Lille : Intérieur Express 49 €, Intérieur Premium 79 € et Formule Complète 119 €. Intervention dans la métropole lilloise.",
+      "Découvrez nos formules de nettoyage auto à domicile à Lille : Intérieur Express 49 €, Intérieur Premium 69 € et Formule Complète 109 €. Intervention dans la métropole lilloise.",
     );
 
     const contactRoute = router.routesById["/contact"];

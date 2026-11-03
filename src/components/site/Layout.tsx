@@ -126,7 +126,7 @@ export function Header() {
 
       <div className="container-site relative z-10 flex h-16 sm:h-[68px] items-center justify-between gap-3 sm:gap-4 py-2.5 sm:py-3">
         <Link to="/" aria-label="Accueil Bichonne ta Caisse" className="shrink-0 flex items-center">
-          <Logo light />
+          <Logo light variant="split" />
         </Link>
         <nav className="hidden lg:flex items-center gap-5 xl:gap-7 text-sm font-semibold shrink-0">
           {NAV.map((n) => (
@@ -295,7 +295,7 @@ export function Footer() {
         <div className="h-2 stripe-accent opacity-80" />
         <div className="container-site grid gap-10 py-14 md:grid-cols-3">
           <div className="space-y-3">
-            <Logo light />
+            <Logo light variant="horizontal" />
             <p className="text-sm opacity-75 max-w-xs">
               Nettoyage automobile à domicile. Intervention dans la métropole lilloise.
             </p>
