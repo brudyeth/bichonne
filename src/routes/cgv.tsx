@@ -75,9 +75,10 @@ function CGVPage() {
               Article 2 — Prestations & Devis
             </h2>
             <p>
-              {BUSINESS.name} propose trois formules principales : Nettoyage extérieur (49 €),
-              Nettoyage intérieur avec shampoing inclus (69 €), et Nettoyage complet (109 €), ainsi
-              que des prestations complémentaires (poils d'animaux, soin nourrissant des cuirs,
+              {BUSINESS.name} propose trois formules principales : Intérieur Express (49 €),
+              Intérieur Premium avec shampoing des sièges et tapis inclus (79 €), et Formule
+              Complète soin intérieur et extérieur (119 €), ainsi que des prestations
+              complémentaires (poils d'animaux / véhicule très sale, soin nourrissant des cuirs,
               etc.).
             </p>
             <p>

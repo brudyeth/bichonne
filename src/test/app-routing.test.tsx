@@ -96,7 +96,7 @@ describe("Business configuration & pricing", () => {
     expect(BUSINESS.phoneTel).toBe("tel:+33659140939");
     expect(BUSINESS.whatsappNumber).toBe("33659140939");
     expect(BUSINESS.facebookUrl).toBe("https://www.facebook.com/profile.php?id=61595404295972");
-    expect(BUSINESS.instagramUrl).toBe("https://www.instagram.com/bicho.nnetacaisse/");
+    expect(BUSINESS.instagramUrl).toBe("https://www.instagram.com/bichonne.tacaisse/");
   });
 });
 
@@ -117,11 +117,11 @@ describe("SEO metadata configuration", () => {
     const descMeta = headResult?.meta?.find((m) => m["name"] === "description");
     const canonicalLink = headResult?.links?.find((l) => l["rel"] === "canonical");
 
-    expect(titleMeta?.title).toBe("Nettoyage voiture à domicile Lille | Bichonne ta Caisse");
-    expect(descMeta?.content).toBe(
+    expect(titleMeta?.["title"]).toBe("Nettoyage voiture à domicile Lille | Bichonne ta Caisse");
+    expect(descMeta?.["content"]).toBe(
       "Nettoyage automobile à domicile à Lille et métropole lilloise dès 49 € : Intérieur Express, Intérieur Premium et Formule Complète. Déplacement offert jusqu'à 15 km.",
     );
-    expect(canonicalLink?.href).toBe("https://bichonnetacaisse.fr/");
+    expect(canonicalLink?.["href"]).toBe("https://bichonnetacaisse.fr/");
   });
 
   it("has canonical links for formules and contact routes", () => {
@@ -137,15 +137,15 @@ describe("SEO metadata configuration", () => {
       }
     ).head?.();
     const formulesCanonical = formulesHead?.links?.find((l) => l["rel"] === "canonical");
-    expect(formulesCanonical?.href).toBe("https://bichonnetacaisse.fr/formules");
+    expect(formulesCanonical?.["href"]).toBe("https://bichonnetacaisse.fr/formules");
 
     const formulesTitle = formulesHead?.meta?.find((m) => "title" in m);
-    expect(formulesTitle?.title).toBe(
+    expect(formulesTitle?.["title"]).toBe(
       "Tarifs nettoyage auto à domicile Lille | Bichonne ta Caisse",
     );
 
     const formulesDesc = formulesHead?.meta?.find((m) => m["name"] === "description");
-    expect(formulesDesc?.content).toBe(
+    expect(formulesDesc?.["content"]).toBe(
       "Découvrez nos formules de nettoyage auto à domicile à Lille : Intérieur Express 49 €, Intérieur Premium 79 € et Formule Complète 119 €. Intervention dans la métropole lilloise.",
     );
 
@@ -154,7 +154,7 @@ describe("SEO metadata configuration", () => {
       contactRoute.options as unknown as { head?: () => { links?: Array<Record<string, string>> } }
     ).head?.();
     const contactCanonical = contactHead?.links?.find((l) => l["rel"] === "canonical");
-    expect(contactCanonical?.href).toBe("https://bichonnetacaisse.fr/contact");
+    expect(contactCanonical?.["href"]).toBe("https://bichonnetacaisse.fr/contact");
   });
 
   it("exports BeforeAfterSection component", async () => {
@@ -187,6 +187,6 @@ describe("SEO metadata configuration", () => {
     ).toBe(true);
 
     const ogImage = headResult?.meta?.find((m) => m["property"] === "og:image");
-    expect(ogImage?.content).toMatch(/^https:\/\/bichonnetacaisse\.fr\//);
+    expect(ogImage?.["content"]).toMatch(/^https:\/\/bichonnetacaisse\.fr\//);
   });
 });

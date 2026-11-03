@@ -64,7 +64,7 @@ const LOCAL_BUSINESS_SCHEMA = {
       ],
       sameAs: [
         "https://www.facebook.com/profile.php?id=61595404295972",
-        "https://www.instagram.com/bicho.nnetacaisse/",
+        "https://www.instagram.com/bichonne.tacaisse/",
       ],
       hasOfferCatalog: {
         "@type": "OfferCatalog",

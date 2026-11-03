@@ -64,12 +64,44 @@ function getEnvValue(key: string, env?: unknown): string | undefined {
   return undefined;
 }
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function getCorsOrigin(request: Request): string {
+  const origin = request.headers.get("origin");
+  if (!origin) return "https://bichonnetacaisse.fr";
+  try {
+    const url = new URL(origin);
+    if (
+      url.hostname === "bichonnetacaisse.fr" ||
+      url.hostname.endsWith(".bichonnetacaisse.fr") ||
+      url.hostname === "localhost" ||
+      url.hostname === "127.0.0.1" ||
+      url.hostname.endsWith(".webcontainer-api.io") ||
+      url.hostname.endsWith(".run.app")
+    ) {
+      return origin;
+    }
+  } catch {
+    // fallback
+  }
+  return "https://bichonnetacaisse.fr";
+}
+
 async function handleContactApi(request: Request, env?: unknown): Promise<Response> {
+  const allowedOrigin = getCorsOrigin(request);
+
   if (request.method === "OPTIONS") {
     return new Response(null, {
       status: 204,
       headers: {
-        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Origin": allowedOrigin,
         "Access-Control-Allow-Methods": "POST, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type",
       },
@@ -79,7 +111,10 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
   if (request.method !== "POST") {
     return new Response(JSON.stringify({ error: "Méthode non autorisée" }), {
       status: 405,
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": allowedOrigin,
+      },
     });
   }
 
@@ -104,6 +139,8 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
       timeSlot?: string;
       message?: string;
       estimatedTotal?: number;
+      hp?: string;
+      website?: string;
     };
 
     const {
@@ -126,7 +163,26 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
       timeSlot,
       message,
       estimatedTotal,
+      hp,
+      website,
     } = data ?? {};
+
+    // Piège antispam (honeypot) : rejet silencieux des robots
+    if (hp || website) {
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: "Votre demande a bien été envoyée ! Nous vous recontacterons très rapidement.",
+        }),
+        {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+          },
+        },
+      );
+    }
 
     if (!name?.trim() || !phone?.trim()) {
       return new Response(
@@ -136,7 +192,35 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
         }),
         {
           status: 400,
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+          },
+        },
+      );
+    }
+
+    // Contrôle anti-abus de taille de contenu
+    if (
+      name.length > 100 ||
+      phone.length > 50 ||
+      (email && email.length > 120) ||
+      (vehicle && vehicle.length > 150) ||
+      (address && address.length > 200) ||
+      (city && city.length > 100) ||
+      (message && message.length > 3000)
+    ) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Certaines informations dépassent la longueur maximale autorisée.",
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+          },
         },
       );
     }
@@ -147,7 +231,7 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
       getEnvValue("CONTACT_SENDER_EMAIL", env) || "reservation@bichonnetacaisse.fr";
 
     if (!resendApiKey) {
-      // Configuration backend non encore renseignée sur Cloudflare
+      // Service e-mail direct non encore activé : notification claire et orientation WhatsApp
       return new Response(
         JSON.stringify({
           success: false,
@@ -157,27 +241,47 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
         }),
         {
           status: 503,
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+          },
         },
       );
     }
 
+    const safeName = escapeHtml(name.trim());
+    const safePhone = escapeHtml(phone.trim());
+    const safeEmail = email?.trim() ? escapeHtml(email.trim()) : undefined;
+    const safeVehicle = vehicle?.trim() ? escapeHtml(vehicle.trim()) : "Non précisé";
+    const safeAddress = address?.trim() ? escapeHtml(address.trim()) : "Non précisée";
+    const safeCity = city?.trim() ? escapeHtml(city.trim()) : "Non précisée";
+    const safeParking = parking?.trim() ? escapeHtml(parking.trim()) : "Non précisé";
+    const safeFormula = formulaName?.trim() ? escapeHtml(formulaName.trim()) : "À définir ensemble";
+    const safeCares = selectedCares?.length
+      ? selectedCares.map((c) => escapeHtml(String(c))).join(", ")
+      : "Aucun";
+    const safeDate = preferredDate?.trim() ? escapeHtml(preferredDate.trim()) : "Non sélectionnée";
+    const safeTimeSlot = timeSlot?.trim() ? escapeHtml(timeSlot.trim()) : "Flexible";
+    const safeMessage = message?.trim()
+      ? escapeHtml(message.trim()).replace(/\n/g, "<br>")
+      : "Aucun message complémentaire.";
+
     const textLines = [
       `Nouvelle demande de devis - Bichonne ta Caisse`,
       `----------------------------------------------`,
-      `Client : ${name}`,
-      `Téléphone : ${phone}`,
-      `E-mail : ${email || "Non renseigné"}`,
+      `Client : ${name.trim()}`,
+      `Téléphone : ${phone.trim()}`,
+      `E-mail : ${email?.trim() || "Non renseigné"}`,
       ``,
-      `Véhicule : ${vehicle || "Non précisé"}`,
-      `Adresse d'intervention : ${address || "Non précisée"}`,
-      `Ville d'intervention : ${city || "Non précisée"}`,
-      `Lieu de stationnement : ${parking || "Non précisé"}`,
+      `Véhicule : ${vehicle?.trim() || "Non précisé"}`,
+      `Adresse d'intervention : ${address?.trim() || "Non précisée"}`,
+      `Ville d'intervention : ${city?.trim() || "Non précisée"}`,
+      `Lieu de stationnement : ${parking?.trim() || "Non précisé"}`,
       `Accès à l'eau : ${waterAccess ? "Oui" : "Non"}`,
       `Prise électrique : ${electricityAccess ? "Oui" : "Non"}`,
       `Déplacement : Offert jusqu'à 15 km autour de Lille (au-delà : 0,50 €/km supp. A/R)`,
       ``,
-      `Formule : ${formulaName || "À définir ensemble"} (${formulaPrice ? `${formulaPrice} €` : "—"})`,
+      `Formule : ${formulaName?.trim() || "À définir ensemble"} (${typeof formulaPrice === "number" ? `${formulaPrice} €` : "—"})`,
       `Soins ciblés : ${selectedCares?.length ? selectedCares.join(", ") : "Aucun"}`,
       `Véhicule particulièrement sale : ${isVeryDirty ? "Oui (+15 €)" : "Non"}`,
       `Présence de poils d'animaux : ${hasPetHair ? "Oui (+15 €)" : "Non"}`,
@@ -185,43 +289,43 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
       `Rendez-vous : ${dateChoice === "date" ? `Date souhaitée : ${preferredDate || "Non sélectionnée"}` : "À convenir ensemble"}`,
       `Créneau horaire : ${timeSlot || "Flexible"}`,
       ``,
-      `Tarif estimé : ${estimatedTotal ? `${estimatedTotal} €` : "À définir"} (hors éventuels frais kilométriques au-delà de 15 km)`,
+      `Tarif estimé : ${typeof estimatedTotal === "number" ? `${estimatedTotal} €` : "À définir"} (hors éventuels frais kilométriques au-delà de 15 km)`,
       ``,
       `Message complémentaire :`,
-      message || "Aucun message complémentaire.",
+      message?.trim() || "Aucun message complémentaire.",
     ];
 
     const htmlBody = `
       <h2>Nouvelle demande de devis - Bichonne ta Caisse</h2>
       <h3>Coordonnées</h3>
-      <p><strong>Nom et prénom :</strong> ${name}</p>
-      <p><strong>Téléphone :</strong> <a href="tel:${phone}">${phone}</a></p>
-      <p><strong>E-mail :</strong> ${email ? `<a href="mailto:${email}">${email}</a>` : "Non renseigné"}</p>
+      <p><strong>Nom et prénom :</strong> ${safeName}</p>
+      <p><strong>Téléphone :</strong> <a href="tel:${safePhone}">${safePhone}</a></p>
+      <p><strong>E-mail :</strong> ${safeEmail ? `<a href="mailto:${safeEmail}">${safeEmail}</a>` : "Non renseigné"}</p>
       
       <h3>Véhicule & Intervention</h3>
-      <p><strong>Marque et modèle :</strong> ${vehicle || "Non précisé"}</p>
-      <p><strong>Adresse :</strong> ${address || "Non précisée"}</p>
-      <p><strong>Ville :</strong> ${city || "Non précisée"}</p>
-      <p><strong>Lieu de stationnement :</strong> ${parking || "Non précisé"}</p>
+      <p><strong>Marque et modèle :</strong> ${safeVehicle}</p>
+      <p><strong>Adresse :</strong> ${safeAddress}</p>
+      <p><strong>Ville :</strong> ${safeCity}</p>
+      <p><strong>Lieu de stationnement :</strong> ${safeParking}</p>
       <p><strong>Accès à l'eau :</strong> ${waterAccess ? "Oui" : "Non"}</p>
       <p><strong>Prise électrique :</strong> ${electricityAccess ? "Oui" : "Non"}</p>
       <p><strong>Déplacement :</strong> Offert jusqu'à 15 km autour de Lille (au-delà : 0,50 €/km supp. A/R selon itinéraire routier)</p>
 
       <h3>Prestations & État</h3>
-      <p><strong>Formule :</strong> ${formulaName || "À définir ensemble"} ${formulaPrice ? `(${formulaPrice} €)` : ""}</p>
-      <p><strong>Soins ciblés :</strong> ${selectedCares?.length ? selectedCares.join(", ") : "Aucun"}</p>
+      <p><strong>Formule :</strong> ${safeFormula} ${typeof formulaPrice === "number" ? `(${formulaPrice} €)` : ""}</p>
+      <p><strong>Soins ciblés :</strong> ${safeCares}</p>
       <p><strong>Particulièrement sale :</strong> ${isVeryDirty ? "Oui (+15 €)" : "Non"}</p>
       <p><strong>Poils d'animaux :</strong> ${hasPetHair ? "Oui (+15 €)" : "Non"}</p>
 
       <h3>Disponibilité</h3>
-      <p><strong>Date :</strong> ${dateChoice === "date" ? `Date souhaitée : ${preferredDate || "Non sélectionnée"}` : "À convenir ensemble"}</p>
-      <p><strong>Créneau :</strong> ${timeSlot || "Flexible"}</p>
+      <p><strong>Date :</strong> ${dateChoice === "date" ? `Date souhaitée : ${safeDate}` : "À convenir ensemble"}</p>
+      <p><strong>Créneau :</strong> ${safeTimeSlot}</p>
 
       <h3>Tarif estimé</h3>
-      <p style="font-size: 1.25rem; font-weight: bold; color: #ea580c;">${estimatedTotal ? `${estimatedTotal} €` : "À définir"}</p>
+      <p style="font-size: 1.25rem; font-weight: bold; color: #ea580c;">${typeof estimatedTotal === "number" ? `${estimatedTotal} €` : "À définir"}</p>
 
       <h3>Message complémentaire</h3>
-      <p>${message ? message.replace(/\n/g, "<br>") : "Aucun message complémentaire."}</p>
+      <p>${safeMessage}</p>
     `;
 
     const resendRes = await fetch("https://api.resend.com/emails", {
@@ -233,8 +337,8 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
       body: JSON.stringify({
         from: `Bichonne ta Caisse <${senderEmail}>`,
         to: [recipientEmail],
-        reply_to: email?.trim() || undefined,
-        subject: `Demande de devis - ${name} (${city || "Métropole lilloise"})`,
+        reply_to: safeEmail || undefined,
+        subject: `Demande de devis - ${safeName} (${city?.trim() || "Métropole lilloise"})`,
         text: textLines.join("\n"),
         html: htmlBody,
       }),
@@ -251,7 +355,10 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
         }),
         {
           status: 502,
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+          },
         },
       );
     }
@@ -263,7 +370,10 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
       }),
       {
         status: 200,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": allowedOrigin,
+        },
       },
     );
   } catch (err) {
@@ -275,7 +385,10 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
       }),
       {
         status: 500,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": allowedOrigin,
+        },
       },
     );
   }

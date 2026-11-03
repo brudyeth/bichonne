@@ -48,11 +48,13 @@ const REALIZATIONS: Realization[] = [
   },
 ];
 
+const DEFAULT_REALIZATION: Realization = REALIZATIONS[0] as Realization;
+
 export function BeforeAfterSection() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const touchStartX = useRef<number | null>(null);
 
-  const current = REALIZATIONS[currentIndex];
+  const current: Realization = REALIZATIONS[currentIndex] ?? DEFAULT_REALIZATION;
 
   const handlePrev = useCallback(() => {
     setCurrentIndex((prev) => (prev === 0 ? REALIZATIONS.length - 1 : prev - 1));
@@ -64,12 +66,14 @@ export function BeforeAfterSection() {
 
   // Simple swipe support on mobile
   const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
+    touchStartX.current = e.touches[0]?.clientX ?? null;
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (touchStartX.current === null) return;
-    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    const touch = e.changedTouches[0];
+    if (!touch) return;
+    const diff = touchStartX.current - touch.clientX;
     if (Math.abs(diff) > 40) {
       if (diff > 0) handleNext();
       else handlePrev();
@@ -171,6 +175,8 @@ export function BeforeAfterSection() {
                     <img
                       src={current.beforeJpg}
                       alt={current.altBefore}
+                      width={800}
+                      height={1000}
                       loading="lazy"
                       decoding="async"
                       className="size-full object-cover"
@@ -190,6 +196,8 @@ export function BeforeAfterSection() {
                     <img
                       src={current.afterJpg}
                       alt={current.altAfter}
+                      width={800}
+                      height={1000}
                       loading="lazy"
                       decoding="async"
                       className="size-full object-cover"

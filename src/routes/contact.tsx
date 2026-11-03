@@ -150,6 +150,7 @@ function Page() {
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [email, setEmail] = useState("");
+  const [hp, setHp] = useState("");
 
   // UI state
   const [copied, setCopied] = useState(false);
@@ -355,6 +356,7 @@ function Page() {
           timeSlot,
           message: message.trim() || undefined,
           estimatedTotal: total || undefined,
+          hp: hp || undefined,
         }),
       });
 
@@ -521,7 +523,7 @@ function Page() {
                     Étape {currentStep} sur 4
                   </span>
                   <span className="text-xs font-medium text-muted-foreground">
-                    {STEPS[currentStep - 1].title}
+                    {STEPS[currentStep - 1]?.title}
                   </span>
                 </div>
 
@@ -1124,6 +1126,16 @@ function Page() {
 
                   {/* Coordonnées */}
                   <div className="space-y-4">
+                    <input
+                      type="text"
+                      name="b_hp"
+                      value={hp}
+                      onChange={(e) => setHp(e.target.value)}
+                      tabIndex={-1}
+                      aria-hidden="true"
+                      className="sr-only hidden"
+                      autoComplete="off"
+                    />
                     <div className="grid gap-4 sm:grid-cols-2">
                       <label className="space-y-1.5">
                         <span className="text-sm font-semibold">Nom et prénom *</span>

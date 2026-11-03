@@ -17,8 +17,8 @@ export function CommuneChecker() {
 
   const activeCommune = useMemo(() => {
     return (
-      LOCAL_COMMUNES.find((c) => c.name.toLowerCase() === selectedCommuneName.toLowerCase()) ||
-      LOCAL_COMMUNES[0]
+      LOCAL_COMMUNES.find((c) => c.name.toLowerCase() === selectedCommuneName.toLowerCase()) ??
+      LOCAL_COMMUNES[0] ?? { name: "Lille", postalCode: "59000", distanceKm: 0 }
     );
   }, [selectedCommuneName]);
 
