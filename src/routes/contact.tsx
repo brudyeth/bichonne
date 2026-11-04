@@ -575,10 +575,14 @@ function Page() {
             >
               {/* Header du formulaire & Titre de l'étape */}
               <div>
-                <div className="mb-4">
+                <div className="mb-4 space-y-1">
                   <h2 className="text-3xl font-display uppercase tracking-wide text-[#11114E]">
                     Préparer ma demande
                   </h2>
+                  <p className="text-xs text-slate-500 font-medium">
+                    Demande sans engagement &amp; sans paiement immédiat • Confirmation de
+                    rendez-vous sous 24 h
+                  </p>
                 </div>
 
                 <div className="flex items-center justify-between gap-3 mb-2">

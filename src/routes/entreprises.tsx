@@ -23,7 +23,7 @@ export const Route = createFileRoute("/entreprises")({
       {
         name: "description",
         content:
-          "Service de nettoyage automobile sur site pour entreprises, flottes pro et comités d'entreprise à Lille et métropole. Devis rapide, facture avec TVA.",
+          "Service de nettoyage automobile sur site pour entreprises, flottes pro et comités d'entreprise à Lille et métropole. Devis rapide et facturation conforme.",
       },
       { property: "og:site_name", content: "Bichonne ta Caisse" },
       {
@@ -149,14 +149,14 @@ function EntreprisesPage() {
       </div>
 
       {/* Offres détaillées B2B */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#FAFBFD] via-[#F4F6FB] to-[#EDF1F7] text-[#11114E] py-16 md:py-24">
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#FAFBFD] via-[#F4F6FB] to-[#EDF1F7] text-[#11114E] py-10 sm:py-12 md:py-14">
         <div className="container-site">
-          <div className="max-w-3xl mb-12">
-            <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-3">
+          <div className="max-w-3xl mb-8 sm:mb-10">
+            <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-2">
               <span className="w-6 h-[2px] bg-primary"></span>
               <span>Nos prestations pour professionnels</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold uppercase tracking-tight text-[#11114E]">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold uppercase tracking-tight text-[#11114E]">
               Des solutions adaptées à vos besoins d'entreprise
             </h2>
             <p className="mt-2 text-sm sm:text-base text-slate-600">

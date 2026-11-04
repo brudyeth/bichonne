@@ -425,15 +425,19 @@ export function PageHero({
   if (transparent) {
     return (
       <section className="relative z-10 text-white">
-        <div className="container-site pt-28 pb-14 md:pt-36 md:pb-16 animate-rise relative z-10">
-          <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-3">
+        <div className="container-site pt-22 pb-8 sm:pt-24 sm:pb-10 md:pt-26 md:pb-12 animate-rise relative z-10">
+          <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-2.5">
             <span className="w-6 h-[2px] bg-primary"></span>
             <span>{eyebrow}</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-bold uppercase tracking-tight text-white leading-[0.98]">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold uppercase tracking-tight text-white leading-[1.04]">
             {title}
           </h1>
-          {children && <div className="mt-4 max-w-2xl opacity-85 leading-relaxed">{children}</div>}
+          {children && (
+            <div className="mt-3.5 max-w-2xl opacity-85 leading-relaxed text-sm sm:text-base">
+              {children}
+            </div>
+          )}
         </div>
       </section>
     );
@@ -469,15 +473,19 @@ export function PageHero({
         className="pointer-events-none absolute inset-0 bg-noise opacity-12 mix-blend-overlay"
       />
 
-      <div className="container-site pt-28 pb-14 md:pt-36 md:pb-20 animate-rise relative z-10">
-        <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-3">
+      <div className="container-site pt-22 pb-8 sm:pt-24 sm:pb-10 md:pt-26 md:pb-12 animate-rise relative z-10">
+        <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-2.5">
           <span className="w-6 h-[2px] bg-primary"></span>
           <span>{eyebrow}</span>
         </div>
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-bold uppercase tracking-tight text-white leading-[0.98]">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold uppercase tracking-tight text-white leading-[1.04]">
           {title}
         </h1>
-        {children && <div className="mt-4 max-w-2xl opacity-85 leading-relaxed">{children}</div>}
+        {children && (
+          <div className="mt-3.5 max-w-2xl opacity-85 leading-relaxed text-sm sm:text-base">
+            {children}
+          </div>
+        )}
       </div>
     </section>
   );

@@ -277,7 +277,7 @@ function ServicePage() {
         />
 
         {/* Fil d'Ariane SEO */}
-        <div className="container-site pt-24 sm:pt-28 text-xs text-white/70 flex items-center gap-1.5">
+        <div className="container-site pt-20 sm:pt-24 text-xs text-white/70 flex items-center gap-1.5">
           <Link to="/" className="hover:text-white transition-colors">
             Accueil
           </Link>
@@ -313,8 +313,8 @@ function ServicePage() {
         </PageHero>
 
         {/* Introduction textuelle */}
-        <section className="relative z-10 py-12 md:py-16 border-t border-white/10">
-          <div className="container-site max-w-4xl space-y-5 text-sm sm:text-base text-white/85 leading-relaxed">
+        <section className="relative z-10 py-10 md:py-12 border-t border-white/10">
+          <div className="container-site max-w-4xl space-y-4 text-xs sm:text-sm text-white/85 leading-relaxed">
             {data.introParagraphs.map((p, idx) => (
               <p key={idx}>{p}</p>
             ))}
@@ -323,17 +323,17 @@ function ServicePage() {
       </div>
 
       {/* Formules de nettoyage */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#FAFBFD] via-[#F4F6FB] to-[#EDF1F7] text-[#11114E] py-16 md:py-20">
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#FAFBFD] via-[#F4F6FB] to-[#EDF1F7] text-[#11114E] py-10 md:py-14">
         <div className="container-site">
-          <div className="max-w-3xl mb-10">
-            <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-2">
+          <div className="max-w-3xl mb-6 sm:mb-8">
+            <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-1.5">
               <span className="w-6 h-[2px] bg-primary"></span>
               <span>Nos tarifs à {data.city}</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-display font-bold uppercase text-[#11114E]">
+            <h2 className="text-2xl sm:text-3xl font-display font-bold uppercase text-[#11114E]">
               Choisissez votre formule pour {data.city}
             </h2>
-            <p className="mt-1.5 text-sm text-slate-600">
+            <p className="mt-1 text-xs sm:text-sm text-slate-600">
               Déplacement offert jusqu'à 15 km de notre base. Même tarif pour tous les véhicules.
             </p>
           </div>
@@ -344,9 +344,9 @@ function ServicePage() {
 
       {/* FAQ locale */}
       {data.localFaq.length > 0 && (
-        <section className="bg-white py-14 border-t border-slate-200">
+        <section className="bg-white py-10 sm:py-12 border-t border-slate-200">
           <div className="container-site max-w-3xl">
-            <h2 className="text-2xl sm:text-3xl font-display font-bold uppercase text-[#11114E] mb-6">
+            <h2 className="text-xl sm:text-2xl font-display font-bold uppercase text-[#11114E] mb-4 sm:mb-5">
               Questions fréquentes à {data.city}
             </h2>
             <div className="space-y-4">

@@ -44,7 +44,7 @@ export function FaqSection({ className = "" }: { className?: string }) {
 
   return (
     <section
-      className={`relative overflow-hidden bg-gradient-to-b from-[#FAFBFD] via-[#F4F6FB] to-[#EDF1F7] text-[#11114E] py-16 md:py-24 ${className}`}
+      className={`relative overflow-hidden bg-gradient-to-b from-[#FAFBFD] via-[#F4F6FB] to-[#EDF1F7] text-[#11114E] py-10 sm:py-12 md:py-14 ${className}`}
       aria-labelledby="faq-heading"
     >
       {/* Reflets diffus nacrés/argentés très doux */}
@@ -64,28 +64,28 @@ export function FaqSection({ className = "" }: { className?: string }) {
 
       <div className="container-site relative z-10">
         {/* COMPOSITION ASYMÉTRIQUE : 35% titre & carte contact à gauche, 65% accordéon à droite */}
-        <div className="grid gap-10 lg:grid-cols-12 lg:items-start">
+        <div className="grid gap-6 lg:gap-8 lg:grid-cols-12 lg:items-start">
           {/* Colonne gauche : Surtitre, Titre compact, description et carte bleu nuit de contact */}
-          <div className="lg:col-span-5 space-y-6">
+          <div className="lg:col-span-5 space-y-4 sm:space-y-5">
             <div>
-              <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-3">
+              <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-2">
                 <span className="w-6 h-[2px] bg-primary"></span>
                 <span>Questions fréquentes</span>
               </div>
               <h2
                 id="faq-heading"
-                className="text-4xl sm:text-5xl lg:text-[46px] font-display font-bold uppercase tracking-tight leading-[0.98] text-[#11114E]"
+                className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold uppercase tracking-tight leading-[1.04] text-[#11114E]"
               >
                 Tout savoir sur nos prestations
               </h2>
-              <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed max-w-md">
+              <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed max-w-md">
                 Des réponses claires pour préparer votre nettoyage en toute sérénité.
               </p>
             </div>
 
             {/* Carte bleu nuit compacte de contact direct */}
-            <div className="rounded-2xl bg-[#11114E] text-white p-5 sm:p-6 shadow-xl space-y-3.5 max-w-md">
-              <div className="flex items-center gap-2 font-display text-base font-bold uppercase tracking-wide text-white">
+            <div className="rounded-2xl bg-[#11114E] text-white p-4 sm:p-5 shadow-lg space-y-2.5 max-w-md">
+              <div className="flex items-center gap-2 font-display text-sm sm:text-base font-bold uppercase tracking-wide text-white">
                 <HelpCircle className="size-4.5 text-primary" />
                 <span>Une autre question ?</span>
               </div>

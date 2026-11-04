@@ -112,26 +112,26 @@ function Page() {
           </div>
         </PageHero>
 
-        <section className="relative z-10 py-12 md:py-16">
+        <section className="relative z-10 py-10 md:py-12">
           <div className="container-site relative z-10">
             <FormulaCards detailed />
-            <p className="mt-4 text-xs sm:text-sm text-white/70 max-w-2xl italic">
+            <p className="mt-3 text-xs sm:text-sm text-white/70 max-w-2xl italic">
               * Soins complémentaires et suppléments éventuels annoncés avant confirmation du
               rendez-vous.
             </p>
-            <p className="mt-4 text-sm text-white/80 max-w-2xl">
+            <p className="mt-3 text-xs sm:text-sm text-white/80 max-w-2xl">
               Le nettoyage des tissus vise à atténuer au mieux les taches ; selon leur ancienneté et
               la nature du tissu, certaines peuvent ne pas disparaître complètement.
             </p>
 
-            <div id="soins-cibles" className="mt-16 pt-12 border-t border-white/10">
-              <div className="grid gap-8 lg:grid-cols-12 lg:items-center">
-                <div className="lg:col-span-5 space-y-4">
+            <div id="soins-cibles" className="mt-10 pt-8 border-t border-white/10">
+              <div className="grid gap-6 lg:gap-8 lg:grid-cols-12 lg:items-center">
+                <div className="lg:col-span-5 space-y-3">
                   <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest">
                     <span className="w-6 h-[2px] bg-primary"></span>
                     <span>Prestations complémentaires</span>
                   </div>
-                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold uppercase tracking-tight text-white">
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold uppercase tracking-tight text-white">
                     Les petits plus pour votre voiture
                   </h2>
                   <p className="text-sm sm:text-base text-white/80 leading-relaxed max-w-md">
