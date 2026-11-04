@@ -1,13 +1,22 @@
-import { Link } from "@tanstack/react-router";
-import { useState, useEffect, type ReactNode } from "react";
-import { Menu, Phone, X, MessageCircle, Facebook } from "lucide-react";
+import { Link, useLocation } from "@tanstack/react-router";
+import { useState, useEffect, useRef, type ReactNode } from "react";
+import {
+  Menu,
+  Phone,
+  X,
+  MessageCircle,
+  Facebook,
+  ChevronDown,
+  Car,
+  Building2,
+  ArrowRight,
+} from "lucide-react";
 import { Logo } from "./Logo";
 import { BUSINESS, whatsappLink } from "@/lib/business";
 
-const NAV = [
+export const NAV = [
   { to: "/", label: "Accueil" },
   { to: "/formules", label: "Formules & tarifs" },
-  { to: "/contact", label: "Réservation & Devis" },
 ] as const;
 
 export function Facebook3DIcon({ className = "size-6" }: { className?: string }) {
@@ -77,6 +86,183 @@ export function Instagram3DIcon({ className = "size-6" }: { className?: string }
   );
 }
 
+export interface BookingOption {
+  id: string;
+  title: string;
+  subtitle: string;
+  icon: typeof Car;
+  to: string;
+  hash?: string;
+}
+
+export const BOOKING_OPTIONS: BookingOption[] = [
+  {
+    id: "particulier",
+    title: "Particulier",
+    subtitle: "Réserver un nettoyage",
+    icon: Car,
+    to: "/contact",
+  },
+  {
+    id: "professionnel",
+    title: "Professionnel",
+    subtitle: "Demander un devis",
+    icon: Building2,
+    to: "/entreprises",
+    hash: "devis",
+  },
+];
+
+export function HeaderBookingDropdown({
+  className = "",
+  isActive,
+  onSelect,
+}: {
+  className?: string;
+  isActive?: boolean;
+  onSelect?: () => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const location = useLocation();
+  const currentPath = location.pathname;
+  const active =
+    isActive !== undefined
+      ? isActive
+      : currentPath.startsWith("/contact") || currentPath.startsWith("/entreprises");
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setIsOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setIsOpen(false);
+    }, 180);
+  };
+
+  const toggleDropdown = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setIsOpen((prev) => !prev);
+  };
+
+  // Fermeture lors d'un clic en dehors
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Gestion du clavier (Échap pour fermer et redonner le focus)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        setIsOpen(false);
+        buttonRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
+
+  return (
+    <div
+      ref={containerRef}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className={`relative inline-block ${className}`}
+    >
+      <button
+        ref={buttonRef}
+        type="button"
+        onClick={toggleDropdown}
+        aria-expanded={isOpen}
+        aria-haspopup="menu"
+        aria-controls="booking-dropdown-menu"
+        aria-label="Menu Réservation & Devis"
+        className={`relative inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm xl:text-[15px] font-semibold text-white/90 hover:text-white hover:bg-white/[0.08] active:bg-white/[0.14] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 transition-all duration-200 ease-out cursor-pointer select-none motion-reduce:transition-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.2)] ${
+          isOpen ? "bg-white/[0.08] text-white" : ""
+        } ${active ? "text-white font-bold" : ""}`}
+      >
+        <span>Réservation &amp; Devis</span>
+        <ChevronDown
+          className={`size-4 text-primary shrink-0 transition-transform duration-200 motion-reduce:transition-none ${
+            isOpen ? "rotate-180" : ""
+          }`}
+          aria-hidden="true"
+        />
+        {/* Petit trait orange sous la rubrique active */}
+        {active && (
+          <span
+            aria-hidden="true"
+            className="absolute -bottom-1 inset-x-2.5 h-[2px] bg-primary rounded-full shadow-[0_0_8px_rgba(244,119,33,0.7)]"
+          />
+        )}
+      </button>
+
+      {/* Menu déroulant élégant avec pont invisible pour le survol continu */}
+      {isOpen && (
+        <div
+          id="booking-dropdown-menu"
+          role="menu"
+          aria-label="Options de réservation et devis"
+          className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-72 rounded-2xl bg-white text-[#11114E] border border-slate-200/90 shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150 motion-reduce:animate-none before:content-[''] before:absolute before:-top-3 before:left-0 before:right-0 before:h-3 focus:outline-none"
+        >
+          <div className="px-3 py-1.5 border-b border-slate-100 mb-1 flex items-center justify-between">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              Votre besoin
+            </span>
+            <span className="text-[10px] font-semibold text-primary">Intervention à domicile</span>
+          </div>
+
+          <div className="space-y-1">
+            {BOOKING_OPTIONS.map((opt) => (
+              <Link
+                key={opt.id}
+                to={opt.to}
+                hash={opt.hash}
+                role="menuitem"
+                onClick={() => {
+                  setIsOpen(false);
+                  onSelect?.();
+                }}
+                className="group flex items-center gap-3 p-2.5 rounded-xl hover:bg-orange-50/70 focus:bg-orange-50/70 focus:outline-none transition-all cursor-pointer"
+              >
+                <div className="grid size-10 place-items-center rounded-xl bg-orange-100/80 text-primary group-hover:bg-primary group-hover:text-white transition-colors shrink-0 shadow-2xs">
+                  <opt.icon className="size-5" />
+                </div>
+                <div className="min-w-0 flex-1 text-left">
+                  <p className="font-display text-sm font-bold uppercase tracking-wide text-[#11114E] group-hover:text-primary transition-colors">
+                    {opt.title}
+                  </p>
+                  <p className="text-xs text-slate-500 group-hover:text-slate-600 transition-colors">
+                    {opt.subtitle}
+                  </p>
+                </div>
+                <ArrowRight className="size-4 text-slate-300 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function HeaderReservationButton({
   className = "",
   onClick,
@@ -84,20 +270,18 @@ export function HeaderReservationButton({
   className?: string;
   onClick?: () => void;
 }) {
-  return (
-    <Link
-      to="/contact"
-      onClick={onClick}
-      className={`btn btn-primary !min-h-10 px-5 py-2 sm:px-6 sm:py-2.5 text-sm sm:text-[15px] shrink-0 ${className}`}
-    >
-      <span>Réserver mon nettoyage</span>
-    </Link>
-  );
+  return <HeaderBookingDropdown className={className} onSelect={onClick} />;
 }
 
 export function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+  const pathname = location.pathname;
+
+  const isAccueilActive = pathname === "/";
+  const isFormulesActive = pathname.startsWith("/formules");
+  const isBookingActive = pathname.startsWith("/contact") || pathname.startsWith("/entreprises");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -124,32 +308,60 @@ export function Header() {
         <div className="h-[1px] w-[78%] max-w-5xl bg-gradient-to-r from-transparent via-white/18 to-transparent" />
       </div>
 
-      <div className="container-site relative z-10 flex h-16 sm:h-[68px] items-center justify-between gap-3 sm:gap-4 py-2.5 sm:py-3">
+      <div className="container-site relative z-10 flex h-16 sm:h-[68px] items-center justify-between gap-4 py-2.5 sm:py-3">
+        {/* Zone gauche : identité */}
         <Link to="/" aria-label="Accueil Bichonne ta Caisse" className="shrink-0 flex items-center">
           <Logo light variant="split" />
         </Link>
-        <nav className="hidden lg:flex items-center gap-5 xl:gap-7 text-sm font-semibold shrink-0">
-          {NAV.map((n) => (
-            <Link
-              key={n.to}
-              to={n.to}
-              className="text-white/85 hover:text-white transition-colors whitespace-nowrap drop-shadow-[0_1px_2px_rgba(0,0,0,0.2)]"
-              activeProps={{ className: "!text-primary !opacity-100 font-bold" }}
-              activeOptions={{ exact: true }}
-            >
-              {n.label}
-            </Link>
-          ))}
+
+        {/* Zone centrale : navigation */}
+        <nav
+          aria-label="Navigation principale"
+          className="hidden lg:flex items-center gap-2 xl:gap-4 text-sm font-semibold shrink-0"
+        >
+          <Link
+            to="/"
+            className={`relative inline-flex items-center px-3.5 py-2 rounded-lg text-sm xl:text-[15px] font-semibold text-white/90 hover:text-white hover:bg-white/[0.08] active:bg-white/[0.14] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 transition-all duration-200 ease-out cursor-pointer select-none motion-reduce:transition-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.2)] ${
+              isAccueilActive ? "text-white font-bold" : ""
+            }`}
+          >
+            <span>Accueil</span>
+            {isAccueilActive && (
+              <span
+                aria-hidden="true"
+                className="absolute -bottom-1 inset-x-2.5 h-[2px] bg-primary rounded-full shadow-[0_0_8px_rgba(244,119,33,0.7)]"
+              />
+            )}
+          </Link>
+
+          <Link
+            to="/formules"
+            className={`relative inline-flex items-center px-3.5 py-2 rounded-lg text-sm xl:text-[15px] font-semibold text-white/90 hover:text-white hover:bg-white/[0.08] active:bg-white/[0.14] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 transition-all duration-200 ease-out cursor-pointer select-none motion-reduce:transition-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.2)] ${
+              isFormulesActive ? "text-white font-bold" : ""
+            }`}
+          >
+            <span>Formules &amp; tarifs</span>
+            {isFormulesActive && (
+              <span
+                aria-hidden="true"
+                className="absolute -bottom-1 inset-x-2.5 h-[2px] bg-primary rounded-full shadow-[0_0_8px_rgba(244,119,33,0.7)]"
+              />
+            )}
+          </Link>
+
+          <HeaderBookingDropdown isActive={isBookingActive} />
         </nav>
-        <div className="hidden lg:flex items-center gap-3 xl:gap-4 shrink-0">
+
+        {/* Zone droite : contact et réseaux sociaux (aucun bouton orange) */}
+        <div className="hidden lg:flex items-center gap-4 xl:gap-5 shrink-0">
+          <a
+            href={BUSINESS.phoneTel}
+            className="flex items-center gap-1.5 xl:gap-2 font-bold whitespace-nowrap text-sm xl:text-base text-white/95 hover:text-white transition-colors drop-shadow-[0_1px_2px_rgba(0,0,0,0.2)]"
+          >
+            <Phone className="size-4 text-primary shrink-0" />
+            <span>{BUSINESS.phoneDisplay}</span>
+          </a>
           <div className="flex items-center gap-2 xl:gap-2.5">
-            <a
-              href={BUSINESS.phoneTel}
-              className="flex items-center gap-1.5 xl:gap-2 font-bold whitespace-nowrap text-sm xl:text-base text-white/95 hover:text-white transition-colors"
-            >
-              <Phone className="size-4 text-primary shrink-0" />
-              {BUSINESS.phoneDisplay}
-            </a>
             <a
               href={BUSINESS.facebookUrl}
               target="_blank"
@@ -171,9 +383,9 @@ export function Header() {
               <Instagram3DIcon className="size-6 sm:size-7" />
             </a>
           </div>
-          {/* Bouton en relief 3D cliquable */}
-          <HeaderReservationButton />
         </div>
+
+        {/* Commandes mobiles */}
         <div className="flex lg:hidden items-center gap-2">
           <a
             href={BUSINESS.phoneTel}
@@ -212,21 +424,72 @@ export function Header() {
           </button>
         </div>
       </div>
+
+      {/* Menu mobile déroulant */}
       {open && (
-        <nav className="lg:hidden border-t border-white/10 bg-[#11114E]/95 backdrop-blur-xl container-site py-4 flex flex-col gap-1 shadow-2xl">
-          {NAV.map((n) => (
-            <Link
-              key={n.to}
-              to={n.to}
-              onClick={() => setOpen(false)}
-              className="py-3 font-display text-2xl uppercase tracking-wide text-white/95 hover:text-white"
-              activeProps={{ className: "!text-primary font-bold" }}
-              activeOptions={{ exact: true }}
-            >
-              {n.label}
-            </Link>
-          ))}
-          <div className="flex items-center gap-3 py-3 border-t border-white/10 mt-1">
+        <nav
+          aria-label="Menu de navigation mobile"
+          className="lg:hidden border-t border-white/10 bg-[#11114E]/98 backdrop-blur-xl container-site py-4 flex flex-col gap-2 shadow-2xl animate-in fade-in slide-in-from-top-2 duration-200 motion-reduce:animate-none"
+        >
+          <Link
+            to="/"
+            onClick={() => setOpen(false)}
+            className="relative flex items-center justify-between px-3.5 py-2.5 rounded-xl font-display text-xl uppercase tracking-wide text-white/95 hover:text-white hover:bg-white/[0.08] active:bg-white/[0.14] transition-colors"
+          >
+            <span>Accueil</span>
+            {isAccueilActive && (
+              <span className="size-2 rounded-full bg-primary shadow-[0_0_8px_rgba(244,119,33,0.8)]" />
+            )}
+          </Link>
+
+          <Link
+            to="/formules"
+            onClick={() => setOpen(false)}
+            className="relative flex items-center justify-between px-3.5 py-2.5 rounded-xl font-display text-xl uppercase tracking-wide text-white/95 hover:text-white hover:bg-white/[0.08] active:bg-white/[0.14] transition-colors"
+          >
+            <span>Formules &amp; tarifs</span>
+            {isFormulesActive && (
+              <span className="size-2 rounded-full bg-primary shadow-[0_0_8px_rgba(244,119,33,0.8)]" />
+            )}
+          </Link>
+
+          {/* Section Réservation & Devis mobile */}
+          <div className="pt-2 border-t border-white/10 mt-1 space-y-2">
+            <div className="flex items-center justify-between px-1">
+              <p className="text-xs font-bold uppercase tracking-wider text-primary">
+                Réservation &amp; Devis
+              </p>
+              {isBookingActive && (
+                <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/30">
+                  En cours
+                </span>
+              )}
+            </div>
+            <div className="grid gap-2">
+              {BOOKING_OPTIONS.map((opt) => (
+                <Link
+                  key={opt.id}
+                  to={opt.to}
+                  hash={opt.hash}
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] active:bg-white/[0.2] border border-white/15 text-white transition-all active:scale-[0.99]"
+                >
+                  <div className="grid size-10 place-items-center rounded-xl bg-primary text-white shrink-0 shadow-xs">
+                    <opt.icon className="size-5" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-display text-base font-bold uppercase tracking-wide text-white">
+                      {opt.title}
+                    </p>
+                    <p className="text-xs text-white/75">{opt.subtitle}</p>
+                  </div>
+                  <ArrowRight className="size-4 text-primary shrink-0" />
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 pt-3 border-t border-white/10 mt-1">
             <a href={BUSINESS.phoneTel} className="font-bold flex items-center gap-2 text-white">
               <Phone className="size-4 text-primary" />
               {BUSINESS.phoneDisplay}
@@ -252,10 +515,6 @@ export function Header() {
               <Instagram3DIcon className="size-6" />
             </a>
           </div>
-          <HeaderReservationButton
-            onClick={() => setOpen(false)}
-            className="mt-2 w-full py-3 text-base"
-          />
         </nav>
       )}
     </header>
@@ -307,6 +566,9 @@ export function Footer() {
             </Link>
             <Link to="/contact" className="block opacity-80 hover:opacity-100">
               Réservation & Devis
+            </Link>
+            <Link to="/entreprises" className="block opacity-80 hover:opacity-100">
+              Entreprises & Flottes
             </Link>
           </div>
           <div className="space-y-2 text-sm">

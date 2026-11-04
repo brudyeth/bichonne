@@ -503,12 +503,367 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
   }
 }
 
+async function handleContactProApi(request: Request, env?: unknown): Promise<Response> {
+  const allowedOrigin = getCorsOrigin(request);
+
+  if (request.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        "Access-Control-Allow-Origin": allowedOrigin,
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
+    });
+  }
+
+  if (request.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Méthode non autorisée" }), {
+      status: 405,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": allowedOrigin,
+      },
+    });
+  }
+
+  try {
+    const data = (await request.json()) as {
+      companyName?: string;
+      contactName?: string;
+      phone?: string;
+      email?: string;
+      vehicleCount?: string;
+      description?: string;
+      hp?: string;
+      website?: string;
+    };
+
+    const { companyName, contactName, phone, email, vehicleCount, description, hp, website } =
+      data ?? {};
+
+    // Piège antispam (honeypot) : rejet silencieux des robots
+    if (hp || website) {
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message:
+            "Merci pour votre demande ! Nous reviendrons vers vous pour échanger sur vos besoins et vous proposer une solution adaptée.",
+        }),
+        {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+          },
+        },
+      );
+    }
+
+    if (!companyName?.trim()) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Le nom de l'entreprise est obligatoire.",
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+          },
+        },
+      );
+    }
+
+    if (!contactName?.trim()) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Le nom et prénom du contact sont obligatoires.",
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+          },
+        },
+      );
+    }
+
+    if (!phone?.trim()) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Le numéro de téléphone est obligatoire.",
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+          },
+        },
+      );
+    }
+
+    if (!isValidFrenchPhoneNumber(phone)) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error:
+            "Veuillez renseigner un numéro de téléphone valide à 10 chiffres (ex. : 06 12 34 56 78 ou +33 6 12 34 56 78).",
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+          },
+        },
+      );
+    }
+
+    if (!email?.trim()) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "L'adresse e-mail professionnelle est obligatoire.",
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+          },
+        },
+      );
+    }
+
+    if (!isValidEmail(email)) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Veuillez renseigner une adresse e-mail valide (ex. : contact@entreprise.fr).",
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+          },
+        },
+      );
+    }
+
+    if (!vehicleCount?.trim()) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Veuillez indiquer le nombre de véhicules concernés.",
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+          },
+        },
+      );
+    }
+
+    // Contrôle anti-abus de longueur
+    if (
+      companyName.length > 150 ||
+      contactName.length > 120 ||
+      phone.length > 50 ||
+      email.length > 120 ||
+      vehicleCount.length > 60 ||
+      (description && description.length > 4000)
+    ) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Certaines informations dépassent la longueur maximale autorisée.",
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+          },
+        },
+      );
+    }
+
+    const resendApiKey = getEnvValue("RESEND_API_KEY", env);
+    const recipientEmail = getEnvValue("CONTACT_RECIPIENT_EMAIL", env) || "rudyboudene93@gmail.com";
+    const senderEmail =
+      getEnvValue("CONTACT_SENDER_EMAIL", env) || "reservation@bichonnetacaisse.fr";
+
+    if (!resendApiKey) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          configured: false,
+          message:
+            "Le service d'envoi d'e-mail direct n'est pas encore configuré sur le serveur (clé API RESEND_API_KEY requise). Veuillez nous contacter par téléphone au 06 59 14 09 39 ou via WhatsApp.",
+        }),
+        {
+          status: 503,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+          },
+        },
+      );
+    }
+
+    const safeCompany = escapeHtml(companyName.trim());
+    const safeContact = escapeHtml(contactName.trim());
+    const safePhone = escapeHtml(phone.trim());
+    const safeEmail = escapeHtml(email.trim());
+    const safeVehicleCount = escapeHtml(vehicleCount.trim());
+    const safeDescription = description?.trim()
+      ? escapeHtml(description.trim()).replace(/\n/g, "<br>")
+      : "Non précisée.";
+
+    const textLines = [
+      `Nouvelle demande professionnelle — Bichonne ta Caisse`,
+      `====================================================`,
+      `Entreprise : ${companyName.trim()}`,
+      `Contact : ${contactName.trim()}`,
+      `Téléphone : ${phone.trim()}`,
+      `E-mail professionnel : ${email.trim()}`,
+      `Nombre de véhicules concernés : ${vehicleCount.trim()}`,
+      ``,
+      `Description du besoin :`,
+      description?.trim() || "Non précisée.",
+      ``,
+      `Origine : Formulaire B2B /entreprises`,
+    ];
+
+    const htmlBody = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #11114E;">
+        <div style="background-color: #11114E; color: #ffffff; padding: 20px; border-radius: 8px 8px 0 0;">
+          <h2 style="margin: 0; font-size: 20px; color: #ffffff;">Nouvelle demande professionnelle — Bichonne ta Caisse</h2>
+          <p style="margin: 5px 0 0 0; font-size: 13px; color: #F47721; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
+            Espace Entreprises &amp; Flottes
+          </p>
+        </div>
+        <div style="border: 1px solid #e2e8f0; border-top: none; padding: 24px; border-radius: 0 0 8px 8px; background: #ffffff;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; width: 40%; font-weight: bold;">Entreprise :</td>
+              <td style="padding: 8px 0; font-weight: bold; color: #11114E; font-size: 15px;">${safeCompany}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-weight: bold;">Contact :</td>
+              <td style="padding: 8px 0; font-weight: 600; color: #11114E;">${safeContact}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-weight: bold;">Téléphone :</td>
+              <td style="padding: 8px 0;"><a href="tel:${safePhone}" style="color: #F47721; font-weight: bold; text-decoration: none;">${safePhone}</a></td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-weight: bold;">E-mail professionnel :</td>
+              <td style="padding: 8px 0;"><a href="mailto:${safeEmail}" style="color: #11114E; text-decoration: underline;">${safeEmail}</a></td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-weight: bold;">Nombre de véhicules :</td>
+              <td style="padding: 8px 0; font-weight: bold; color: #F47721;">${safeVehicleCount}</td>
+            </tr>
+          </table>
+
+          <div style="margin-top: 20px; padding: 16px; background-color: #f8fafc; border-radius: 6px; border-left: 4px solid #F47721;">
+            <p style="margin: 0 0 6px 0; font-size: 12px; font-weight: bold; text-transform: uppercase; color: #64748b;">Description du besoin</p>
+            <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #334155;">${safeDescription}</p>
+          </div>
+
+          <p style="margin-top: 24px; font-size: 11px; color: #94a3b8; text-align: center;">
+            Message envoyé depuis le formulaire Entreprises de bichonnetacaisse.fr
+          </p>
+        </div>
+      </div>
+    `;
+
+    const resendRes = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${resendApiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: `Bichonne ta Caisse <${senderEmail}>`,
+        to: [recipientEmail],
+        reply_to: safeEmail,
+        subject: `Nouvelle demande professionnelle — Bichonne ta Caisse`,
+        text: textLines.join("\n"),
+        html: htmlBody,
+      }),
+    });
+
+    if (!resendRes.ok) {
+      const errText = await resendRes.text();
+      console.error("Resend API error (Pro):", errText);
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error:
+            "Erreur lors de la transmission via le service e-mail. Veuillez nous contacter directement au 06 59 14 09 39 ou via WhatsApp.",
+        }),
+        {
+          status: 502,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+          },
+        },
+      );
+    }
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message:
+          "Merci pour votre demande ! Nous reviendrons vers vous pour échanger sur vos besoins et vous proposer une solution adaptée.",
+      }),
+      {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": allowedOrigin,
+        },
+      },
+    );
+  } catch (err) {
+    console.error("Error in /api/contact-pro:", err);
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: "Une erreur inattendue est survenue lors de la transmission de votre demande.",
+      }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": allowedOrigin,
+        },
+      },
+    );
+  }
+}
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
       const url = new URL(request.url);
       if (url.pathname === "/api/contact") {
         return await handleContactApi(request, env);
+      }
+      if (url.pathname === "/api/contact-pro") {
+        return await handleContactProApi(request, env);
       }
 
       const handler = await getServerEntry();

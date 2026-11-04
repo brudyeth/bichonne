@@ -4,6 +4,13 @@ import { describe, expect, it } from "vitest";
 
 import { routeTree } from "@/routeTree.gen";
 import { BUSINESS, CARES, FORMULAS, TRAVEL_CONDITIONS } from "@/lib/business";
+import {
+  BOOKING_OPTIONS,
+  NAV,
+  HeaderBookingDropdown,
+  Header,
+  HeaderReservationButton,
+} from "@/components/site/Layout";
 
 // Match routes without running loaders or rendering: loaders may need a server or
 // network the test run lacks, and jsdom never loads the stylesheets React waits on.
@@ -15,11 +22,43 @@ describe("App routing", () => {
     expect(matches.at(-1)?.routeId).not.toBe(rootRouteId);
   });
 
-  it("matches /formules and /contact routes", () => {
+  it("matches /formules, /entreprises and /contact routes", () => {
     const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
 
     expect(router.matchRoutes("/formules").at(-1)?.routeId).not.toBe(rootRouteId);
+    expect(router.matchRoutes("/entreprises").at(-1)?.routeId).not.toBe(rootRouteId);
     expect(router.matchRoutes("/contact").at(-1)?.routeId).not.toBe(rootRouteId);
+  });
+
+  it("keeps main navigation (NAV) streamlined with Accueil and Formules & tarifs", () => {
+    expect(NAV).toEqual([
+      { to: "/", label: "Accueil" },
+      { to: "/formules", label: "Formules & tarifs" },
+    ]);
+  });
+
+  it("provides Particulier and Professionnel options in the header booking dropdown", () => {
+    expect(BOOKING_OPTIONS).toHaveLength(2);
+
+    const particulier = BOOKING_OPTIONS.find((opt) => opt.id === "particulier");
+    expect(particulier).toBeDefined();
+    expect(particulier?.title).toBe("Particulier");
+    expect(particulier?.subtitle).toBe("Réserver un nettoyage");
+    expect(particulier?.to).toBe("/contact");
+
+    const pro = BOOKING_OPTIONS.find((opt) => opt.id === "professionnel");
+    expect(pro).toBeDefined();
+    expect(pro?.title).toBe("Professionnel");
+    expect(pro?.subtitle).toBe("Demander un devis");
+    expect(pro?.to).toBe("/entreprises");
+    expect(pro?.hash).toBe("devis");
+    expect(`${pro?.to}#${pro?.hash}`).toBe("/entreprises#devis");
+  });
+
+  it("exports header navigation components and reservation helpers", () => {
+    expect(typeof Header).toBe("function");
+    expect(typeof HeaderBookingDropdown).toBe("function");
+    expect(typeof HeaderReservationButton).toBe("function");
   });
 });
 
