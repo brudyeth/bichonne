@@ -111,15 +111,21 @@ export const INTENSIVE_DIRT_NOTICE =
   "En cas de dépoilage intensif ou de résidus fortement incrustés dans les tissus et moquettes (épines végétales, débris tenaces, etc.), un devis personnalisé sera établi selon le travail nécessaire.";
 
 export const TRAVEL_CONDITIONS = {
-  freeRadiusKm: 15,
+  freeRadiusKm: 20,
   ratePerKmRoundTrip: 0.5,
   referenceCity: "Lille",
-  headline: "Déplacement offert jusqu'à 15 km autour de Lille",
-  subline: "Au-delà, seuls les kilomètres supplémentaires sont facturés à 0,50 €/km, aller-retour.",
+  departurePoint: {
+    name: "Place de la République, Lille",
+    address: "Place de la République, 59000 Lille",
+    lat: 50.63185,
+    lon: 3.06074,
+  },
+  headline: "Déplacement offert jusqu'à 20 km de Lille",
+  subline: "Au-delà : 0,50 €/km supplémentaire aller-retour.",
   notice:
-    "Déplacement offert jusqu'à 15 km autour de Lille. Au-delà, seuls les kilomètres supplémentaires sont facturés à 0,50 €/km, aller-retour (selon l'itinéraire routier, communiqué avant confirmation définitive).",
+    "Déplacement offert jusqu'à 20 km de Lille. Au-delà : 0,50 €/km supplémentaire aller-retour (selon l'itinéraire routier estimé, communiqué avant confirmation définitive).",
   calculateFee: (distanceOneWayKm: number) => {
-    const extraKm = Math.max(0, distanceOneWayKm - 15);
+    const extraKm = Math.max(0, distanceOneWayKm - 20);
     return Math.round(extraKm * 2 * 0.5 * 100) / 100;
   },
 };

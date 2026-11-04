@@ -132,7 +132,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Nettoyage automobile à domicile à Lille et métropole lilloise dès 49 € : Intérieur Express, Intérieur Premium et Formule Complète. Déplacement offert jusqu'à 15 km.",
+          "Nettoyage automobile à domicile à Lille et métropole lilloise dès 49 € : Intérieur Express, Intérieur Premium et Formule Complète. Déplacement offert jusqu'à 20 km.",
       },
       { property: "og:site_name", content: "Bichonne ta Caisse" },
       {
@@ -142,7 +142,7 @@ export const Route = createFileRoute("/")({
       {
         property: "og:description",
         content:
-          "Nettoyage automobile à domicile à Lille et métropole lilloise dès 49 € : Intérieur Express, Intérieur Premium et Formule Complète. Déplacement offert jusqu'à 15 km.",
+          "Nettoyage automobile à domicile à Lille et métropole lilloise dès 49 € : Intérieur Express, Intérieur Premium et Formule Complète. Déplacement offert jusqu'à 20 km.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://bichonnetacaisse.fr/" },
@@ -166,7 +166,7 @@ export const Route = createFileRoute("/")({
       {
         name: "twitter:description",
         content:
-          "Nettoyage automobile à domicile à Lille et métropole lilloise dès 49 € : Intérieur Express, Intérieur Premium et Formule Complète. Déplacement offert jusqu'à 15 km.",
+          "Nettoyage automobile à domicile à Lille et métropole lilloise dès 49 € : Intérieur Express, Intérieur Premium et Formule Complète. Déplacement offert jusqu'à 20 km.",
       },
       {
         name: "twitter:image",
@@ -201,8 +201,8 @@ const REASSURANCE = [
   {
     icon: MapPin,
     title: "Déplacement offert",
-    subtitle: "JUSQU'À 15 KM DE LILLE",
-    text: "Offert jusqu'à 15 km autour de Lille. Au-delà, 0,50 €/km supplémentaire aller-retour.",
+    subtitle: "JUSQU'À 20 KM DE LILLE",
+    text: "Offert jusqu'à 20 km de Lille (Place de la République). Au-delà, 0,50 €/km supplémentaire aller-retour.",
   },
 ];
 
@@ -379,7 +379,7 @@ function Index() {
                 </span>
                 <div className="text-left leading-tight">
                   <p className="text-xs sm:text-sm font-bold text-white">Déplacement offert</p>
-                  <p className="text-[11px] text-white/70 mt-0.5">Jusqu'à 15 km autour de Lille</p>
+                  <p className="text-[11px] text-white/70 mt-0.5">Jusqu'à 20 km de Lille</p>
                 </div>
               </div>
             </div>
@@ -637,12 +637,13 @@ function Index() {
                 id="zone-heading"
                 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold uppercase tracking-tight text-white leading-[1.02]"
               >
-                Déplacement offert jusqu'à 15 km autour de Lille
+                Déplacement offert jusqu'à 20 km de Lille
               </h2>
 
               <p className="text-xs sm:text-sm text-white/80 leading-relaxed">
-                Au-delà, seuls les kilomètres supplémentaires sont facturés à 0,50 €/km,
-                aller-retour. Nous intervenons chez vous, sur votre parking ou sur votre lieu de
+                Point de départ : Place de la République, Lille. Au-delà, seuls les kilomètres
+                supplémentaires sont facturés à 0,50 €/km, aller-retour (selon la distance routière
+                estimée). Nous intervenons chez vous, sur votre parking ou sur votre lieu de
                 travail.
               </p>
 
@@ -659,8 +660,8 @@ function Index() {
               </div>
 
               <p className="text-[11px] text-white/60 italic pt-1">
-                * Distance calculée selon l'itinéraire routier depuis notre point de référence à
-                Lille.
+                * Distance routière estimée depuis notre point de référence à Lille (Place de la
+                République).
               </p>
             </div>
 
@@ -674,29 +675,30 @@ function Index() {
 
                 <div className="divide-y divide-slate-100 text-xs sm:text-sm">
                   <div className="flex items-center justify-between pb-2 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                    <span>Distance</span>
-                    <span>Frais</span>
+                    <span>Distance routière estimée (aller)</span>
+                    <span>Frais A/R</span>
                   </div>
                   <div className="flex items-center justify-between py-2 font-semibold">
-                    <span className="text-slate-800">Jusqu'à 15 km</span>
-                    <span className="font-bold text-primary">Offert</span>
+                    <span className="text-slate-800">Jusqu'à 20 km</span>
+                    <span className="font-bold text-primary">Offert (0 €)</span>
                   </div>
                   <div className="flex items-center justify-between py-2 font-semibold">
-                    <span className="text-slate-800">20 km</span>
-                    <span className="font-bold text-[#11114E]">5 €</span>
+                    <span className="text-slate-800">25 km (5 km supp.)</span>
+                    <span className="font-bold text-[#11114E]">5,00 €</span>
                   </div>
                   <div className="flex items-center justify-between py-2 font-semibold">
-                    <span className="text-slate-800">25 km</span>
-                    <span className="font-bold text-[#11114E]">10 €</span>
+                    <span className="text-slate-800">30 km (10 km supp.)</span>
+                    <span className="font-bold text-[#11114E]">10,00 €</span>
                   </div>
                   <div className="flex items-center justify-between py-2 font-semibold">
-                    <span className="text-slate-800">30 km</span>
-                    <span className="font-bold text-[#11114E]">15 €</span>
+                    <span className="text-slate-800">35 km (15 km supp.)</span>
+                    <span className="font-bold text-[#11114E]">15,00 €</span>
                   </div>
                 </div>
 
                 <p className="mt-2.5 text-[11px] text-slate-500">
-                  Seuls les kilomètres dépassant les 15 km offerts sont facturés.
+                  Déplacement offert jusqu'à 20 km. Au-delà, seuls les kilomètres supplémentaires
+                  sont facturés à 0,50 €/km aller-retour.
                 </p>
 
                 <div className="mt-4 pt-3.5 border-t border-slate-100 flex flex-col sm:flex-row gap-2.5">

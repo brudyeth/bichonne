@@ -103,11 +103,11 @@ function Page() {
           <div className="mt-4 inline-flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2.5 rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-xs sm:text-sm text-white/95">
             <div className="flex items-center gap-2 font-semibold text-primary">
               <MapPin className="size-4 shrink-0" />
-              <span>Déplacement offert jusqu'à 15 km autour de Lille</span>
+              <span>Déplacement offert jusqu'à 20 km de Lille</span>
             </div>
             <span className="hidden sm:inline text-white/40">•</span>
             <span className="text-white/80 text-xs">
-              Au-delà, seuls les kilomètres supplémentaires sont facturés à 0,50 €/km, aller-retour.
+              Au-delà : 0,50 €/km supplémentaire aller-retour (selon la distance routière estimée).
             </span>
           </div>
         </PageHero>
@@ -171,11 +171,12 @@ function Page() {
                   <div className="mt-3 rounded-xl border border-primary/20 bg-[#F8F9FC] p-3.5 space-y-1 text-xs">
                     <p className="font-semibold text-[#11114E] flex items-center gap-1.5">
                       <MapPin className="size-3.5 text-primary shrink-0" />
-                      Déplacement offert jusqu'à 15 km autour de Lille
+                      Déplacement offert jusqu'à 20 km de Lille
                     </p>
                     <p className="text-slate-600">
-                      Au-delà de 15 km, seuls les kilomètres supplémentaires sont facturés à 0,50
-                      €/km, aller-retour (selon l'itinéraire routier, communiqué avant validation).
+                      Point de départ : Place de la République, Lille. Au-delà de 20 km, seuls les
+                      kilomètres supplémentaires sont facturés à 0,50 €/km, aller-retour (selon la
+                      distance routière estimée).
                     </p>
                   </div>
                 </div>

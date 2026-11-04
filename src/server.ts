@@ -120,6 +120,242 @@ function getCorsOrigin(request: Request): string {
   return "https://bichonnetacaisse.fr";
 }
 
+// =============================================================================
+// CALCULATEUR DE FRAIS DE DÉPLACEMENT
+// Point de départ fixe : Place de la République, 59000 Lille
+// Coordonnées GPS : 50.63185, 3.06074
+// Règle tarifaire :
+// - Déplacement gratuit jusqu'à 20 km de distance routière aller simple.
+// - Au-delà, facturation des kilomètres supplémentaires aller-retour à 0,50 €/km.
+// Formule : Math.max(0, distanceAllerKm - 20) * 2 * 0.50
+// =============================================================================
+export const LILLE_REPUBLIQUE = {
+  name: "Place de la République, Lille",
+  lat: 50.63185,
+  lon: 3.06074,
+};
+
+export const FREE_RADIUS_KM = 20;
+export const RATE_PER_KM_ROUND_TRIP = 0.5;
+
+interface CachedDistance {
+  distanceOneWayKm: number;
+  fee: number;
+  source: "osrm" | "fallback";
+  timestamp: number;
+}
+const distanceCache = new Map<string, CachedDistance>();
+const CACHE_MAX_ENTRIES = 500;
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24h
+
+function haversineDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+export async function calculateDistanceAndFee(
+  lat: number,
+  lon: number,
+): Promise<{
+  success: boolean;
+  distanceOneWayKm: number;
+  fee: number;
+  source: "osrm" | "fallback";
+  freeRadiusKm: number;
+  ratePerKmRoundTrip: number;
+  label: string;
+}> {
+  if (
+    typeof lat !== "number" ||
+    typeof lon !== "number" ||
+    isNaN(lat) ||
+    isNaN(lon) ||
+    lat < -90 ||
+    lat > 90 ||
+    lon < -180 ||
+    lon > 180
+  ) {
+    throw new Error("Coordonnées géographiques invalides");
+  }
+
+  const cacheKey = `${lat.toFixed(4)},${lon.toFixed(4)}`;
+  const now = Date.now();
+  const cached = distanceCache.get(cacheKey);
+  if (cached && now - cached.timestamp < CACHE_TTL_MS) {
+    return {
+      success: true,
+      distanceOneWayKm: cached.distanceOneWayKm,
+      fee: cached.fee,
+      source: cached.source,
+      freeRadiusKm: FREE_RADIUS_KM,
+      ratePerKmRoundTrip: RATE_PER_KM_ROUND_TRIP,
+      label: "Distance routière estimée",
+    };
+  }
+
+  // 1. Appel du moteur d'itinéraire routier (OSRM) avec timeout strict de 3.5s
+  let distanceOneWayKm: number | null = null;
+  let source: "osrm" | "fallback" = "osrm";
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 3500);
+
+    const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${LILLE_REPUBLIQUE.lon},${LILLE_REPUBLIQUE.lat};${lon},${lat}?overview=false`;
+    const res = await fetch(osrmUrl, {
+      signal: controller.signal,
+      headers: {
+        Accept: "application/json",
+        "User-Agent": "BichonneTaCaisse-Routing/1.0",
+      },
+    });
+    clearTimeout(timeout);
+
+    if (res.ok) {
+      const data = (await res.json()) as {
+        code?: string;
+        routes?: Array<{ distance?: number }>;
+      };
+      if (data.code === "Ok" && Array.isArray(data.routes) && data.routes[0]?.distance) {
+        const meters = data.routes[0].distance;
+        distanceOneWayKm = Math.round((meters / 1000) * 10) / 10;
+        source = "osrm";
+      }
+    }
+  } catch {
+    source = "fallback";
+  }
+
+  // 2. Solution de secours si OSRM est indisponible ou a expiré :
+  // Calcul géodésique précis (Haversine) pondéré par le coefficient moyen de réseau routier périurbain français (~1.28)
+  if (distanceOneWayKm === null) {
+    const birdKm = haversineDistanceKm(LILLE_REPUBLIQUE.lat, LILLE_REPUBLIQUE.lon, lat, lon);
+    distanceOneWayKm = Math.round(birdKm * 1.28 * 10) / 10;
+    source = "fallback";
+  }
+
+  // Formule officielle arrondie au centime :
+  // frais = Math.max(0, distanceAllerKm - 20) * 2 * 0.50
+  const extraKm = Math.max(0, distanceOneWayKm - FREE_RADIUS_KM);
+  const fee = Math.round(extraKm * 2 * RATE_PER_KM_ROUND_TRIP * 100) / 100;
+
+  if (distanceCache.size >= CACHE_MAX_ENTRIES) {
+    const oldestKey = distanceCache.keys().next().value;
+    if (oldestKey) distanceCache.delete(oldestKey);
+  }
+  distanceCache.set(cacheKey, {
+    distanceOneWayKm,
+    fee,
+    source,
+    timestamp: now,
+  });
+
+  return {
+    success: true,
+    distanceOneWayKm,
+    fee,
+    source,
+    freeRadiusKm: FREE_RADIUS_KM,
+    ratePerKmRoundTrip: RATE_PER_KM_ROUND_TRIP,
+    label: "Distance routière estimée",
+  };
+}
+
+async function handleDistanceApi(request: Request): Promise<Response> {
+  const allowedOrigin = getCorsOrigin(request);
+
+  if (request.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        "Access-Control-Allow-Origin": allowedOrigin,
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
+    });
+  }
+
+  try {
+    let lat: number | undefined;
+    let lon: number | undefined;
+
+    if (request.method === "GET") {
+      const url = new URL(request.url);
+      const latParam = url.searchParams.get("lat");
+      const lonParam = url.searchParams.get("lon");
+      if (latParam && lonParam) {
+        lat = parseFloat(latParam);
+        lon = parseFloat(lonParam);
+      }
+    } else if (request.method === "POST") {
+      const body = (await request.json()) as { lat?: number; lon?: number };
+      lat = body.lat;
+      lon = body.lon;
+    } else {
+      return new Response(JSON.stringify({ error: "Méthode non autorisée" }), {
+        status: 405,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": allowedOrigin,
+        },
+      });
+    }
+
+    if (typeof lat !== "number" || typeof lon !== "number" || isNaN(lat) || isNaN(lon)) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          fee: null,
+          error: "Coordonnées lat et lon obligatoires",
+          message: "Frais de déplacement à confirmer",
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": allowedOrigin,
+          },
+        },
+      );
+    }
+
+    const result = await calculateDistanceAndFee(lat, lon);
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": allowedOrigin,
+        "Cache-Control": "public, max-age=3600",
+      },
+    });
+  } catch (err) {
+    console.error("Error in handleDistanceApi:", err);
+    return new Response(
+      JSON.stringify({
+        success: false,
+        fee: null,
+        message: "Frais de déplacement à confirmer",
+      }),
+      {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": allowedOrigin,
+        },
+      },
+    );
+  }
+}
+
 async function handleContactApi(request: Request, env?: unknown): Promise<Response> {
   const allowedOrigin = getCorsOrigin(request);
 
@@ -155,6 +391,10 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
       isGrandUtility?: boolean;
       address?: string;
       city?: string;
+      travelDistanceKm?: number | null;
+      travelFee?: number | null;
+      travelLat?: number;
+      travelLon?: number;
       parking?: string;
       waterAccess?: boolean;
       electricityAccess?: boolean;
@@ -182,6 +422,10 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
       isGrandUtility,
       address,
       city,
+      travelDistanceKm,
+      travelFee,
+      travelLat,
+      travelLon,
       parking,
       waterAccess,
       electricityAccess,
@@ -349,6 +593,62 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
       ? escapeHtml(message.trim()).replace(/\n/g, "<br>")
       : "Aucun message complémentaire.";
 
+    // Vérification et recalcul sécurisé des frais de déplacement côté serveur
+    let verifiedDistanceKm: number | null = null;
+    let verifiedTravelFee: number | null = null;
+    let travelFeeText = "Frais de déplacement à confirmer";
+
+    if (
+      typeof travelLat === "number" &&
+      typeof travelLon === "number" &&
+      !isNaN(travelLat) &&
+      !isNaN(travelLon)
+    ) {
+      try {
+        const calc = await calculateDistanceAndFee(travelLat, travelLon);
+        if (calc.success) {
+          verifiedDistanceKm = calc.distanceOneWayKm;
+          verifiedTravelFee = calc.fee;
+        }
+      } catch {
+        // En cas d'erreur de calcul, non bloquant : verifiedTravelFee reste null
+      }
+    } else if (typeof travelFee === "number" && typeof travelDistanceKm === "number") {
+      const extraKm = Math.max(0, travelDistanceKm - FREE_RADIUS_KM);
+      verifiedDistanceKm = travelDistanceKm;
+      verifiedTravelFee = Math.round(extraKm * 2 * RATE_PER_KM_ROUND_TRIP * 100) / 100;
+    }
+
+    if (verifiedTravelFee !== null && verifiedDistanceKm !== null) {
+      if (verifiedTravelFee === 0) {
+        travelFeeText = `0,00 € (Déplacement offert : ${verifiedDistanceKm} km aller depuis Place de la République, Lille)`;
+      } else {
+        const extraKm = Math.max(0, verifiedDistanceKm - FREE_RADIUS_KM);
+        travelFeeText = `${verifiedTravelFee.toFixed(2).replace(".", ",")} € (Distance routière estimée : ${verifiedDistanceKm} km aller · ${extraKm.toFixed(1)} km supp. A/R à 0,50 €/km)`;
+      }
+    } else {
+      travelFeeText =
+        "Frais de déplacement à confirmer lors de notre rappel (selon l'itinéraire routier)";
+    }
+
+    // Récapitulatif du total estimé avec frais de déplacement vérifiés
+    let finalTotalDisplay = "";
+    if (typeof formulaPrice === "number") {
+      const basePrestationTotal =
+        formulaPrice + (utilitySurcharge || 0) + (isVeryDirty ? 15 : 0) + (hasPetHair ? 15 : 0);
+
+      if (verifiedTravelFee !== null && verifiedTravelFee > 0) {
+        const totalWithTravel = Math.round((basePrestationTotal + verifiedTravelFee) * 100) / 100;
+        finalTotalDisplay = `${totalWithTravel.toFixed(2).replace(".00", "")} € (dont ${verifiedTravelFee.toFixed(2).replace(".", ",")} € de frais de déplacement)`;
+      } else if (verifiedTravelFee === 0) {
+        finalTotalDisplay = `${basePrestationTotal} € (déplacement offert inclus)`;
+      } else {
+        finalTotalDisplay = `${basePrestationTotal} € (+ frais de déplacement à confirmer)`;
+      }
+    } else {
+      finalTotalDisplay = typeof estimatedTotal === "number" ? `${estimatedTotal} €` : "À définir";
+    }
+
     const textLines = [
       `Nouvelle demande de devis - Bichonne ta Caisse`,
       `----------------------------------------------`,
@@ -376,7 +676,7 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
       `Lieu de stationnement : ${parking?.trim() || "Non précisé"}`,
       `Accès à l'eau : ${waterAccess ? "Oui" : "Non"}`,
       `Prise électrique : ${electricityAccess ? "Oui" : "Non"}`,
-      `Déplacement : Offert jusqu'à 15 km autour de Lille (au-delà : 0,50 €/km supp. A/R)`,
+      `Déplacement : ${travelFeeText}`,
       ``,
       `Formule : ${formulaName?.trim() || "À définir ensemble"} (${typeof formulaPrice === "number" ? `${formulaPrice} €` : "—"})`,
       `Soins ciblés : ${selectedCares?.length ? selectedCares.join(", ") : "Aucun"}`,
@@ -386,9 +686,7 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
       `Rendez-vous : ${dateChoice === "date" ? `Date souhaitée : ${preferredDate || "Non sélectionnée"}` : "À convenir ensemble"}`,
       `Créneau horaire : ${timeSlot || "Flexible"}`,
       ``,
-      `Tarif estimé : ${typeof estimatedTotal === "number" ? `${estimatedTotal} €` : "À définir"}${
-        utilitySurcharge ? ` (dont supplément utilitaire +${utilitySurcharge} €)` : ""
-      } (hors éventuels frais kilométriques au-delà de 15 km)`,
+      `Tarif estimé : ${finalTotalDisplay}`,
       ``,
       `Message complémentaire :`,
       message?.trim() || "Aucun message complémentaire.",
@@ -416,7 +714,7 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
       <p><strong>Lieu de stationnement :</strong> ${safeParking}</p>
       <p><strong>Accès à l'eau :</strong> ${waterAccess ? "Oui" : "Non"}</p>
       <p><strong>Prise électrique :</strong> ${electricityAccess ? "Oui" : "Non"}</p>
-      <p><strong>Déplacement :</strong> Offert jusqu'à 15 km autour de Lille (au-delà : 0,50 €/km supp. A/R selon itinéraire routier)</p>
+      <p><strong>Déplacement :</strong> ${escapeHtml(travelFeeText)}</p>
 
       <h3>Prestations & État</h3>
       <p><strong>Formule :</strong> ${safeFormula} ${typeof formulaPrice === "number" ? `(${formulaPrice} €)` : ""}</p>
@@ -429,9 +727,7 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
       <p><strong>Créneau :</strong> ${safeTimeSlot}</p>
 
       <h3>Tarif estimé</h3>
-      <p style="font-size: 1.25rem; font-weight: bold; color: #ea580c;">${typeof estimatedTotal === "number" ? `${estimatedTotal} €` : "À définir"}${
-        utilitySurcharge ? ` (dont utilitaire +${utilitySurcharge} €)` : ""
-      }</p>
+      <p style="font-size: 1.25rem; font-weight: bold; color: #ea580c;">${escapeHtml(finalTotalDisplay)}</p>
 
       <h3>Message complémentaire</h3>
       <p>${safeMessage}</p>
@@ -864,6 +1160,9 @@ export default {
       }
       if (url.pathname === "/api/contact-pro") {
         return await handleContactProApi(request, env);
+      }
+      if (url.pathname === "/api/distance") {
+        return await handleDistanceApi(request);
       }
 
       const handler = await getServerEntry();

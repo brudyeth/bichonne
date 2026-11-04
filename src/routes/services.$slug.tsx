@@ -198,7 +198,7 @@ const SERVICE_PAGES: Record<string, ServicePageData> = {
       {
         question: "Y a-t-il des frais de déplacement pour Roubaix ?",
         answer:
-          "Roubaix se situe à environ 11 km de notre point de référence : le déplacement est donc 100% offert dans notre rayon de 15 km gratuits.",
+          "Roubaix se situe à environ 11 km de notre point de référence : le déplacement est donc 100% offert dans notre rayon de 20 km gratuits.",
       },
     ],
   },
@@ -220,7 +220,7 @@ const SERVICE_PAGES: Record<string, ServicePageData> = {
       {
         question: "Le déplacement est-il offert à Tourcoing ?",
         answer:
-          "Oui, Tourcoing est située à environ 12 km de notre base, ce qui est pleinement compris dans nos 15 km de déplacement gratuit.",
+          "Oui, Tourcoing est située à environ 12 km de notre point de référence (Place de la République à Lille), ce qui est pleinement compris dans nos 20 km de déplacement gratuit.",
       },
     ],
   },
@@ -334,7 +334,8 @@ function ServicePage() {
               Choisissez votre formule pour {data.city}
             </h2>
             <p className="mt-1 text-xs sm:text-sm text-slate-600">
-              Déplacement offert jusqu'à 15 km de notre base. Même tarif pour tous les véhicules.
+              Déplacement offert jusqu'à 20 km de Lille (Place de la République). Même tarif pour
+              tous les véhicules.
             </p>
           </div>
 
@@ -370,13 +371,13 @@ function ServicePage() {
             <span className="w-5 h-[2px] bg-primary"></span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-display font-bold uppercase text-white">
-            Déplacement offert jusqu'à 15 km de notre base
+            Déplacement offert jusqu'à 20 km de Lille
           </h2>
           <p className="text-sm text-white/80 max-w-xl mx-auto leading-relaxed">
             Nous intervenons directement sur votre stationnement à {data.city} ({data.postalCode})
-            et dans toute la métropole lilloise. Le déplacement est 100% offert jusqu'à 15 km.
-            Au-delà, seuls les kilomètres supplémentaires sont facturés 0,50 €/km aller-retour selon
-            l'itinéraire routier réel.
+            et dans toute la métropole lilloise. Le déplacement est 100% offert jusqu'à 20 km depuis
+            la Place de la République à Lille. Au-delà, seuls les kilomètres supplémentaires sont
+            facturés 0,50 €/km aller-retour selon la distance routière estimée.
           </p>
           <div className="pt-2">
             <a

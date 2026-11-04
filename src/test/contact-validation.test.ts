@@ -136,3 +136,39 @@ describe("Utility vehicle pricing rules", () => {
     expect(calculateTotal(69, "utilitaire", [15])).toBe(104);
   });
 });
+
+describe("Travel fee calculation rules (Place de la République, Lille)", () => {
+  function calculateTravelFee(distanceOneWayKm: number): number {
+    const freeRadiusKm = 20;
+    const ratePerKmRoundTrip = 0.5;
+    const billableExcessOneWay = Math.max(0, distanceOneWayKm - freeRadiusKm);
+    return Math.round(billableExcessOneWay * 2 * ratePerKmRoundTrip * 100) / 100;
+  }
+
+  it("is free up to 20 km one-way from Place de la République", () => {
+    expect(calculateTravelFee(0)).toBe(0);
+    expect(calculateTravelFee(5)).toBe(0);
+    expect(calculateTravelFee(10.5)).toBe(0);
+    expect(calculateTravelFee(19.9)).toBe(0);
+    expect(calculateTravelFee(20)).toBe(0);
+  });
+
+  it("bills 0.50 €/km round-trip for kilometers beyond 20 km", () => {
+    // 25 km: 5 km excess * 2 * 0.50 = 5 €
+    expect(calculateTravelFee(25)).toBe(5);
+    // 30 km: 10 km excess * 2 * 0.50 = 10 €
+    expect(calculateTravelFee(30)).toBe(10);
+    // 35 km: 15 km excess * 2 * 0.50 = 15 €
+    expect(calculateTravelFee(35)).toBe(15);
+    // 37.3 km: 17.3 * 2 * 0.50 = 17.30 €
+    expect(calculateTravelFee(37.3)).toBe(17.3);
+  });
+
+  it("calculates total with formula, utility surcharge and travel fee", () => {
+    // Formule Complète (109 €) + Utilitaire (+20 €) + 30 km travel (+10 €) = 139 €
+    const baseFormula = 109;
+    const utility = 20;
+    const travel = calculateTravelFee(30);
+    expect(baseFormula + utility + travel).toBe(139);
+  });
+});

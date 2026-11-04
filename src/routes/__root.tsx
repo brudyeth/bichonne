@@ -83,7 +83,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Nettoyage automobile à domicile à Lille et métropole lilloise dès 49 € : Intérieur Express, Intérieur Premium et Formule Complète. Déplacement offert jusqu'à 15 km.",
+          "Nettoyage automobile à domicile à Lille et métropole lilloise dès 49 € : Intérieur Express, Intérieur Premium et Formule Complète. Déplacement offert jusqu'à 20 km.",
       },
       { property: "og:site_name", content: "Bichonne ta Caisse" },
       { property: "og:type", content: "website" },

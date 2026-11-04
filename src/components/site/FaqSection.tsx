@@ -21,7 +21,7 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     question: "Quels sont les frais de déplacement ?",
     answer:
-      "Le déplacement est entièrement offert dans un rayon de 15 km autour de Lille. Au-delà de ces 15 km gratuits, seuls les kilomètres supplémentaires sont facturés à 0,50 € par kilomètre, calculés sur l'aller-retour selon l'itinéraire routier réel.",
+      "Le déplacement est entièrement offert jusqu'à 20 km de Lille (point de départ : Place de la République). Au-delà de ces 20 km gratuits, seuls les kilomètres supplémentaires sont facturés à 0,50 € par kilomètre, aller et retour, selon la distance routière estimée.",
   },
   {
     question: "Le shampoing des sièges et tapis est-il bien inclus ?",

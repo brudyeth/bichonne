@@ -35,7 +35,8 @@ export function CommuneChecker() {
         Testez votre commune ou code postal
       </h3>
       <p className="text-xs sm:text-sm text-white/80 mt-1 mb-4">
-        Le déplacement est offert jusqu'à 15 km de notre point de référence.
+        Le déplacement est offert jusqu'à {TRAVEL_CONDITIONS.freeRadiusKm} km de notre point de
+        référence.
       </p>
 
       {/* Champ de recherche */}
@@ -90,7 +91,8 @@ export function CommuneChecker() {
             </span>
           ) : (
             <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/20 text-primary border border-primary/30 px-3 py-1 text-xs font-bold uppercase tracking-wider">
-              {fee} € aller-retour ({activeCommune.distanceKm - 15} km au-delà des 15 km offerts)
+              {fee} € aller-retour ({activeCommune.distanceKm - TRAVEL_CONDITIONS.freeRadiusKm} km
+              au-delà des {TRAVEL_CONDITIONS.freeRadiusKm} km offerts)
             </span>
           )}
         </div>
@@ -98,8 +100,9 @@ export function CommuneChecker() {
 
       {/* Note sur l'adresse de référence */}
       <p className="mt-3 text-[11px] text-white/60 italic leading-snug">
-        * Distance indicative calculée depuis notre base ({BUSINESS.departureAddressNote}). Le
-        montant exact vous est confirmé avant intervention.
+        * Distance routière estimée depuis notre point de référence (
+        {TRAVEL_CONDITIONS.departurePoint.name}). Le montant exact vous est confirmé avant
+        intervention.
       </p>
 
       {/* CTA rapide */}

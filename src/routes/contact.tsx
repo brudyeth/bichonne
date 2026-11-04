@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState, useRef } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import {
   Copy,
   MessageCircle,
@@ -17,6 +17,7 @@ import {
   ArrowLeft,
   CheckCircle2,
   Info,
+  Loader2,
 } from "lucide-react";
 import { PageHero, Facebook3DIcon, Instagram3DIcon } from "@/components/site/Layout";
 import { BUSINESS, FORMULAS, INTENSIVE_DIRT_NOTICE, euro, whatsappLink } from "@/lib/business";
@@ -155,6 +156,31 @@ function Page() {
   const [email, setEmail] = useState("");
   const [hp, setHp] = useState("");
 
+  // État autocomplétion Base Adresse Nationale & Calculateur de déplacement
+  const [addressSuggestions, setAddressSuggestions] = useState<
+    Array<{
+      label: string;
+      name: string;
+      postcode: string;
+      city: string;
+      coordinates: [number, number];
+    }>
+  >([]);
+  const [isSearchingAddress, setIsSearchingAddress] = useState(false);
+  const [showAddressDropdown, setShowAddressDropdown] = useState(false);
+  const [travelCalculation, setTravelCalculation] = useState<{
+    distanceOneWayKm: number;
+    fee: number;
+    source: "osrm" | "fallback";
+    label: string;
+    lat: number;
+    lon: number;
+  } | null>(null);
+  const [isCalculatingDistance, setIsCalculatingDistance] = useState(false);
+  const addressDebounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const addressAbortRef = useRef<AbortController | null>(null);
+  const addressContainerRef = useRef<HTMLDivElement>(null);
+
   // UI state
   const [copied, setCopied] = useState(false);
   const [stepError, setStepError] = useState("");
@@ -166,12 +192,151 @@ function Page() {
   const selectedFormula = FORMULAS.find((x) => x.id === formula);
   const selectedCaresList = FORM_CARES.filter((c) => cares.includes(c.id));
 
+  // Fermeture du menu d'autocomplétion lors d'un clic extérieur
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (addressContainerRef.current && !addressContainerRef.current.contains(e.target as Node)) {
+        setShowAddressDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Gestion de la saisie d'adresse : annule immédiatement tout ancien calcul
+  const handleAddressChange = (newVal: string) => {
+    setAddress(newVal);
+    if (stepError) setStepError("");
+
+    // ANNULATION IMMÉDIATE de l'ancien calcul kilométrique dès que l'adresse change
+    setTravelCalculation(null);
+
+    if (addressDebounceTimerRef.current) {
+      clearTimeout(addressDebounceTimerRef.current);
+    }
+    if (addressAbortRef.current) {
+      addressAbortRef.current.abort();
+    }
+
+    const trimmed = newVal.trim();
+    if (trimmed.length < 3) {
+      setAddressSuggestions([]);
+      setShowAddressDropdown(false);
+      setIsSearchingAddress(false);
+      return;
+    }
+
+    setIsSearchingAddress(true);
+    const controller = new AbortController();
+    addressAbortRef.current = controller;
+
+    addressDebounceTimerRef.current = setTimeout(async () => {
+      try {
+        // Base Adresse Nationale officielle (BAN data.gouv.fr)
+        const url = `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(trimmed)}&limit=5&autocomplete=1&lat=50.63185&lon=3.06074`;
+        const res = await fetch(url, { signal: controller.signal });
+        if (res.ok) {
+          const data = (await res.json()) as {
+            features?: Array<{
+              properties?: {
+                label?: string;
+                name?: string;
+                postcode?: string;
+                city?: string;
+              };
+              geometry?: {
+                coordinates?: [number, number];
+              };
+            }>;
+          };
+
+          if (Array.isArray(data.features)) {
+            const list = data.features
+              .filter(
+                (f) =>
+                  f.properties?.label &&
+                  f.geometry?.coordinates &&
+                  f.geometry.coordinates.length === 2,
+              )
+              .map((f) => ({
+                label: f.properties!.label!,
+                name: f.properties!.name || f.properties!.label!,
+                postcode: f.properties!.postcode || "",
+                city: f.properties!.city || "",
+                coordinates: f.geometry!.coordinates as [number, number],
+              }));
+
+            setAddressSuggestions(list);
+            setShowAddressDropdown(list.length > 0);
+          }
+        }
+      } catch (err: unknown) {
+        if (err instanceof Error && err.name !== "AbortError") {
+          // Erreur silencieuse
+        }
+      } finally {
+        setIsSearchingAddress(false);
+      }
+    }, 300);
+  };
+
+  // Sélection d'une adresse : calcul de la distance routière estimée depuis Place de la République, Lille
+  const handleSelectSuggestion = async (sugg: {
+    label: string;
+    name: string;
+    postcode: string;
+    city: string;
+    coordinates: [number, number];
+  }) => {
+    setAddress(sugg.name);
+    if (sugg.city) setCity(sugg.city);
+    setShowAddressDropdown(false);
+    setAddressSuggestions([]);
+
+    setIsCalculatingDistance(true);
+    const [lon, lat] = sugg.coordinates;
+
+    try {
+      const res = await fetch(`/api/distance?lat=${lat}&lon=${lon}`);
+      if (res.ok) {
+        const data = (await res.json()) as {
+          success?: boolean;
+          distanceOneWayKm?: number;
+          fee?: number;
+          source?: "osrm" | "fallback";
+          label?: string;
+        };
+
+        if (
+          data.success &&
+          typeof data.distanceOneWayKm === "number" &&
+          typeof data.fee === "number"
+        ) {
+          setTravelCalculation({
+            distanceOneWayKm: data.distanceOneWayKm,
+            fee: Math.round(data.fee * 100) / 100,
+            source: data.source || "osrm",
+            label: data.label || "Distance routière estimée",
+            lat,
+            lon,
+          });
+          return;
+        }
+      }
+      setTravelCalculation(null);
+    } catch {
+      setTravelCalculation(null);
+    } finally {
+      setIsCalculatingDistance(false);
+    }
+  };
+
   // Supplément véhicule utilitaire fixe de 20 €, applicable à toutes les formules (petits, moyens et grands utilitaires)
   const isUtilityVehicle =
     vehicleCategory === "utilitaire" || vehicleCategory === "grand-utilitaire";
 
-  // Calcul dynamique du tarif total estimé
-  const total = useMemo(() => {
+  // Total prestation de base (hors frais kilométriques éventuels)
+  const baseTotal = useMemo(() => {
     let t = selectedFormula?.price ?? 0;
     t += selectedCaresList.reduce((acc, c) => acc + c.price, 0);
     if (isUtilityVehicle && selectedFormula) {
@@ -179,6 +344,17 @@ function Page() {
     }
     return t;
   }, [selectedFormula, selectedCaresList, isUtilityVehicle]);
+
+  // Total incluant les frais kilométriques si calculés avec succès
+  const totalWithTravel = useMemo(() => {
+    if (travelCalculation && typeof travelCalculation.fee === "number") {
+      return Math.round((baseTotal + travelCalculation.fee) * 100) / 100;
+    }
+    return null;
+  }, [baseTotal, travelCalculation]);
+
+  // Total estimé affiché
+  const total = totalWithTravel !== null ? totalWithTravel : baseTotal;
 
   const todayStr = useMemo(() => {
     const now = new Date();
@@ -325,7 +501,15 @@ function Page() {
       `• Stationnement : ${parking}`,
       `• Accès à l'eau : ${hasWater ? "Oui" : "Non"}`,
       `• Prise électrique accessible : ${hasElectricity ? "Oui" : "Non"}`,
-      `• Déplacement : Offert jusqu'à 15 km autour de Lille (au-delà : 0,50 €/km supp. A/R)`,
+      `• Déplacement : ${
+        travelCalculation
+          ? travelCalculation.fee === 0
+            ? `Offert (${travelCalculation.distanceOneWayKm} km aller - dans les 20 km de Lille)`
+            : `+${travelCalculation.fee.toFixed(2).replace(".", ",")} € (Distance routière estimée : ${travelCalculation.distanceOneWayKm} km aller · ${(travelCalculation.distanceOneWayKm - 20).toFixed(1)} km supp. A/R)`
+          : address.trim()
+            ? "Frais de déplacement à confirmer (selon l'itinéraire routier)"
+            : "Offert jusqu'à 20 km de Lille (0,50 €/km supp. A/R au-delà)"
+      }`,
       "",
       "✨ PRESTATIONS & OPTIONS :",
       `• Formule : ${selectedFormula ? `${selectedFormula.name} (${euro(selectedFormula.price)})` : "À définir ensemble"}`,
@@ -344,6 +528,12 @@ function Page() {
       total
         ? `💰 TARIF ESTIMÉ : ${euro(total)}${
             isUtilityVehicle ? " (dont supplément utilitaire +20 €)" : ""
+          }${
+            travelCalculation && travelCalculation.fee > 0
+              ? ` (dont frais déplacement : +${travelCalculation.fee.toFixed(2).replace(".", ",")} €)`
+              : !travelCalculation && address.trim()
+                ? " (+ frais de déplacement à confirmer)"
+                : ""
           }${hasIntensiveDirt ? " (+ devis personnalisé pour salissures intensives)" : ""}`
         : "💰 TARIF ESTIMÉ : À définir selon prestations",
       "",
@@ -370,6 +560,7 @@ function Page() {
     preferredDate,
     timeSlot,
     total,
+    travelCalculation,
     message,
   ]);
 
@@ -403,6 +594,10 @@ function Page() {
           isGrandUtility: false,
           address: address.trim() || undefined,
           city: city.trim() || undefined,
+          travelDistanceKm: travelCalculation ? travelCalculation.distanceOneWayKm : null,
+          travelFee: travelCalculation ? travelCalculation.fee : null,
+          travelLat: travelCalculation?.lat,
+          travelLon: travelCalculation?.lon,
           parking,
           waterAccess: hasWater,
           electricityAccess: hasElectricity,
@@ -552,11 +747,11 @@ function Page() {
                   <MapPin className="size-5 text-primary shrink-0 mt-0.5" />
                   <div>
                     <p className="font-semibold text-white leading-tight">
-                      Déplacement offert jusqu'à 15 km autour de Lille
+                      Déplacement offert jusqu'à 20 km de Lille
                     </p>
                     <p className="text-xs text-white/80 mt-1">
-                      Au-delà, seuls les kilomètres supplémentaires sont facturés à 0,50 €/km,
-                      aller-retour.
+                      Calculé depuis la Place de la République. Au-delà, seuls les kilomètres
+                      supplémentaires sont facturés à 0,50 €/km, aller-retour.
                     </p>
                   </div>
                 </div>
@@ -1347,21 +1542,51 @@ function Page() {
                     </div>
 
                     <div className="grid gap-4 sm:grid-cols-2">
-                      <label className="space-y-1.5">
-                        <span className="text-sm font-semibold">Adresse d'intervention *</span>
+                      <div ref={addressContainerRef} className="relative space-y-1.5">
+                        <span className="text-sm font-semibold flex items-center justify-between">
+                          <span>Adresse d'intervention *</span>
+                          {isSearchingAddress && (
+                            <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                              <Loader2 className="size-3 animate-spin text-primary" />
+                              Recherche...
+                            </span>
+                          )}
+                        </span>
                         <input
                           type="text"
                           required
                           className={field}
                           value={address}
-                          onChange={(e) => {
-                            setAddress(e.target.value);
-                            if (stepError) setStepError("");
+                          onChange={(e) => handleAddressChange(e.target.value)}
+                          onFocus={() => {
+                            if (addressSuggestions.length > 0) setShowAddressDropdown(true);
                           }}
                           placeholder="Ex. : 12 rue de la Paix"
                           autoComplete="street-address"
                         />
-                      </label>
+
+                        {/* Menu d'autocomplétion officiel Base Adresse Nationale */}
+                        {showAddressDropdown && addressSuggestions.length > 0 && (
+                          <div className="absolute left-0 right-0 top-full mt-1 z-30 max-h-60 overflow-y-auto rounded-xl border border-border bg-white shadow-xl dark:bg-slate-900 divide-y divide-border/60">
+                            {addressSuggestions.map((sugg, i) => (
+                              <button
+                                key={`${sugg.label}-${i}`}
+                                type="button"
+                                onClick={() => handleSelectSuggestion(sugg)}
+                                className="w-full text-left px-3.5 py-2.5 hover:bg-primary/10 transition-colors flex items-start gap-2.5 text-xs sm:text-sm text-foreground cursor-pointer"
+                              >
+                                <MapPin className="size-4 text-primary shrink-0 mt-0.5" />
+                                <div>
+                                  <span className="font-semibold block">{sugg.name}</span>
+                                  <span className="text-xs text-muted-foreground">
+                                    {sugg.postcode} {sugg.city}
+                                  </span>
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
 
                       <label className="space-y-1.5">
                         <span className="text-sm font-semibold">Ville d'intervention *</span>
@@ -1380,17 +1605,73 @@ function Page() {
                       </label>
                     </div>
 
+                    {/* Statut dynamique du calcul de déplacement */}
+                    {isCalculatingDistance && (
+                      <div className="rounded-xl border border-primary/20 bg-primary/5 p-3 text-xs flex items-center gap-2 text-primary font-medium animate-pulse">
+                        <Loader2 className="size-4 animate-spin shrink-0" />
+                        <span>Calcul de la distance routière estimée depuis Lille...</span>
+                      </div>
+                    )}
+
+                    {!isCalculatingDistance && travelCalculation && (
+                      <div
+                        className={`rounded-xl border p-3 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
+                          travelCalculation.fee === 0
+                            ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-900 dark:text-emerald-100"
+                            : "border-primary/30 bg-primary/10 text-[#11114E] dark:text-foreground"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 font-bold">
+                          {travelCalculation.fee === 0 ? (
+                            <>
+                              <Check className="size-4 text-emerald-600 shrink-0" />
+                              <span className="text-emerald-700 dark:text-emerald-300">
+                                Déplacement offert (0 €)
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <MapPin className="size-4 text-primary shrink-0" />
+                              <span className="text-primary font-bold">
+                                Frais de déplacement : +
+                                {travelCalculation.fee.toFixed(2).replace(".", ",")} €
+                              </span>
+                            </>
+                          )}
+                        </div>
+                        <span className="text-[11px] text-muted-foreground">
+                          {travelCalculation.label} :{" "}
+                          <strong>{travelCalculation.distanceOneWayKm} km aller</strong>
+                          {travelCalculation.fee === 0
+                            ? " (dans les 20 km de Lille)"
+                            : ` · ${(travelCalculation.distanceOneWayKm - 20).toFixed(1)} km supp. A/R à 0,50 €/km`}
+                        </span>
+                      </div>
+                    )}
+
+                    {!isCalculatingDistance && !travelCalculation && address.trim().length >= 3 && (
+                      <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-amber-900 dark:text-amber-100">
+                        <div className="flex items-center gap-2 font-semibold text-amber-800 dark:text-amber-200">
+                          <AlertCircle className="size-4 text-amber-600 shrink-0" />
+                          <span>Frais de déplacement à confirmer</span>
+                        </div>
+                        <span className="text-[11px] text-muted-foreground">
+                          Sélectionnez votre adresse dans la liste déroulante pour un calcul
+                          automatique instantané.
+                        </span>
+                      </div>
+                    )}
+
                     {/* Information conditions de déplacement */}
                     <div className="rounded-xl border border-primary/20 bg-secondary/40 p-4 text-xs space-y-1.5">
                       <div className="flex items-center gap-2 font-semibold text-foreground">
                         <MapPin className="size-4 text-primary shrink-0" />
-                        <span>Déplacement offert jusqu'à 15 km autour de Lille</span>
+                        <span>Déplacement offert jusqu'à 20 km de Lille</span>
                       </div>
                       <p className="text-muted-foreground leading-relaxed pl-6">
-                        Au-delà de 15 km, seuls les kilomètres supplémentaires sont facturés à 0,50
-                        €/km, aller-retour. Les éventuels frais de déplacement seront calculés selon
-                        l'itinéraire routier et vous seront communiqués pour accord avant validation
-                        définitive de votre réservation.
+                        Calculé depuis la Place de la République à Lille. Au-delà de 20 km, seuls
+                        les kilomètres supplémentaires sont facturés à 0,50 €/km, aller-retour. Les
+                        éventuels frais seront confirmés avec vous lors du rappel avant validation.
                       </p>
                     </div>
 
@@ -1463,12 +1744,36 @@ function Page() {
 
                       <div className="flex justify-between py-1 border-b border-border/50">
                         <span className="text-muted-foreground">Frais de déplacement :</span>
-                        <span className="font-semibold text-right">
-                          Offert jusqu'à 15 km de Lille
-                          <span className="block text-[11px] font-normal text-muted-foreground">
-                            (0,50 €/km supp. A/R au-delà si applicable)
-                          </span>
-                        </span>
+                        <div className="text-right">
+                          {travelCalculation ? (
+                            travelCalculation.fee === 0 ? (
+                              <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                                Offert (0 €)
+                                <span className="block text-[11px] font-normal text-muted-foreground">
+                                  {travelCalculation.label} : {travelCalculation.distanceOneWayKm}{" "}
+                                  km aller
+                                </span>
+                              </span>
+                            ) : (
+                              <span className="font-semibold text-primary">
+                                +{travelCalculation.fee.toFixed(2).replace(".", ",")} €
+                                <span className="block text-[11px] font-normal text-muted-foreground">
+                                  {travelCalculation.label} : {travelCalculation.distanceOneWayKm}{" "}
+                                  km aller
+                                  {" · "}
+                                  {(travelCalculation.distanceOneWayKm - 20).toFixed(1)} km supp.
+                                </span>
+                              </span>
+                            )
+                          ) : (
+                            <span className="font-semibold text-amber-600 dark:text-amber-400">
+                              À confirmer
+                              <span className="block text-[11px] font-normal text-muted-foreground">
+                                Offert jusqu'à 20 km de Lille (0,50 €/km supp. A/R au-delà)
+                              </span>
+                            </span>
+                          )}
+                        </div>
                       </div>
 
                       <div className="flex justify-between py-1 border-b border-border/50">
@@ -1507,13 +1812,22 @@ function Page() {
                           Tarif total estimé
                         </span>
                         <span className="text-xs text-muted-foreground">
-                          Hors éventuels frais de déplacement au-delà de 15 km
+                          {travelCalculation
+                            ? travelCalculation.fee === 0
+                              ? "Déplacement inclus (offert dans les 20 km)"
+                              : `Inclut ${travelCalculation.fee.toFixed(2).replace(".", ",")} € de frais de déplacement`
+                            : "Hors éventuels frais de déplacement au-delà de 20 km"}
                         </span>
                       </div>
                       <div className="text-right">
                         <span className="font-display text-4xl font-bold text-primary">
                           {total ? euro(total) : "—"}
                         </span>
+                        {!travelCalculation && address.trim() && (
+                          <span className="block text-[11px] font-medium text-amber-600 dark:text-amber-400">
+                            + frais de déplacement à confirmer
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>

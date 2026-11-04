@@ -103,9 +103,10 @@ function CGVPage() {
               .
             </p>
             <p>
-              <strong>Frais de déplacement :</strong> Le déplacement est offert jusqu'à 15 km autour
-              de Lille. Au-delà, une participation de 0,50 €/km aller-retour est facturée sur les
-              seuls kilomètres excédentaires.
+              <strong>Frais de déplacement :</strong> Le déplacement est offert jusqu'à 20 km de
+              Lille (point de départ : Place de la République). Au-delà, une participation de 0,50
+              €/km aller-retour est facturée sur les seuls kilomètres excédentaires (selon la
+              distance routière estimée).
             </p>
             <p>
               <strong>Modalités de paiement :</strong> Le règlement intervient sur place à la fin de
