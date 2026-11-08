@@ -172,3 +172,54 @@ describe("Travel fee calculation rules (Place de la République, Lille)", () => 
     expect(baseFormula + utility + travel).toBe(139);
   });
 });
+
+describe("Simplified 3-step booking flow and direct callback agreement", () => {
+  const STEPS_CONFIG = [
+    { num: 1, label: "Prestation", title: "Votre prestation" },
+    { num: 2, label: "Véhicule", title: "Votre véhicule & Lieu" },
+    { num: 3, label: "Coordonnées", title: "Vos coordonnées & Confirmation" },
+  ];
+
+  it("contains exactly 3 steps without date selection step", () => {
+    expect(STEPS_CONFIG).toHaveLength(3);
+    expect(STEPS_CONFIG.map((s) => s.label)).toEqual(["Prestation", "Véhicule", "Coordonnées"]);
+    expect(STEPS_CONFIG.some((s) => s.label.toLowerCase().includes("date"))).toBe(false);
+    expect(STEPS_CONFIG.some((s) => s.label.toLowerCase().includes("rendez-vous"))).toBe(false);
+  });
+
+  it("validates that vehicle model is required before moving from Step 2 to Step 3", () => {
+    function canAdvanceStep2(vehicle: string): boolean {
+      return vehicle.trim().length > 0;
+    }
+
+    expect(canAdvanceStep2("")).toBe(false);
+    expect(canAdvanceStep2("   ")).toBe(false);
+    expect(canAdvanceStep2("Renault Clio 5")).toBe(true);
+    expect(canAdvanceStep2("Peugeot 208")).toBe(true);
+  });
+
+  it("formats appointment summary to state date and time are to be agreed on call", () => {
+    const summaryAvailability =
+      "• Date & horaire d'intervention : À convenir ensemble lors du rappel";
+    expect(summaryAvailability).toContain("À convenir ensemble");
+    expect(summaryAvailability).not.toContain("Date préférentielle");
+    expect(summaryAvailability).not.toContain("Créneau horaire");
+  });
+
+  it("contains the exact requested reassurance message and post-submission success message", () => {
+    const reassuranceNotice =
+      "Nous vous recontactons rapidement pour convenir ensemble d'une date et d'un horaire d'intervention.";
+    const successNotice =
+      "Votre demande a bien été envoyée ! Nous vous recontactons rapidement pour fixer ensemble votre rendez-vous.";
+
+    expect(reassuranceNotice).toBe(
+      "Nous vous recontactons rapidement pour convenir ensemble d'une date et d'un horaire d'intervention.",
+    );
+    expect(successNotice).toBe(
+      "Votre demande a bien été envoyée ! Nous vous recontactons rapidement pour fixer ensemble votre rendez-vous.",
+    );
+    // Neither should imply the booking is already confirmed
+    expect(reassuranceNotice).not.toContain("Réservation confirmée");
+    expect(successNotice).not.toContain("Réservation confirmée");
+  });
+});

@@ -587,8 +587,6 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
     const safeCares = selectedCares?.length
       ? selectedCares.map((c) => escapeHtml(String(c))).join(", ")
       : "Aucun";
-    const safeDate = preferredDate?.trim() ? escapeHtml(preferredDate.trim()) : "Non sélectionnée";
-    const safeTimeSlot = timeSlot?.trim() ? escapeHtml(timeSlot.trim()) : "Flexible";
     const safeMessage = message?.trim()
       ? escapeHtml(message.trim()).replace(/\n/g, "<br>")
       : "Aucun message complémentaire.";
@@ -683,8 +681,7 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
       `Véhicule particulièrement sale : ${isVeryDirty ? "Oui (+15 €)" : "Non"}`,
       `Présence de poils d'animaux : ${hasPetHair ? "Oui (+15 €)" : "Non"}`,
       ``,
-      `Rendez-vous : ${dateChoice === "date" ? `Date souhaitée : ${preferredDate || "Non sélectionnée"}` : "À convenir ensemble"}`,
-      `Créneau horaire : ${timeSlot || "Flexible"}`,
+      `Date et horaire d'intervention : À convenir ensemble lors du rappel`,
       ``,
       `Tarif estimé : ${finalTotalDisplay}`,
       ``,
@@ -722,9 +719,8 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
       <p><strong>Particulièrement sale :</strong> ${isVeryDirty ? "Oui (+15 €)" : "Non"}</p>
       <p><strong>Poils d'animaux :</strong> ${hasPetHair ? "Oui (+15 €)" : "Non"}</p>
 
-      <h3>Disponibilité</h3>
-      <p><strong>Date :</strong> ${dateChoice === "date" ? `Date souhaitée : ${safeDate}` : "À convenir ensemble"}</p>
-      <p><strong>Créneau :</strong> ${safeTimeSlot}</p>
+      <h3>Date d'intervention</h3>
+      <p><strong>Date &amp; horaire :</strong> À convenir ensemble lors de notre rappel téléphonique</p>
 
       <h3>Tarif estimé</h3>
       <p style="font-size: 1.25rem; font-weight: bold; color: #ea580c;">${escapeHtml(finalTotalDisplay)}</p>
@@ -771,7 +767,8 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
     return new Response(
       JSON.stringify({
         success: true,
-        message: "Votre demande a bien été envoyée ! Nous vous recontacterons très rapidement.",
+        message:
+          "Votre demande a bien été envoyée ! Nous vous recontactons rapidement pour fixer ensemble votre rendez-vous.",
       }),
       {
         status: 200,

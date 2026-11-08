@@ -7,7 +7,6 @@ import {
   Check,
   Mail,
   AlertCircle,
-  Calendar,
   Sparkles,
   Car,
   MapPin,
@@ -112,21 +111,18 @@ const PARKING_CHOICES = [
   "Autre",
 ] as const;
 
-const TIME_SLOT_CHOICES = ["Flexible", "Matin", "Après-midi", "Soirée", "Week-end"] as const;
-
 const STEPS = [
   { num: 1, label: "Prestation", title: "Votre prestation", icon: Sparkles },
   { num: 2, label: "Véhicule", title: "Votre véhicule & Lieu", icon: Car },
-  { num: 3, label: "Rendez-vous", title: "Votre rendez-vous", icon: Calendar },
-  { num: 4, label: "Confirmation", title: "Coordonnées & Envoi", icon: CheckCircle2 },
+  { num: 3, label: "Coordonnées", title: "Vos coordonnées & Confirmation", icon: CheckCircle2 },
 ] as const;
 
 function Page() {
   const { formule } = Route.useSearch();
   const formTopRef = useRef<HTMLDivElement>(null);
 
-  // Étape courante (1 à 4)
-  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
+  // Étape courante (1 à 3)
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
 
   // Étape 1 : Prestation
   const [formula, setFormula] = useState(formule ?? "");
@@ -142,18 +138,13 @@ function Page() {
   const [hasWater, setHasWater] = useState(true);
   const [hasElectricity, setHasElectricity] = useState(true);
 
-  // Étape 3 : Rendez-vous & Compléments
-  const [dateChoice, setDateChoice] = useState<"calendar" | "together">("calendar");
-  const [preferredDate, setPreferredDate] = useState("");
-  const [timeSlot, setTimeSlot] = useState<string>("Flexible");
-  const [message, setMessage] = useState("");
-
-  // Étape 4 : Coordonnées
+  // Étape 3 : Coordonnées, Précisions & Confirmation
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
   const [hp, setHp] = useState("");
 
   // État autocomplétion Base Adresse Nationale & Calculateur de déplacement
@@ -356,11 +347,6 @@ function Page() {
   // Total estimé affiché
   const total = totalWithTravel !== null ? totalWithTravel : baseTotal;
 
-  const todayStr = useMemo(() => {
-    const now = new Date();
-    return now.toISOString().split("T")[0];
-  }, []);
-
   // Défilement doux vers le haut du formulaire lors du changement d'étape
   const scrollToFormTop = () => {
     if (formTopRef.current) {
@@ -385,27 +371,18 @@ function Page() {
       }
       setCurrentStep(3);
       scrollToFormTop();
-    } else if (currentStep === 3) {
-      if (dateChoice === "calendar" && !preferredDate) {
-        setStepError(
-          "Veuillez sélectionner une date souhaitée dans le calendrier ou choisir « Convenir d'une date ensemble ».",
-        );
-        return;
-      }
-      setCurrentStep(4);
-      scrollToFormTop();
     }
   };
 
   const goToPreviousStep = () => {
     setStepError("");
     if (currentStep > 1) {
-      setCurrentStep((prev) => (prev - 1) as 1 | 2 | 3 | 4);
+      setCurrentStep((prev) => (prev - 1) as 1 | 2 | 3);
       scrollToFormTop();
     }
   };
 
-  const jumpToStep = (target: 1 | 2 | 3 | 4) => {
+  const jumpToStep = (target: 1 | 2 | 3) => {
     if (target < currentStep) {
       setStepError("");
       setCurrentStep(target);
@@ -520,10 +497,7 @@ function Page() {
         : null,
       "",
       "📅 DISPONIBILITÉ :",
-      dateChoice === "calendar" && preferredDate
-        ? `• Date préférentielle : ${preferredDate}`
-        : "• Date : À convenir ensemble",
-      `• Créneau horaire : ${timeSlot}`,
+      "• Date & horaire d'intervention : À convenir ensemble lors du rappel",
       "",
       total
         ? `💰 TARIF ESTIMÉ : ${euro(total)}${
@@ -556,9 +530,6 @@ function Page() {
     selectedFormula,
     selectedCaresList,
     hasIntensiveDirt,
-    dateChoice,
-    preferredDate,
-    timeSlot,
     total,
     travelCalculation,
     message,
@@ -609,9 +580,6 @@ function Page() {
           ],
           isVeryDirty: cares.includes("poils-sale") || hasIntensiveDirt,
           hasPetHair: cares.includes("poils-sale") || hasIntensiveDirt,
-          dateChoice,
-          preferredDate: dateChoice === "calendar" ? preferredDate : undefined,
-          timeSlot,
           message: message.trim() || undefined,
           estimatedTotal: total || undefined,
           hp: hp || undefined,
@@ -628,7 +596,9 @@ function Page() {
       if (res.ok && data.success) {
         setEmailStatus({
           type: "success",
-          message: data.message ?? "Votre demande a été envoyée avec succès !",
+          message:
+            data.message ??
+            "Votre demande a bien été envoyée ! Nous vous recontactons rapidement pour fixer ensemble votre rendez-vous.",
         });
       } else {
         setEmailStatus({
@@ -782,7 +752,7 @@ function Page() {
 
                 <div className="flex items-center justify-between gap-3 mb-2">
                   <span className="text-xs font-bold uppercase tracking-wider text-primary">
-                    Étape {currentStep} sur 4
+                    Étape {currentStep} sur 3
                   </span>
                   <span className="text-xs font-medium text-muted-foreground">
                     {STEPS[currentStep - 1]?.title}
@@ -793,14 +763,14 @@ function Page() {
                 <div className="w-full bg-secondary rounded-full h-2 overflow-hidden mb-6">
                   <div
                     className="bg-primary h-full rounded-full transition-all duration-300 ease-out"
-                    style={{ width: `${(currentStep / 4) * 100}%` }}
+                    style={{ width: `${(currentStep / 3) * 100}%` }}
                   />
                 </div>
 
                 {/* Indicateurs d'étapes cliquables pour revenir en arrière */}
                 <nav
                   aria-label="Progression du formulaire"
-                  className="grid grid-cols-4 gap-2 pb-5 border-b border-border"
+                  className="grid grid-cols-3 gap-2 pb-5 border-b border-border"
                 >
                   {STEPS.map((s) => {
                     const isPassed = s.num < currentStep;
@@ -1321,158 +1291,6 @@ function Page() {
                       onClick={goToNextStep}
                       className="btn btn-primary flex-1 py-3.5 text-base justify-center shadow-sm"
                     >
-                      Continuer vers Votre rendez-vous
-                      <ArrowRight className="size-5 ml-1" />
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* ========================================================================= */}
-              {/* ÉTAPE 3 : Votre rendez-vous & Disponibilité                                */}
-              {/* ========================================================================= */}
-              {currentStep === 3 && (
-                <div className="space-y-6 animate-in fade-in duration-200">
-                  <div>
-                    <h2 className="text-3xl font-display uppercase tracking-wide">
-                      3. Votre rendez-vous
-                    </h2>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Proposez vos préférences de date et de créneau horaire.
-                    </p>
-                  </div>
-
-                  {/* Mode de date */}
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <label
-                      className={`flex items-center gap-3 rounded-xl border p-3.5 cursor-pointer text-sm font-medium transition-colors ${
-                        dateChoice === "calendar"
-                          ? "border-primary bg-secondary"
-                          : "hover:bg-secondary/40"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="dateChoice"
-                        value="calendar"
-                        checked={dateChoice === "calendar"}
-                        onChange={() => {
-                          setDateChoice("calendar");
-                          setStepError("");
-                        }}
-                        className="size-4 accent-primary"
-                      />
-                      Proposer une date préférentielle
-                    </label>
-
-                    <label
-                      className={`flex items-center gap-3 rounded-xl border p-3.5 cursor-pointer text-sm font-medium transition-colors ${
-                        dateChoice === "together"
-                          ? "border-primary bg-secondary"
-                          : "hover:bg-secondary/40"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="dateChoice"
-                        value="together"
-                        checked={dateChoice === "together"}
-                        onChange={() => {
-                          setDateChoice("together");
-                          setStepError("");
-                        }}
-                        className="size-4 accent-primary"
-                      />
-                      Convenir d'une date ensemble
-                    </label>
-                  </div>
-
-                  {/* Sélecteur de date (si calendrier) */}
-                  {dateChoice === "calendar" && (
-                    <label className="block space-y-1.5 animate-in fade-in duration-200">
-                      <span className="text-sm font-semibold flex items-center gap-1.5">
-                        <Calendar className="size-4 text-primary" />
-                        Date souhaitée *
-                      </span>
-                      <input
-                        type="date"
-                        min={todayStr}
-                        className={field}
-                        value={preferredDate}
-                        onChange={(e) => {
-                          setPreferredDate(e.target.value);
-                          setStepError("");
-                        }}
-                      />
-                    </label>
-                  )}
-
-                  {/* Créneau horaire */}
-                  <label className="block space-y-1.5">
-                    <span className="text-sm font-semibold">Créneau horaire souhaité</span>
-                    <select
-                      className={field}
-                      value={timeSlot}
-                      onChange={(e) => setTimeSlot(e.target.value)}
-                    >
-                      {TIME_SLOT_CHOICES.map((slot) => (
-                        <option key={slot} value={slot}>
-                          {slot}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-
-                  {/* Informations complémentaires */}
-                  <label className="block space-y-1.5 pt-1">
-                    <span className="text-sm font-semibold flex items-center justify-between">
-                      <span>Informations complémentaires</span>
-                      <span className="text-xs font-normal text-muted-foreground">
-                        (facultatif)
-                      </span>
-                    </span>
-                    <textarea
-                      className={field}
-                      rows={3}
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      placeholder="Précisions sur l'état de la voiture, accès particulier, code portail, questions..."
-                    />
-                  </label>
-
-                  {/* Avertissement informatif obligatoire */}
-                  <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 text-xs text-foreground/85 leading-relaxed">
-                    <p className="font-semibold text-primary mb-0.5">Information importante :</p>
-                    Votre demande ne constitue pas une réservation définitive. Nous vous
-                    recontacterons pour confirmer votre rendez-vous.
-                  </div>
-
-                  {/* Message d'erreur éventuel */}
-                  {stepError && (
-                    <p
-                      role="alert"
-                      className="text-sm font-semibold text-destructive flex items-center gap-1.5"
-                    >
-                      <AlertCircle className="size-4 shrink-0" />
-                      {stepError}
-                    </p>
-                  )}
-
-                  {/* Navigation étape 3 */}
-                  <div className="flex gap-3 pt-2">
-                    <button
-                      type="button"
-                      onClick={goToPreviousStep}
-                      className="btn btn-outline py-3.5 px-5 text-base justify-center"
-                    >
-                      <ArrowLeft className="size-4 mr-1" />
-                      Retour
-                    </button>
-                    <button
-                      type="button"
-                      onClick={goToNextStep}
-                      className="btn btn-primary flex-1 py-3.5 text-base justify-center shadow-sm"
-                    >
                       Continuer vers Vos coordonnées
                       <ArrowRight className="size-5 ml-1" />
                     </button>
@@ -1481,13 +1299,13 @@ function Page() {
               )}
 
               {/* ========================================================================= */}
-              {/* ÉTAPE 4 : Vos coordonnées, Récapitulatif & Confirmation                    */}
+              {/* ÉTAPE 3 : Vos coordonnées, Récapitulatif & Confirmation                    */}
               {/* ========================================================================= */}
-              {currentStep === 4 && (
+              {currentStep === 3 && (
                 <div className="space-y-6 animate-in fade-in duration-200">
                   <div>
                     <h2 className="text-3xl font-display uppercase tracking-wide">
-                      4. Vos coordonnées & Confirmation
+                      3. Vos coordonnées & Confirmation
                     </h2>
                     <p className="text-sm text-muted-foreground mt-1">
                       Dernière étape : indiquez où et comment vous joindre, puis transmettez votre
@@ -1694,6 +1512,23 @@ function Page() {
                         autoComplete="email"
                       />
                     </label>
+
+                    {/* Informations complémentaires */}
+                    <label className="block space-y-1.5 pt-1">
+                      <span className="text-sm font-semibold flex items-center justify-between">
+                        <span>Informations complémentaires</span>
+                        <span className="text-xs font-normal text-muted-foreground">
+                          (facultatif)
+                        </span>
+                      </span>
+                      <textarea
+                        className={field}
+                        rows={3}
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        placeholder="Précisions sur l'état de la voiture, accès particulier, code portail, questions..."
+                      />
+                    </label>
                   </div>
 
                   {/* Récapitulatif clair de la demande */}
@@ -1795,12 +1630,9 @@ function Page() {
                       )}
 
                       <div className="flex justify-between py-1 border-b border-border/50">
-                        <span className="text-muted-foreground">Date souhaitée :</span>
-                        <span className="font-semibold text-right">
-                          {dateChoice === "calendar" && preferredDate
-                            ? preferredDate
-                            : "À convenir ensemble"}{" "}
-                          — {timeSlot}
+                        <span className="text-muted-foreground">Date d'intervention :</span>
+                        <span className="font-semibold text-right text-primary">
+                          À convenir ensemble lors du rappel
                         </span>
                       </div>
                     </div>
@@ -1849,7 +1681,10 @@ function Page() {
                       <Check className="size-5 shrink-0 text-emerald-600 mt-0.5" />
                       <div>
                         <p className="font-bold">Demande envoyée avec succès !</p>
-                        <p className="text-xs opacity-90 mt-0.5">{emailStatus.message}</p>
+                        <p className="text-xs opacity-90 mt-0.5">
+                          {emailStatus.message ||
+                            "Votre demande a bien été envoyée ! Nous vous recontactons rapidement pour fixer ensemble votre rendez-vous."}
+                        </p>
                       </div>
                     </div>
                   )}
@@ -1864,14 +1699,19 @@ function Page() {
                     </div>
                   )}
 
-                  {/* Reassurance validation manuelle */}
-                  <div className="rounded-xl border border-primary/20 bg-primary/5 p-3.5 flex items-center gap-3 text-xs text-foreground/90">
-                    <CheckCircle2 className="size-4.5 text-primary shrink-0" />
-                    <p>
-                      <strong>Validation manuelle sans paiement immédiat :</strong> nous vous
-                      contactons sous 24 h pour confirmer la date. Le règlement s'effectue sur place
-                      une fois le nettoyage réalisé.
-                    </p>
+                  {/* Mention rassurante prise de rendez-vous directe */}
+                  <div className="rounded-xl border border-primary/25 bg-primary/5 p-4 flex items-start sm:items-center gap-3 text-xs sm:text-sm text-foreground/90">
+                    <CheckCircle2 className="size-5 text-primary shrink-0 mt-0.5 sm:mt-0" />
+                    <div>
+                      <p className="font-semibold text-foreground">
+                        Nous vous recontactons rapidement pour convenir ensemble d'une date et d'un
+                        horaire d'intervention.
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        Demande sans engagement &amp; sans paiement immédiat. Règlement sur place
+                        une fois le nettoyage réalisé.
+                      </p>
+                    </div>
                   </div>
 
                   {/* Boutons d'action finale */}
