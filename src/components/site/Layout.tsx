@@ -555,14 +555,19 @@ export function Footer() {
         <div className="container-site grid gap-10 py-14 md:grid-cols-3">
           <div className="space-y-3">
             <Logo light variant="horizontal" />
-            <p className="text-sm opacity-75 max-w-xs">
-              Nettoyage automobile à domicile. Intervention dans la métropole lilloise.
+            <p className="text-sm opacity-80 max-w-xs leading-relaxed">
+              Nettoyage automobile professionnel à domicile. Intervention à Lille, Wambrechies,
+              Marcq-en-Barœul, Lambersart, Bondues, La Madeleine, Roubaix, Tourcoing et toute la
+              métropole lilloise (déplacement offert jusqu'à 20 km).
             </p>
           </div>
           <div className="space-y-2 text-sm">
             <p className="font-display text-lg uppercase text-primary">Prestations</p>
             <Link to="/formules" className="block opacity-80 hover:opacity-100">
               Formules & tarifs
+            </Link>
+            <Link to="/resultats" className="block opacity-80 hover:opacity-100">
+              Résultats avant / après
             </Link>
             <Link to="/contact" className="block opacity-80 hover:opacity-100">
               Réservation & Devis
@@ -604,10 +609,9 @@ export function Footer() {
               <Instagram3DIcon className="size-4.5" />
               <span>Suivez-nous sur Instagram</span>
             </a>
-            <Link to="/entreprises" className="block opacity-80 hover:opacity-100">
-              Entreprises & Flottes
-            </Link>
-            <p className="opacity-80">{BUSINESS.area}</p>
+            <p className="opacity-80 pt-1 text-xs">
+              Zone desservie : Lille et métropole lilloise (rayon 20 km offert)
+            </p>
           </div>
         </div>
         <div className="border-t border-night-foreground/10">

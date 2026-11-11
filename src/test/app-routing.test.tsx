@@ -22,12 +22,13 @@ describe("App routing", () => {
     expect(matches.at(-1)?.routeId).not.toBe(rootRouteId);
   });
 
-  it("matches /formules, /entreprises and /contact routes", () => {
+  it("matches /formules, /entreprises, /contact and /resultats routes", () => {
     const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
 
     expect(router.matchRoutes("/formules").at(-1)?.routeId).not.toBe(rootRouteId);
     expect(router.matchRoutes("/entreprises").at(-1)?.routeId).not.toBe(rootRouteId);
     expect(router.matchRoutes("/contact").at(-1)?.routeId).not.toBe(rootRouteId);
+    expect(router.matchRoutes("/resultats").at(-1)?.routeId).not.toBe(rootRouteId);
   });
 
   it("keeps main navigation (NAV) streamlined with Accueil and Formules & tarifs", () => {
@@ -195,6 +196,20 @@ describe("SEO metadata configuration", () => {
     ).head?.();
     const contactCanonical = contactHead?.links?.find((l) => l["rel"] === "canonical");
     expect(contactCanonical?.["href"]).toBe("https://bichonnetacaisse.fr/contact");
+
+    const resultatsRoute = router.routesById["/resultats"];
+    const resultatsHead = (
+      resultatsRoute.options as unknown as {
+        head?: () => {
+          meta?: Array<Record<string, string>>;
+          links?: Array<Record<string, string>>;
+        };
+      }
+    ).head?.();
+    const resultatsCanonical = resultatsHead?.links?.find((l) => l["rel"] === "canonical");
+    expect(resultatsCanonical?.["href"]).toBe("https://bichonnetacaisse.fr/resultats");
+    const resultatsTitle = resultatsHead?.meta?.find((m) => "title" in m);
+    expect(resultatsTitle?.["title"]).toContain("Résultats avant / après");
   });
 
   it("exports BeforeAfterSection component and organizes realizations by vehicle", async () => {

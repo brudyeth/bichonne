@@ -1,10 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { Check, Clock, Sparkles, Plus, Info, PawPrint } from "lucide-react";
+import { Check, Clock, Sparkles, Plus, Info, PawPrint, X } from "lucide-react";
 import { FORMULAS, CARES, euro, INTENSIVE_DIRT_NOTICE } from "@/lib/business";
 
 export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
-  const premiumFormula = FORMULAS.find((f) => f.id === "interieur-premium");
-
   return (
     <div className="space-y-4">
       <div className="grid gap-4 sm:gap-5 md:grid-cols-3 items-stretch">
@@ -18,11 +16,11 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
               <article
                 key={f.id}
                 id={f.id}
-                className="relative flex flex-col justify-between h-full rounded-2xl bg-white text-[#11114E] border-2 border-primary ring-4 ring-primary/10 shadow-[0_12px_36px_-6px_rgba(244,119,33,0.20)] p-4 sm:p-5 lg:p-4.5 xl:p-5 transition-all duration-200 lg:-translate-y-1.5 z-10"
+                className="relative flex flex-col justify-between h-full rounded-2xl bg-white text-[#11114E] border-[2.5px] border-primary ring-4 ring-primary/20 shadow-[0_16px_40px_-8px_rgba(244,119,33,0.28)] p-4 sm:p-5 lg:p-4.5 xl:p-5 transition-all duration-200 lg:-translate-y-2 z-10"
               >
                 {/* Badge supérieur orange : LA PLUS POPULAIRE */}
                 <div className="absolute -top-3 left-5 sm:left-6">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-0.5 text-[11px] font-bold uppercase tracking-wider text-white shadow-sm">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-primary px-3.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-white shadow-md">
                     <Sparkles className="size-3" /> La plus populaire
                   </span>
                 </div>
@@ -53,30 +51,36 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
                   </p>
 
                   {/* Encadré spécial Shampoing inclus */}
-                  <div className="mt-2.5 rounded-lg bg-[#FFF6EE] border border-primary/20 py-1.5 px-2.5 text-xs font-semibold text-[#11114E] leading-snug">
-                    Shampoing des sièges et tapis{" "}
-                    <span className="text-primary font-bold">inclus</span>
+                  <div className="mt-3 rounded-xl bg-[#FFF6EE] border border-primary/25 px-3 py-2 text-xs font-semibold text-[#11114E] leading-snug">
+                    <div className="flex items-center gap-1.5">
+                      <Sparkles className="size-3.5 text-primary shrink-0" />
+                      <span>
+                        Shampoing des sièges et tapis{" "}
+                        <span className="text-primary font-bold">inclus</span>
+                      </span>
+                    </div>
                   </div>
 
-                  {/* Séparateur */}
-                  <div className="my-3 h-px w-full bg-slate-200" />
-
-                  {/* Liste des prestations incluses */}
-                  <div className="flex-1">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-primary mb-2">
+                  {/* Panneau distinct des prestations incluses */}
+                  <div className="mt-3 flex-1 rounded-xl bg-[#F6F8FC] border border-slate-200/90 border-l-2 border-l-primary/80 p-3 sm:p-3.5 shadow-2xs">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-primary mb-2.5">
                       Prestations incluses
                     </p>
-                    <ul className="space-y-1.5 text-xs sm:text-[13px]">
+                    <ul className="space-y-2 text-xs sm:text-[13px]">
                       {f.items.map((i) => {
                         const isShampoo = i.toLowerCase().includes("shampoing");
                         return (
-                          <li key={i} className="flex items-start gap-2 leading-snug">
+                          <li key={i} className="flex items-start gap-2.5 leading-snug">
                             <Check
-                              className="size-3.5 text-primary shrink-0 mt-0.5"
+                              className="size-4 text-primary shrink-0 mt-0.5"
                               strokeWidth={2.5}
                             />
                             <span
-                              className={isShampoo ? "text-[#11114E] font-bold" : "text-slate-700"}
+                              className={
+                                isShampoo
+                                  ? "text-[#11114E] font-bold"
+                                  : "text-slate-800 font-medium"
+                              }
                             >
                               {i}
                             </span>
@@ -100,7 +104,7 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
                   <Link
                     to="/contact"
                     search={{ formule: f.id }}
-                    className="btn btn-primary w-full text-xs sm:text-sm font-bold uppercase tracking-wider py-2.5"
+                    className="btn btn-primary w-full text-xs sm:text-sm font-bold uppercase tracking-wider py-3 shadow-md"
                   >
                     Choisir cette formule
                   </Link>
@@ -119,16 +123,16 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
           }
 
           if (isComplet) {
-            // CARTE BLEU NUIT : FORMULE COMPLÈTE (109 €)
+            // CARTE BLEU-GRIS CLAIR : FORMULE COMPLÈTE (109 €)
             return (
               <article
                 key={f.id}
                 id={f.id}
-                className="relative flex flex-col justify-between h-full rounded-2xl bg-[#13144d]/90 text-white border border-white/10 p-4 sm:p-5 lg:p-4.5 xl:p-5 shadow-lg transition-all duration-200"
+                className="relative flex flex-col justify-between h-full rounded-2xl bg-[#EEF2F7] text-[#11114E] border border-slate-300/80 p-4 sm:p-5 lg:p-4.5 xl:p-5 shadow-lg transition-all duration-200"
               >
                 {/* Badge supérieur : LE SOIN INTÉGRAL */}
                 <div className="absolute -top-3 left-5 sm:left-6">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-white/10 border border-white/20 px-3 py-0.5 text-[11px] font-bold uppercase tracking-wider text-white backdrop-blur-xs shadow-sm">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-[#11114E] text-white px-3 py-0.5 text-[11px] font-bold uppercase tracking-wider shadow-sm">
                     Soin intégral
                   </span>
                 </div>
@@ -136,7 +140,7 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
                 <div className="flex-1 flex flex-col">
                   {/* En-tête : Nom, Prix & Durée */}
                   <div className="space-y-1.5 pt-1">
-                    <h3 className="font-display text-lg sm:text-xl font-bold uppercase tracking-wide leading-tight text-white">
+                    <h3 className="font-display text-lg sm:text-xl font-bold uppercase tracking-wide leading-tight text-[#11114E]">
                       {f.name}
                     </h3>
 
@@ -144,34 +148,31 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
                       <span className="font-display text-3xl sm:text-4xl lg:text-[42px] font-bold text-primary tracking-tight leading-none">
                         {euro(f.price)}
                       </span>
-                      <span className="text-xs font-semibold text-white/70">/ véhicule</span>
+                      <span className="text-xs font-semibold text-slate-500">/ véhicule</span>
                     </div>
 
-                    <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-white/80">
+                    <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-600">
                       <Clock className="size-3.5 text-primary shrink-0" />
                       <span>Durée estimée : {f.duration}</span>
                     </div>
                   </div>
 
                   {/* Description courte */}
-                  <p className="mt-2 text-xs sm:text-[13px] leading-relaxed text-white/80">
+                  <p className="mt-2 text-xs sm:text-[13px] leading-relaxed text-slate-600">
                     {f.short}
                   </p>
 
-                  {/* Séparateur */}
-                  <div className="my-3 h-px w-full bg-white/10" />
-
-                  {/* Deux blocs distincts aérés sans pavé dense */}
-                  <div className="space-y-2 flex-1">
-                    <div className="rounded-lg bg-white/[0.05] border border-white/10 p-2.5 space-y-1">
-                      <div className="flex items-center gap-1.5">
-                        <Check className="size-3.5 text-primary shrink-0" strokeWidth={2.5} />
-                        <p className="font-display text-[11px] font-bold uppercase tracking-wider text-primary">
+                  {/* Panneaux distincts des prestations Formule Complète */}
+                  <div className="mt-3 space-y-2.5 flex-1">
+                    <div className="rounded-xl bg-white border border-slate-300/70 border-l-2 border-l-primary/80 p-3 space-y-1.5 shadow-2xs">
+                      <div className="flex items-center gap-2">
+                        <Check className="size-4 text-primary shrink-0" strokeWidth={2.5} />
+                        <p className="font-display text-xs font-bold uppercase tracking-wider text-primary">
                           Intégralité d'Intérieur Premium
                         </p>
                       </div>
-                      <p className="text-[11px] text-white/80 leading-snug pl-5">
-                        Aspiration complète, shampoing sièges & tapis, plastiques, vitres
+                      <p className="text-xs text-slate-700 leading-snug pl-6">
+                        Aspiration complète, shampoing sièges &amp; tapis, plastiques, vitres
                         intérieures et traitement anti-odeur.
                       </p>
                     </div>
@@ -182,26 +183,38 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
                       </span>
                     </div>
 
-                    <div className="rounded-lg bg-white/[0.05] border border-white/10 p-2.5 space-y-1">
-                      <p className="font-display text-[11px] font-bold uppercase tracking-wider text-white">
-                        Prestations carrosserie & extérieur
+                    <div className="rounded-xl bg-white border border-slate-300/70 border-l-2 border-l-primary/80 p-3 space-y-2 shadow-2xs">
+                      <p className="font-display text-[11px] font-bold uppercase tracking-wider text-[#11114E]">
+                        Prestations carrosserie &amp; extérieur
                       </p>
-                      <ul className="space-y-1 text-xs text-white/85">
-                        <li className="flex items-center gap-2">
-                          <Check className="size-3.5 text-primary shrink-0" strokeWidth={2.5} />
-                          <span>Prélavage à la mousse active</span>
+                      <ul className="space-y-2 text-xs sm:text-[13px] text-[#11114E]">
+                        <li className="flex items-start gap-2.5 leading-snug">
+                          <Check
+                            className="size-4 text-primary shrink-0 mt-0.5"
+                            strokeWidth={2.5}
+                          />
+                          <span className="font-medium">Prélavage à la mousse active</span>
                         </li>
-                        <li className="flex items-center gap-2">
-                          <Check className="size-3.5 text-primary shrink-0" strokeWidth={2.5} />
-                          <span>Lavage manuel de la carrosserie</span>
+                        <li className="flex items-start gap-2.5 leading-snug">
+                          <Check
+                            className="size-4 text-primary shrink-0 mt-0.5"
+                            strokeWidth={2.5}
+                          />
+                          <span className="font-medium">Lavage manuel de la carrosserie</span>
                         </li>
-                        <li className="flex items-center gap-2">
-                          <Check className="size-3.5 text-primary shrink-0" strokeWidth={2.5} />
-                          <span>Nettoyage soigné des jantes</span>
+                        <li className="flex items-start gap-2.5 leading-snug">
+                          <Check
+                            className="size-4 text-primary shrink-0 mt-0.5"
+                            strokeWidth={2.5}
+                          />
+                          <span className="font-medium">Nettoyage soigné des jantes</span>
                         </li>
-                        <li className="flex items-center gap-2">
-                          <Check className="size-3.5 text-primary shrink-0" strokeWidth={2.5} />
-                          <span>Rinçage et séchage microfibre</span>
+                        <li className="flex items-start gap-2.5 leading-snug">
+                          <Check
+                            className="size-4 text-primary shrink-0 mt-0.5"
+                            strokeWidth={2.5}
+                          />
+                          <span className="font-medium">Rinçage et séchage microfibre</span>
                         </li>
                       </ul>
                     </div>
@@ -209,19 +222,19 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
 
                   {/* Notice en cas de salissures intensives */}
                   {f.notice && (
-                    <div className="mt-2.5 flex items-start gap-1.5 text-[11px] leading-tight text-white/60">
+                    <div className="mt-2.5 flex items-start gap-1.5 text-[11px] leading-tight text-slate-500">
                       <Info className="size-3.5 text-primary shrink-0 mt-0.5" />
                       <p>{f.notice}</p>
                     </div>
                   )}
                 </div>
 
-                {/* Bouton sombre avec bordure fine */}
+                {/* Bouton sombre contrasté */}
                 <div className="mt-4 pt-1 space-y-1.5">
                   <Link
                     to="/contact"
                     search={{ formule: f.id }}
-                    className="btn border border-white/20 bg-white/[0.06] text-white hover:bg-white/10 w-full text-xs sm:text-sm font-bold uppercase tracking-wider py-2.5"
+                    className="btn bg-[#11114E] text-white hover:bg-[#11114E]/90 w-full text-xs sm:text-sm font-bold uppercase tracking-wider py-3 shadow-sm transition-colors"
                   >
                     Choisir cette formule
                   </Link>
@@ -229,7 +242,7 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
                     <Link
                       to="/formules"
                       hash={f.id}
-                      className="block text-center text-[11px] font-semibold text-white/70 hover:text-white hover:underline"
+                      className="block text-center text-[11px] font-semibold text-slate-500 hover:text-[#11114E] hover:underline"
                     >
                       Voir les détails complets
                     </Link>
@@ -239,17 +252,17 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
             );
           }
 
-          // CARTE BLEU NUIT : INTÉRIEUR EXPRESS (49 €)
+          // CARTE BLEU-GRIS CLAIR : INTÉRIEUR EXPRESS (49 €)
           return (
             <article
               key={f.id}
               id={f.id}
-              className="relative flex flex-col justify-between h-full rounded-2xl bg-[#13144d]/90 text-white border border-white/10 p-4 sm:p-5 lg:p-4.5 xl:p-5 shadow-lg transition-all duration-200"
+              className="relative flex flex-col justify-between h-full rounded-2xl bg-[#EEF2F7] text-[#11114E] border border-slate-300/80 p-4 sm:p-5 lg:p-4.5 xl:p-5 shadow-lg transition-all duration-200"
             >
               <div className="flex-1 flex flex-col">
                 {/* En-tête : Nom, Prix & Durée */}
                 <div className="space-y-1.5 pt-1">
-                  <h3 className="font-display text-lg sm:text-xl font-bold uppercase tracking-wide leading-tight text-white">
+                  <h3 className="font-display text-lg sm:text-xl font-bold uppercase tracking-wide leading-tight text-[#11114E]">
                     {f.name}
                   </h3>
 
@@ -257,48 +270,58 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
                     <span className="font-display text-3xl sm:text-4xl lg:text-[42px] font-bold text-primary tracking-tight leading-none">
                       {euro(f.price)}
                     </span>
-                    <span className="text-xs font-semibold text-white/70">/ véhicule</span>
+                    <span className="text-xs font-semibold text-slate-500">/ véhicule</span>
                   </div>
 
-                  <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-white/80">
+                  <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-600">
                     <Clock className="size-3.5 text-primary shrink-0" />
                     <span>Durée estimée : {f.duration}</span>
                   </div>
                 </div>
 
                 {/* Description courte */}
-                <p className="mt-2 text-xs sm:text-[13px] leading-relaxed text-white/80">
+                <p className="mt-2 text-xs sm:text-[13px] leading-relaxed text-slate-600">
                   {f.short}
                 </p>
 
-                {/* Séparateur */}
-                <div className="my-3 h-px w-full bg-white/10" />
+                {/* Repère de comparaison avec le Premium */}
+                <div className="mt-3 rounded-xl bg-white/80 border border-slate-300/70 border-l-2 border-l-primary p-3 text-left space-y-1.5 shadow-2xs">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-primary">
+                    En plus avec le Premium
+                  </p>
+                  <div className="flex items-center gap-2 text-xs text-slate-600">
+                    <X className="size-3.5 text-slate-400 shrink-0" strokeWidth={2.5} />
+                    <span className="line-through text-slate-500 font-medium">
+                      Shampouinage des sièges et tapis
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-600 font-semibold pl-5.5">
+                    Inclus dans Intérieur Premium — 69 €
+                  </p>
+                </div>
 
-                {/* Liste des prestations incluses */}
-                <div className="flex-1">
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-primary mb-2">
+                {/* Panneau distinct des prestations incluses */}
+                <div className="mt-3 flex-1 rounded-xl bg-white border border-slate-300/70 border-l-2 border-l-primary/80 p-3 sm:p-3.5 shadow-2xs">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-primary mb-2.5">
                     Prestations incluses
                   </p>
-                  <ul className="space-y-1.5 text-xs sm:text-[13px]">
+                  <ul className="space-y-2 text-xs sm:text-[13px]">
                     {f.items.map((i) => (
-                      <li key={i} className="flex items-start gap-2 leading-snug">
-                        <Check
-                          className="size-3.5 text-primary shrink-0 mt-0.5"
-                          strokeWidth={2.5}
-                        />
-                        <span className="text-white/90">{i}</span>
+                      <li key={i} className="flex items-start gap-2.5 leading-snug">
+                        <Check className="size-4 text-primary shrink-0 mt-0.5" strokeWidth={2.5} />
+                        <span className="text-[#11114E] font-medium">{i}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
               </div>
 
-              {/* Bouton sombre avec bordure fine */}
+              {/* Bouton sombre contrasté */}
               <div className="mt-4 pt-1 space-y-1.5">
                 <Link
                   to="/contact"
                   search={{ formule: f.id }}
-                  className="btn border border-white/20 bg-white/[0.06] text-white hover:bg-white/10 w-full text-xs sm:text-sm font-bold uppercase tracking-wider py-2.5"
+                  className="btn bg-[#11114E] text-white hover:bg-[#11114E]/90 w-full text-xs sm:text-sm font-bold uppercase tracking-wider py-3 shadow-sm transition-colors"
                 >
                   Choisir cette formule
                 </Link>
@@ -306,7 +329,7 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
                   <Link
                     to="/formules"
                     hash={f.id}
-                    className="block text-center text-[11px] font-semibold text-white/70 hover:text-white hover:underline"
+                    className="block text-center text-[11px] font-semibold text-slate-500 hover:text-[#11114E] hover:underline"
                   >
                     Voir les détails complets
                   </Link>

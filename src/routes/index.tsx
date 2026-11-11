@@ -1,21 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import {
-  Home,
-  Receipt,
   MessageCircle,
-  MapPin,
   Phone,
-  Car,
   ArrowRight,
   Sparkles,
+  MapPin,
+  Clock,
+  ShieldCheck,
   Check,
+  CheckCircle2,
+  Calendar,
 } from "lucide-react";
 import heroDetailingWebp from "@/assets/hero-detailing.webp";
 import heroDetailingPng from "@/assets/hero-detailing.png";
-import { FormulaCards, CareCards } from "@/components/site/Cards";
-import { BeforeAfterSection } from "@/components/site/BeforeAfterSection";
-import { FaqSection, FAQ_ITEMS } from "@/components/site/FaqSection";
-import { ContactBand } from "@/components/site/Layout";
+import { FormulaCards } from "@/components/site/Cards";
 import { BUSINESS, whatsappLink } from "@/lib/business";
 
 const LOCAL_BUSINESS_SCHEMA = {
@@ -101,18 +100,6 @@ const LOCAL_BUSINESS_SCHEMA = {
       },
     },
     {
-      "@type": "FAQPage",
-      "@id": "https://bichonnetacaisse.fr/#faq",
-      mainEntity: FAQ_ITEMS.map((item) => ({
-        "@type": "Question",
-        name: item.question,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: typeof item.answer === "string" ? item.answer : "",
-        },
-      })),
-    },
-    {
       "@type": "WebSite",
       "@id": "https://bichonnetacaisse.fr/#website",
       url: "https://bichonnetacaisse.fr/",
@@ -179,46 +166,56 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const REASSURANCE = [
+// 3 exemples phares authentiques issus de nos réalisations réelles
+const FEATURED_RESULTS = [
   {
-    icon: Home,
-    title: "Intervention à domicile",
-    subtitle: "CHEZ VOUS OU AU TRAVAIL",
-    text: "Chez vous ou sur votre lieu de travail dans la métropole lilloise : vous gagnez du temps sans vous déplacer.",
+    id: "poste-conduite",
+    vehicle: "Peugeot 208",
+    title: "Poste de conduite",
+    subtitle: "Tableau de bord, volant & console centrale",
+    description:
+      "Dépoussiérage, dégraissage minutieux des aérateurs et rénovation satinée des plastiques intérieurs.",
+    beforeWebp: "/assets/before-after/208-poste-conduite-avant.webp",
+    beforeJpg: "/assets/before-after/208-poste-conduite-avant.jpg",
+    afterWebp: "/assets/before-after/208-poste-conduite-apres.webp",
+    afterJpg: "/assets/before-after/208-poste-conduite-apres.jpg",
+    altBefore: "Poste de conduite Peugeot 208 avant nettoyage intérieur à domicile à Lille",
+    altAfter: "Poste de conduite Peugeot 208 après nettoyage intérieur à domicile à Lille",
   },
   {
-    icon: Sparkles,
-    title: "Nettoyage approfondi",
-    subtitle: "SHAMPOING SIÈGES INCLUS",
-    text: "Aspiration minutieuse, rénovation des plastiques et shampoing en profondeur des sièges et moquettes.",
+    id: "tapis-conducteur",
+    vehicle: "Peugeot 208",
+    title: "Tapis conducteur",
+    subtitle: "Extraction textile & élimination des gravillons",
+    description:
+      "Aspiration haute dépression et brossage mécanique des fibres pour désincruster la terre séchée.",
+    beforeWebp: "/assets/before-after/208-tapis-conducteur-avant.webp",
+    beforeJpg: "/assets/before-after/208-tapis-conducteur-avant.jpg",
+    afterWebp: "/assets/before-after/208-tapis-conducteur-apres.webp",
+    afterJpg: "/assets/before-after/208-tapis-conducteur-apres.jpg",
+    altBefore: "Tapis conducteur Peugeot 208 avant brossage et aspiration textile",
+    altAfter: "Tapis conducteur Peugeot 208 après brossage et aspiration textile",
   },
   {
-    icon: Receipt,
-    title: "Tarifs transparents",
-    subtitle: "MÊME PRIX POUR TOUS",
-    text: "Des prix fixes et identiques pour citadine, berline ou SUV. Aucun coût caché.",
+    id: "pedalier-clio",
+    vehicle: "Renault Clio 5",
+    title: "Pédalier & Moquette",
+    subtitle: "Moquette conducteur, pédales & seuil",
+    description:
+      "Aspiration profonde des fibres textiles, élimination des poils et dégraissage intégral du pédalier.",
+    beforeWebp: "/assets/before-after/pedalier-avant.webp",
+    beforeJpg: "/assets/before-after/pedalier-avant.jpg",
+    afterWebp: "/assets/before-after/pedalier-apres.webp",
+    afterJpg: "/assets/before-after/pedalier-apres.jpg",
+    altBefore: "Pédalier et moquette Renault Clio 5 avant nettoyage automobile à domicile",
+    altAfter: "Pédalier et moquette Renault Clio 5 après nettoyage automobile à domicile",
   },
-  {
-    icon: MapPin,
-    title: "Déplacement offert",
-    subtitle: "JUSQU'À 20 KM DE LILLE",
-    text: "Offert jusqu'à 20 km de Lille (Place de la République). Au-delà, 0,50 €/km supplémentaire aller-retour.",
-  },
-];
-
-const COMMUNES = [
-  "Lille",
-  "Wambrechies",
-  "Lambersart",
-  "Marcq-en-Barœul",
-  "Bondues",
-  "La Madeleine",
-  "Tourcoing",
-  "Roubaix",
-  "et communes voisines",
 ];
 
 function Index() {
+  const [selectedResultIndex, setSelectedResultIndex] = useState(0);
+  const activeResult = FEATURED_RESULTS[selectedResultIndex] ?? FEATURED_RESULTS[0];
+
   return (
     <>
       <script
@@ -226,9 +223,11 @@ function Index() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(LOCAL_BUSINESS_SCHEMA) }}
       />
 
-      {/* SECTION 1 : HERO REPRODUCTION FIDÈLE LOVABLE (Bleu nuit profond avec halos diffus et composition asymétrique) */}
-      <section className="relative overflow-hidden bg-[#11114E] text-white pt-20 sm:pt-[96px] md:pt-24 pb-10 sm:pb-12 md:pb-14">
-        {/* Halos lumineux profonds et subtils */}
+      {/* ========================================================================= */}
+      {/* 1. PRÉSENTATION : HERO & BÉNÉFICES CLÉS                                   */}
+      {/* ========================================================================= */}
+      <section className="relative overflow-hidden bg-[#11114E] text-white pt-20 sm:pt-24 md:pt-26 pb-12 sm:pb-14 md:pb-16">
+        {/* Halos lumineux subtils */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute -top-24 -right-24 size-[620px] sm:size-[760px] lg:size-[900px] rounded-full bg-[#2a44a6]/25 blur-[150px] sm:blur-[180px]"
@@ -239,384 +238,357 @@ function Index() {
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute top-[25%] left-[8%] size-[300px] sm:size-[380px] rounded-full bg-[#F47721]/[0.06] blur-[110px] sm:blur-[130px]"
+          className="pointer-events-none absolute top-[30%] left-[8%] size-[300px] sm:size-[380px] rounded-full bg-[#F47721]/[0.06] blur-[110px]"
         />
-        {/* Texture de grain tactile fine */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 bg-noise opacity-12 mix-blend-overlay"
         />
 
-        {/* ZONE DROITE IMMERSIVE DESKTOP : Fusion organique par masque de transparence multi-points, sans dégradé opaque rapporté */}
+        {/* Image hero desktop avec fusion organique en fondu */}
         <div
           aria-hidden="true"
-          className="hidden lg:block absolute right-0 top-0 bottom-0 w-[58%] xl:w-[62%] 2xl:w-[65%] pointer-events-none select-none z-0"
+          className="hidden lg:block absolute right-0 top-0 bottom-0 w-[56%] xl:w-[60%] pointer-events-none select-none z-0"
           style={{
             maskImage:
-              "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.01) 10%, rgba(0,0,0,0.05) 20%, rgba(0,0,0,0.16) 32%, rgba(0,0,0,0.38) 46%, rgba(0,0,0,0.68) 60%, rgba(0,0,0,0.9) 74%, rgba(0,0,0,0.98) 88%, black 100%)",
+              "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.02) 12%, rgba(0,0,0,0.2) 28%, rgba(0,0,0,0.55) 45%, rgba(0,0,0,0.85) 62%, black 100%)",
             WebkitMaskImage:
-              "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.01) 10%, rgba(0,0,0,0.05) 20%, rgba(0,0,0,0.16) 32%, rgba(0,0,0,0.38) 46%, rgba(0,0,0,0.68) 60%, rgba(0,0,0,0.9) 74%, rgba(0,0,0,0.98) 88%, black 100%)",
+              "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.02) 12%, rgba(0,0,0,0.2) 28%, rgba(0,0,0,0.55) 45%, rgba(0,0,0,0.85) 62%, black 100%)",
           }}
         >
-          <div
-            className="size-full"
-            style={{
-              maskImage:
-                "radial-gradient(ellipse 100% 92% at 75% 48%, black 50%, rgba(0,0,0,0.94) 66%, rgba(0,0,0,0.72) 80%, rgba(0,0,0,0.28) 92%, transparent 100%)",
-              WebkitMaskImage:
-                "radial-gradient(ellipse 100% 92% at 75% 48%, black 50%, rgba(0,0,0,0.94) 66%, rgba(0,0,0,0.72) 80%, rgba(0,0,0,0.28) 92%, transparent 100%)",
-            }}
-          >
-            <div
-              className="size-full"
-              style={{
-                maskImage:
-                  "linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.96) 8%, black 20%, black 72%, rgba(0,0,0,0.9) 82%, rgba(0,0,0,0.45) 92%, transparent 100%)",
-                WebkitMaskImage:
-                  "linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.96) 8%, black 20%, black 72%, rgba(0,0,0,0.9) 82%, rgba(0,0,0,0.45) 92%, transparent 100%)",
-              }}
-            >
-              <picture className="size-full">
-                <source type="image/webp" srcSet={heroDetailingWebp} />
-                <img
-                  src={heroDetailingPng}
-                  alt="Matériel de detailing automobile professionnel Bichonne ta Caisse avec microfibre brodée, flacon de soin et carrosserie au soleil"
-                  width={1672}
-                  height={941}
-                  loading="eager"
-                  fetchPriority="high"
-                  decoding="async"
-                  className="size-full object-cover object-[66%_48%]"
-                  style={{
-                    filter: "contrast(1.04) brightness(1.12) saturate(1.04)",
-                  }}
-                />
-              </picture>
-            </div>
-          </div>
+          <picture className="size-full">
+            <source type="image/webp" srcSet={heroDetailingWebp} />
+            <img
+              src={heroDetailingPng}
+              alt="Matériel de detailing automobile professionnel Bichonne ta Caisse avec microfibre, flacon et carrosserie soignée"
+              width={1672}
+              height={941}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              className="size-full object-cover object-[68%_48%]"
+              style={{ filter: "contrast(1.04) brightness(1.1) saturate(1.04)" }}
+            />
+          </picture>
         </div>
 
         <div className="container-site relative z-10">
-          {/* Colonne gauche (desktop) / Contenu principal (mobile) */}
-          <div className="max-w-xl lg:max-w-2xl lg:w-[52%] xl:w-[48%] space-y-4 sm:space-y-4.5 animate-rise">
-            {/* Petit surtitre orange précédé d'un trait horizontal */}
+          <div className="max-w-xl lg:max-w-2xl lg:w-[54%] space-y-5 animate-rise">
+            {/* Surtitre local */}
             <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest">
               <span className="w-6 h-[2px] bg-primary"></span>
-              <span>Lille & Métropole lilloise</span>
+              <span>Lille &amp; Métropole lilloise • À domicile</span>
             </div>
 
-            {/* Grand titre blanc compact avec À LILLE en orange */}
-            <h1 className="text-3xl sm:text-4xl lg:text-[46px] xl:text-[52px] font-display font-bold uppercase tracking-tight leading-[1.02] text-white">
+            {/* Titre principal */}
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold uppercase tracking-tight leading-[1.03] text-white">
               Nettoyage automobile
               <br />à domicile <span className="text-primary">à Lille</span> et
               <br />
               métropole lilloise
             </h1>
 
-            {/* Paragraphe commercial court */}
-            <p className="text-sm sm:text-base text-white/85 leading-relaxed max-w-lg">
-              Nous venons chez vous ou au travail avec tout le matériel. Notre spécialité :
-              l'intérieur en profondeur, sièges et tapis shampouinés.
+            {/* Paragraphe explicatif clair */}
+            <p className="text-sm sm:text-base text-white/90 leading-relaxed max-w-lg">
+              Nous venons directement chez vous ou sur votre lieu de travail avec tout le matériel
+              professionnel. Notre spécialité : l'intérieur en profondeur, sièges et moquettes
+              shampouinés, finitions soignées sans que vous ayez à vous déplacer.
             </p>
 
-            {/* IMMERSION MOBILE & TABLETTE : Fusion organique sans cadre, coins adoucis et transparence naturelle */}
-            <div
-              className="lg:hidden relative -mx-4 sm:-mx-6 w-[calc(100%+2rem)] sm:w-[calc(100%+3rem)] max-w-none aspect-[16/10] sm:aspect-[16/9] my-4 sm:my-5"
-              style={{
-                maskImage:
-                  "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.18) 5%, rgba(0,0,0,0.6) 12%, rgba(0,0,0,0.92) 20%, black 28%, black 74%, rgba(0,0,0,0.9) 82%, rgba(0,0,0,0.45) 92%, transparent 100%)",
-                WebkitMaskImage:
-                  "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.18) 5%, rgba(0,0,0,0.6) 12%, rgba(0,0,0,0.92) 20%, black 28%, black 74%, rgba(0,0,0,0.9) 82%, rgba(0,0,0,0.45) 92%, transparent 100%)",
-              }}
-            >
-              <div
-                className="size-full"
-                style={{
-                  maskImage:
-                    "radial-gradient(ellipse 100% 92% at 65% 52%, black 54%, rgba(0,0,0,0.92) 70%, rgba(0,0,0,0.55) 85%, rgba(0,0,0,0.18) 95%, transparent 100%)",
-                  WebkitMaskImage:
-                    "radial-gradient(ellipse 100% 92% at 65% 52%, black 54%, rgba(0,0,0,0.92) 70%, rgba(0,0,0,0.55) 85%, rgba(0,0,0,0.18) 95%, transparent 100%)",
-                }}
-              >
-                <picture className="size-full">
-                  <source type="image/webp" srcSet={heroDetailingWebp} />
-                  <img
-                    src={heroDetailingPng}
-                    alt="Matériel de detailing automobile professionnel Bichonne ta Caisse avec microfibre brodée, flacon de soin et carrosserie au soleil"
-                    width={1672}
-                    height={941}
-                    loading="eager"
-                    fetchPriority="high"
-                    decoding="async"
-                    className="size-full object-cover object-[66%_52%]"
-                    style={{
-                      filter: "contrast(1.04) brightness(1.12) saturate(1.04)",
-                    }}
-                  />
-                </picture>
-              </div>
+            {/* Photo d'immersion mobile */}
+            <div className="lg:hidden relative -mx-4 sm:-mx-6 aspect-[16/10] my-3 overflow-hidden rounded-xl">
+              <picture className="size-full">
+                <source type="image/webp" srcSet={heroDetailingWebp} />
+                <img
+                  src={heroDetailingPng}
+                  alt="Nettoyage automobile professionnel à domicile à Lille"
+                  width={1200}
+                  height={750}
+                  loading="eager"
+                  className="size-full object-cover object-center"
+                />
+              </picture>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#11114E] via-transparent to-transparent opacity-80" />
             </div>
 
-            {/* Deux cartes d'avantages côte à côte */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 pt-0.5 max-w-xl">
-              {/* Carte avantage 1 */}
-              <div className="rounded-xl border border-white/10 bg-white/[0.05] p-3 flex items-start gap-2.5 backdrop-blur-xs">
-                <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-white/10 text-primary">
-                  <Sparkles className="size-4" />
-                </span>
-                <div className="text-left leading-tight">
-                  <p className="text-xs sm:text-sm font-bold text-white">Dès 49 €</p>
-                  <p className="text-[11px] text-white/70 mt-0.5">
-                    Intérieur express, premium ou complet
-                  </p>
-                </div>
-              </div>
-
-              {/* Carte avantage 2 */}
-              <div className="rounded-xl border border-white/10 bg-white/[0.05] p-3 flex items-start gap-2.5 backdrop-blur-xs">
-                <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-white/10 text-primary">
-                  <MapPin className="size-4" />
-                </span>
-                <div className="text-left leading-tight">
-                  <p className="text-xs sm:text-sm font-bold text-white">Déplacement offert</p>
-                  <p className="text-[11px] text-white/70 mt-0.5">Jusqu'à 20 km de Lille</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Boutons d'action */}
-            <div className="flex flex-wrap items-center gap-3 pt-1.5">
+            {/* Boutons d'action prioritaires dès le haut de page */}
+            <div className="flex flex-wrap items-center gap-3 pt-1">
               <Link
                 to="/contact"
-                className="btn btn-primary text-xs sm:text-sm px-5 sm:px-6 py-2.5 sm:py-3"
+                className="btn btn-primary text-xs sm:text-sm px-5 sm:px-6 py-3 font-bold uppercase tracking-wider shadow-lg"
               >
-                <span>Réserver mon nettoyage</span>
+                <span>Demander un devis gratuit</span>
                 <ArrowRight className="size-4" />
               </Link>
-              <Link
-                to="/formules"
-                className="btn border border-white/20 bg-white/[0.04] text-white hover:bg-white/10 text-xs sm:text-sm font-bold uppercase tracking-wider px-4 sm:px-5 py-2.5 sm:py-3"
+              <a
+                href="#formules"
+                className="btn border border-white/20 bg-white/[0.06] text-white hover:bg-white/12 text-xs sm:text-sm font-bold uppercase tracking-wider px-4 sm:px-5 py-3"
               >
-                Découvrir les formules
-              </Link>
+                Voir nos formules
+              </a>
             </div>
 
-            {/* Lien WhatsApp discret */}
-            <div className="pt-0.5">
+            {/* Raccourcis directs téléphone & WhatsApp */}
+            <div className="flex flex-wrap items-center gap-4 text-xs text-white/80 pt-0.5">
+              <a
+                href={BUSINESS.phoneTel}
+                className="inline-flex items-center gap-2 hover:text-white transition-colors"
+              >
+                <Phone className="size-3.5 text-primary" />
+                <span className="font-semibold text-white">{BUSINESS.phoneDisplay}</span>
+              </a>
+              <span className="text-white/30">•</span>
               <a
                 href={whatsappLink()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-xs text-white/80 hover:text-white transition-colors"
+                className="inline-flex items-center gap-2 hover:text-white transition-colors"
               >
                 <MessageCircle className="size-3.5 text-whatsapp" />
-                <span>Une question ? Écrivez-nous sur WhatsApp</span>
+                <span>WhatsApp direct</span>
               </a>
+            </div>
+
+            {/* 4 bénéfices très courts intégrés à la présentation */}
+            <div className="pt-4 border-t border-white/12 grid grid-cols-2 gap-3 text-xs sm:text-[13px]">
+              <div className="flex items-start gap-2 text-white/90">
+                <Check className="size-4 text-primary shrink-0 mt-0.5" strokeWidth={2.5} />
+                <span>
+                  <strong>À domicile ou au travail</strong>
+                  <span className="block text-white/70 text-[11px]">Zéro contrainte</span>
+                </span>
+              </div>
+              <div className="flex items-start gap-2 text-white/90">
+                <Check className="size-4 text-primary shrink-0 mt-0.5" strokeWidth={2.5} />
+                <span>
+                  <strong>Shampoing sièges inclus</strong>
+                  <span className="block text-white/70 text-[11px]">Injection / extraction</span>
+                </span>
+              </div>
+              <div className="flex items-start gap-2 text-white/90">
+                <Check className="size-4 text-primary shrink-0 mt-0.5" strokeWidth={2.5} />
+                <span>
+                  <strong>Même tarif pour tous</strong>
+                  <span className="block text-white/70 text-[11px]">Citadine, berline ou SUV</span>
+                </span>
+              </div>
+              <div className="flex items-start gap-2 text-white/90">
+                <Check className="size-4 text-primary shrink-0 mt-0.5" strokeWidth={2.5} />
+                <span>
+                  <strong>Déplacement offert</strong>
+                  <span className="block text-white/70 text-[11px]">Jusqu'à 20 km de Lille</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 2. FORMULES : TARIFS CLAIRS SANS MODIFICATION (49 €, 69 €, 109 €)        */}
+      {/* ========================================================================= */}
+      <section
+        id="formules"
+        className="relative overflow-hidden bg-[#11114E] text-white py-12 sm:py-14 md:py-16 border-t border-white/10"
+        aria-labelledby="formulas-heading"
+      >
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -top-20 -left-20 size-[650px] rounded-full bg-[#243888]/20 blur-[150px]"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute bottom-0 right-0 size-[600px] rounded-full bg-[#282A74]/20 blur-[150px]"
+        />
+
+        <div className="container-site relative z-10">
+          <div className="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-1.5">
+                <span className="w-6 h-[2px] bg-primary"></span>
+                <span>Nos formules de nettoyage</span>
+              </div>
+              <h2
+                id="formulas-heading"
+                className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold uppercase tracking-tight text-white"
+              >
+                Des formules transparentes et adaptées
+              </h2>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-white/85">
+              <CheckCircle2 className="size-4 text-primary shrink-0" />
+              <span>Tarif unique pour citadine, berline et SUV • Aucun frais caché</span>
             </div>
           </div>
 
-          {/* Bas du hero : Bandeau discret "Plusieurs voitures à la maison ?" */}
-          <div className="mt-8 sm:mt-11 pt-4 sm:pt-5 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          {/* Cartes officielles des 3 formules (49 €, 69 €, 109 €) */}
+          <FormulaCards />
+
+          {/* Rappel concis déplacement + lien vers soins ciblés */}
+          <div className="mt-6 rounded-xl border border-white/12 bg-white/[0.04] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs sm:text-sm text-white/85">
             <div className="flex items-center gap-2.5">
-              <Car className="size-4.5 text-primary shrink-0" />
-              <p className="text-xs sm:text-sm text-white/90">
-                <strong className="text-white font-bold">Plusieurs voitures à la maison ?</strong>{" "}
-                Demandez un devis personnalisé pour toute la famille.
-              </p>
+              <MapPin className="size-4 text-primary shrink-0" />
+              <span>
+                <strong>Déplacement offert jusqu'à 20 km de Lille</strong> (Place de la République).
+                Au-delà : 0,50 €/km supplémentaire aller-retour.
+              </span>
             </div>
             <Link
-              to="/contact"
-              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-primary hover:text-white transition-colors shrink-0"
+              to="/formules"
+              hash="soins-cibles"
+              className="text-primary font-bold hover:underline shrink-0 flex items-center gap-1"
             >
-              <span>Demander un devis</span>
+              <span>Soins ciblés (poils, cuir)</span>
               <ArrowRight className="size-3.5" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* SECTION 2 : POURQUOI NOUS CHOISIR (Fond blanc nacré, titre à gauche et 4 cartes sobres) */}
+      {/* ========================================================================= */}
+      {/* 3. RÉSULTATS : 3 EXEMPLES CONCRETS + BOUTON VERS LA PAGE DÉDIÉE          */}
+      {/* ========================================================================= */}
       <section
-        className="relative overflow-hidden bg-gradient-to-b from-[#FAFBFD] via-[#F4F6FB] to-[#EDF1F7] text-[#11114E] py-10 sm:py-12 md:py-14"
-        aria-labelledby="reassurance-heading"
+        className="relative overflow-hidden bg-gradient-to-b from-[#FAFBFD] via-[#F4F6FB] to-[#EDF1F7] text-[#11114E] py-12 sm:py-14 md:py-16"
+        aria-labelledby="results-heading"
       >
-        {/* Reflets diffus nacrés/argentés très doux */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -top-24 -right-20 size-[540px] rounded-full bg-blue-100/40 blur-[130px]"
-        />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -bottom-24 -left-20 size-[520px] rounded-full bg-indigo-100/40 blur-[125px]"
-        />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-noise opacity-[0.04] mix-blend-multiply"
-        />
-
         <div className="container-site relative z-10">
-          {/* En-tête sobre aligné à gauche avec surtitre orange précédé d'un trait */}
-          <div className="max-w-3xl mb-6 sm:mb-8">
-            <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-2.5">
+          {/* En-tête de section */}
+          <div className="max-w-2xl mb-6 sm:mb-8">
+            <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-2">
               <span className="w-6 h-[2px] bg-primary"></span>
-              <span>Pourquoi nous choisir</span>
+              <span>Résultats réels</span>
             </div>
             <h2
-              id="reassurance-heading"
+              id="results-heading"
               className="text-2xl sm:text-3xl md:text-4xl font-display font-bold uppercase tracking-tight text-[#11114E]"
             >
-              Pourquoi choisir Bichonne ta Caisse ?
+              Avant / Après : L'efficacité en images
             </h2>
             <p className="mt-1.5 text-xs sm:text-sm text-slate-600">
-              Un service de nettoyage automobile soigné, accessible et transparent, à domicile.
+              Découvrez la différence immédiate après intervention. Photos 100 % authentiques prises
+              directement sur nos chantiers dans la métropole lilloise.
             </p>
           </div>
 
-          {/* 4 cartes sobres avec icônes bleu nuit et sous-titres orange */}
-          <div className="grid gap-3.5 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {REASSURANCE.map((r) => (
-              <div
-                key={r.title}
-                className="flex flex-col rounded-xl border border-slate-200/80 bg-white p-4 sm:p-5 shadow-xs hover:shadow-md transition-shadow"
+          {/* Onglets de sélection des 3 exemples phares */}
+          <div className="flex flex-wrap gap-2 mb-5">
+            {FEATURED_RESULTS.map((item, idx) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setSelectedResultIndex(idx)}
+                className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wide transition-all ${
+                  selectedResultIndex === idx
+                    ? "bg-[#11114E] text-white shadow-md"
+                    : "bg-white text-slate-700 border border-slate-200/80 hover:bg-slate-50"
+                }`}
               >
-                <div className="grid size-10 place-items-center rounded-lg bg-[#11114E] text-primary mb-3.5 shadow-2xs">
-                  <r.icon className="size-4.5" />
-                </div>
-                <h3 className="font-display text-base sm:text-lg font-bold uppercase tracking-tight text-[#11114E]">
-                  {r.title}
-                </h3>
-                <p className="text-[11px] font-bold uppercase tracking-wider text-primary mt-0.5 mb-2">
-                  {r.subtitle}
-                </p>
-                <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed">{r.text}</p>
-              </div>
+                {item.title} ({item.vehicle})
+              </button>
             ))}
+          </div>
+
+          {/* Carte de comparaison côte à côte AVANT / APRÈS */}
+          <div className="rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-6 shadow-md">
+            <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+              <div>
+                <h3 className="font-display text-lg sm:text-xl font-bold uppercase tracking-wide text-[#11114E]">
+                  {activeResult.vehicle} • {activeResult.title}
+                </h3>
+                <p className="text-xs text-slate-500">{activeResult.subtitle}</p>
+              </div>
+              <span className="self-start sm:self-center text-[11px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2.5 py-1 rounded-md">
+                Avant / Après
+              </span>
+            </div>
+
+            {/* Comparaison côte à côte sans curseur */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              {/* Photo AVANT */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider">
+                  <span className="text-slate-600">État initial</span>
+                  <span className="text-red-700 bg-red-100/80 px-2 py-0.5 rounded text-[11px]">
+                    AVANT
+                  </span>
+                </div>
+                <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
+                  <picture className="size-full">
+                    <source type="image/webp" srcSet={activeResult.beforeWebp} />
+                    <img
+                      src={activeResult.beforeJpg}
+                      alt={activeResult.altBefore}
+                      loading="lazy"
+                      className="size-full object-cover"
+                    />
+                  </picture>
+                </div>
+              </div>
+
+              {/* Photo APRÈS */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider">
+                  <span className="text-[#11114E]">Résultat rénové</span>
+                  <span className="text-emerald-800 bg-emerald-100/90 px-2 py-0.5 rounded text-[11px]">
+                    APRÈS
+                  </span>
+                </div>
+                <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
+                  <picture className="size-full">
+                    <source type="image/webp" srcSet={activeResult.afterWebp} />
+                    <img
+                      src={activeResult.afterJpg}
+                      alt={activeResult.altAfter}
+                      loading="lazy"
+                      className="size-full object-cover"
+                    />
+                  </picture>
+                </div>
+              </div>
+            </div>
+
+            <p className="mt-3.5 text-xs text-slate-600 leading-relaxed">
+              {activeResult.description}
+            </p>
+          </div>
+
+          {/* Bouton vers la page Résultats présentant l'intégralité des photos */}
+          <div className="mt-7 flex flex-col sm:flex-row items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-sm">
+            <div className="space-y-0.5 text-center sm:text-left">
+              <p className="text-sm sm:text-base font-bold text-[#11114E]">
+                Envie de voir davantage de transformations ?
+              </p>
+              <p className="text-xs text-slate-600">
+                Consultez notre galerie complète avec l'ensemble des zones rénovées sur Peugeot 208
+                et Renault Clio 5.
+              </p>
+            </div>
+            <Link
+              to="/resultats"
+              className="btn btn-primary text-xs sm:text-sm font-bold uppercase tracking-wider px-5 py-3 shrink-0 shadow-md"
+            >
+              <span>Voir toutes nos réalisations</span>
+              <ArrowRight className="size-4" />
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* CONTENEUR FORMULES + SOINS : Arrière-plan bleu nuit continu #11114E avec halos continus sans rupture */}
-      <div className="relative overflow-hidden bg-[#11114E] text-white">
-        {/* Halos continus partagés */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -top-24 -left-24 size-[700px] sm:size-[850px] lg:size-[950px] rounded-full bg-[#243888]/22 blur-[150px] sm:blur-[180px]"
-        />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute top-[25%] -right-24 size-[650px] sm:size-[800px] lg:size-[920px] rounded-full bg-[#282A74]/20 blur-[145px] sm:blur-[175px]"
-        />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute top-[55%] -left-20 size-[680px] sm:size-[820px] lg:size-[940px] rounded-full bg-[#2C3275]/21 blur-[145px] sm:blur-[175px]"
-        />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute top-[65%] right-[10%] size-[320px] sm:size-[400px] rounded-full bg-[#F47721]/[0.06] blur-[115px] sm:blur-[135px]"
-        />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-noise opacity-12 mix-blend-overlay"
-        />
-
-        {/* SECTION 3 : FORMULES DE NETTOYAGE */}
-        <section
-          className="relative z-10 py-10 sm:py-12 md:py-14"
-          aria-labelledby="formulas-heading"
-        >
-          <div className="container-site relative z-10">
-            {/* En-tête : Surtitre, titre principal à gauche, argument à droite */}
-            <div className="mb-5 sm:mb-6 flex flex-wrap items-end justify-between gap-3">
-              <div>
-                <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-1.5">
-                  <span className="w-6 h-[2px] bg-primary"></span>
-                  <span>Nos formules</span>
-                </div>
-                <h2
-                  id="formulas-heading"
-                  className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold uppercase tracking-tight text-white"
-                >
-                  Choisissez votre formule de nettoyage
-                </h2>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-white/90 font-medium">
-                <Check className="size-3.5 text-primary shrink-0" strokeWidth={2.5} />
-                <span>Même prix pour tous les véhicules. Pas de frais cachés.</span>
-              </div>
-            </div>
-
-            {/* 3 cartes : Intérieur Express 49€ (bleu nuit), Intérieur Premium 69€ (blanche au centre - la plus populaire), Formule Complète 109€ (bleu nuit) */}
-            <FormulaCards />
-
-            <p className="mt-3 text-xs text-white/70 max-w-2xl italic">
-              * Soins complémentaires et suppléments éventuels annoncés avant confirmation du
-              rendez-vous.
-            </p>
-          </div>
-        </section>
-
-        {/* SECTION 4 : PRESTATIONS COMPLÉMENTAIRES (Composition asymétrique : titre à gauche, grand encadré blanc à droite) */}
-        <section
-          className="relative z-10 pb-10 sm:pb-12 md:pb-14 pt-3 md:pt-4 border-t border-white/10"
-          aria-labelledby="cares-heading"
-        >
-          <div className="container-site relative z-10">
-            <div className="grid gap-6 lg:gap-8 lg:grid-cols-12 lg:items-center">
-              {/* Colonne gauche (5 colonnes) : Surtitre, titre, description et bouton */}
-              <div className="lg:col-span-5 space-y-3">
-                <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest">
-                  <span className="w-6 h-[2px] bg-primary"></span>
-                  <span>Prestations complémentaires</span>
-                </div>
-                <h2
-                  id="cares-heading"
-                  className="text-2xl sm:text-3xl md:text-4xl font-display font-bold uppercase tracking-tight text-white"
-                >
-                  Les petits plus pour votre voiture
-                </h2>
-                <p className="text-xs sm:text-sm text-white/80 leading-relaxed max-w-md">
-                  Complétez votre formule avec les soins adaptés à votre véhicule.
-                </p>
-                <div className="pt-1">
-                  <Link
-                    to="/formules"
-                    hash="soins-cibles"
-                    className="btn border border-white/20 bg-white/[0.05] text-white hover:bg-white/10 text-xs sm:text-sm font-bold uppercase tracking-wider py-2.5 px-4"
-                  >
-                    Voir tous les détails
-                  </Link>
-                </div>
-              </div>
-
-              {/* Colonne droite (7 colonnes) : Grand encadré blanc avec prix orange */}
-              <div className="lg:col-span-7">
-                <CareCards />
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      {/* SECTION 5 : AVANT / APRÈS (Fond blanc nacré, composition asymétrique Lovable avec sélecteur interactif) */}
-      <BeforeAfterSection />
-
-      {/* SECTION 6 : ZONE D'INTERVENTION (Bleu nuit profond, composition asymétrique avec tableau kilométrique blanc) */}
+      {/* ========================================================================= */}
+      {/* 4. CONTACT : APPEL CLAIR À DEMANDER UN DEVIS / CONTACTER L'ENTREPRISE     */}
+      {/* ========================================================================= */}
       <section
-        className="relative overflow-hidden bg-[#11114E] text-white py-10 sm:py-12 md:py-14"
-        aria-labelledby="zone-heading"
+        className="relative overflow-hidden bg-[#11114E] text-white py-12 sm:py-14 md:py-16 border-t border-white/10"
+        aria-labelledby="contact-cta-heading"
       >
-        {/* Halos zone d'intervention */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-20 -right-20 size-[680px] sm:size-[820px] lg:size-[920px] rounded-full bg-[#243888]/22 blur-[145px] sm:blur-[175px]"
+          className="pointer-events-none absolute -top-24 -right-24 size-[650px] rounded-full bg-[#2a44a6]/25 blur-[160px]"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -bottom-20 -left-20 size-[640px] sm:size-[780px] lg:size-[880px] rounded-full bg-[#282A74]/20 blur-[140px] sm:blur-[170px]"
-        />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute top-1/2 left-[20%] size-[300px] rounded-full bg-[#F47721]/[0.05] blur-[110px]"
+          className="pointer-events-none absolute -bottom-24 -left-20 size-[620px] rounded-full bg-[#F47721]/[0.08] blur-[150px]"
         />
         <div
           aria-hidden="true"
@@ -624,109 +596,116 @@ function Index() {
         />
 
         <div className="container-site relative z-10">
-          {/* COMPOSITION ASYMÉTRIQUE : 5 colonnes gauche (texte + badges communes), 7 colonnes droite (carte blanche avec barème) */}
-          <div className="grid gap-6 lg:gap-8 lg:grid-cols-12 lg:items-center">
-            {/* Colonne gauche */}
-            <div className="lg:col-span-5 space-y-3.5">
-              <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest">
-                <span className="w-6 h-[2px] bg-primary"></span>
-                <span>Zone d'intervention</span>
-              </div>
-
-              <h2
-                id="zone-heading"
-                className="text-2xl sm:text-3xl md:text-4xl font-display font-bold uppercase tracking-tight text-white leading-[1.02]"
-              >
-                Déplacement offert jusqu'à 20 km de Lille
-              </h2>
-
-              <p className="text-xs sm:text-sm text-white/80 leading-relaxed">
-                Point de départ : Place de la République, Lille. Au-delà, seuls les kilomètres
-                supplémentaires sont facturés à 0,50 €/km, aller-retour (selon la distance routière
-                estimée). Nous intervenons chez vous, sur votre parking ou sur votre lieu de
-                travail.
-              </p>
-
-              {/* Étiquettes des communes desservies */}
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                {COMMUNES.map((commune) => (
-                  <span
-                    key={commune}
-                    className="rounded-full border border-white/15 bg-white/[0.06] px-2.5 py-1 text-[11px] font-semibold text-white/90 backdrop-blur-xs"
-                  >
-                    {commune}
-                  </span>
-                ))}
-              </div>
-
-              <p className="text-[11px] text-white/60 italic pt-1">
-                * Distance routière estimée depuis notre point de référence à Lille (Place de la
-                République).
-              </p>
+          <div className="max-w-3xl mx-auto text-center space-y-4 mb-8">
+            <div className="inline-flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest">
+              <span className="w-6 h-[2px] bg-primary"></span>
+              <span>Demande rapide &amp; sans engagement</span>
+              <span className="w-6 h-[2px] bg-primary"></span>
             </div>
+            <h2
+              id="contact-cta-heading"
+              className="text-3xl sm:text-4xl md:text-5xl font-display font-bold uppercase tracking-tight text-white leading-[1.04]"
+            >
+              Prêt à redonner une seconde jeunesse à votre voiture ?
+            </h2>
+            <p className="text-sm sm:text-base text-white/85 max-w-xl mx-auto leading-relaxed">
+              Demandez votre devis gratuit en 2 minutes ou contactez-nous directement par téléphone
+              ou WhatsApp pour convenir d'une date d'intervention.
+            </p>
+          </div>
 
-            {/* Colonne droite : Carte blanche avec tableau kilométrique transparent */}
-            <div className="lg:col-span-7">
-              <div className="rounded-2xl bg-white p-4 sm:p-6 text-[#11114E] shadow-xl">
-                <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-wider mb-3.5">
-                  <MapPin className="size-4" />
-                  <span>Barème kilométrique transparent</span>
-                </div>
-
-                <div className="divide-y divide-slate-100 text-xs sm:text-sm">
-                  <div className="flex items-center justify-between pb-2 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                    <span>Distance routière estimée (aller)</span>
-                    <span>Frais A/R</span>
-                  </div>
-                  <div className="flex items-center justify-between py-2 font-semibold">
-                    <span className="text-slate-800">Jusqu'à 20 km</span>
-                    <span className="font-bold text-primary">Offert (0 €)</span>
-                  </div>
-                  <div className="flex items-center justify-between py-2 font-semibold">
-                    <span className="text-slate-800">25 km (5 km supp.)</span>
-                    <span className="font-bold text-[#11114E]">5,00 €</span>
-                  </div>
-                  <div className="flex items-center justify-between py-2 font-semibold">
-                    <span className="text-slate-800">30 km (10 km supp.)</span>
-                    <span className="font-bold text-[#11114E]">10,00 €</span>
-                  </div>
-                  <div className="flex items-center justify-between py-2 font-semibold">
-                    <span className="text-slate-800">35 km (15 km supp.)</span>
-                    <span className="font-bold text-[#11114E]">15,00 €</span>
-                  </div>
-                </div>
-
-                <p className="mt-2.5 text-[11px] text-slate-500">
-                  Déplacement offert jusqu'à 20 km. Au-delà, seuls les kilomètres supplémentaires
-                  sont facturés à 0,50 €/km aller-retour.
+          {/* Grille de contact claire avec 3 options directes */}
+          <div className="grid gap-3.5 sm:gap-4 md:grid-cols-3 max-w-4xl mx-auto">
+            {/* Option 1 : Formulaire en ligne (mise en avant principale) */}
+            <Link
+              to="/contact"
+              className="group flex flex-col justify-between rounded-2xl border-2 border-primary bg-primary/10 p-5 text-left transition-all hover:bg-primary/15 hover:scale-[1.01] shadow-lg"
+            >
+              <div className="space-y-2">
+                <span className="grid size-10 place-items-center rounded-xl bg-primary text-white font-bold shadow-sm">
+                  <Calendar className="size-5" />
+                </span>
+                <p className="font-display text-xl font-bold uppercase tracking-wide text-white">
+                  Devis en ligne
                 </p>
-
-                <div className="mt-4 pt-3.5 border-t border-slate-100 flex flex-col sm:flex-row gap-2.5">
-                  <a
-                    href={BUSINESS.phoneTel}
-                    className="btn border-2 border-slate-200 hover:border-[#11114E] text-[#11114E] flex-1 justify-center py-2 text-xs sm:text-sm font-bold"
-                  >
-                    <Phone className="size-3.5" />
-                    <span>{BUSINESS.phoneDisplay}</span>
-                  </a>
-                  <Link
-                    to="/contact"
-                    className="btn btn-primary flex-1 justify-center py-2 text-white text-xs sm:text-sm font-bold"
-                  >
-                    Réservation & Devis
-                  </Link>
-                </div>
+                <p className="text-xs text-white/80 leading-relaxed">
+                  Formulaire simplifié en 3 étapes. Estimation immédiate avec calcul kilométrique.
+                </p>
               </div>
-            </div>
+              <div className="mt-4 pt-3 border-t border-primary/30 flex items-center justify-between text-xs font-bold uppercase tracking-wider text-primary group-hover:text-white transition-colors">
+                <span>Remplir ma demande</span>
+                <ArrowRight className="size-4" />
+              </div>
+            </Link>
+
+            {/* Option 2 : Téléphone direct */}
+            <a
+              href={BUSINESS.phoneTel}
+              className="flex flex-col justify-between rounded-2xl border border-white/15 bg-white/[0.05] p-5 text-left transition-all hover:bg-white/10 hover:border-white/30"
+            >
+              <div className="space-y-2">
+                <span className="grid size-10 place-items-center rounded-xl bg-white/10 text-primary font-bold">
+                  <Phone className="size-5" />
+                </span>
+                <p className="font-display text-xl font-bold uppercase tracking-wide text-white">
+                  Par téléphone
+                </p>
+                <p className="text-xs text-white/80 leading-relaxed">
+                  Échange direct pour discuter de l'état de votre véhicule et convenir d'une date.
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-white/10 text-xs font-bold text-white">
+                <span className="text-primary font-display text-lg tracking-wide block">
+                  {BUSINESS.phoneDisplay}
+                </span>
+                <span className="text-[11px] text-white/60 font-normal">Du lundi au samedi</span>
+              </div>
+            </a>
+
+            {/* Option 3 : WhatsApp */}
+            <a
+              href={whatsappLink()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col justify-between rounded-2xl border border-emerald-500/30 bg-emerald-950/20 p-5 text-left transition-all hover:bg-emerald-900/30 hover:border-emerald-500/50"
+            >
+              <div className="space-y-2">
+                <span className="grid size-10 place-items-center rounded-xl bg-emerald-600 text-white font-bold shadow-sm">
+                  <MessageCircle className="size-5" />
+                </span>
+                <p className="font-display text-xl font-bold uppercase tracking-wide text-white">
+                  WhatsApp direct
+                </p>
+                <p className="text-xs text-white/80 leading-relaxed">
+                  Envoyez des photos de votre habitacle pour une estimation rapide et sur-mesure.
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-emerald-500/20 flex items-center justify-between text-xs font-bold uppercase tracking-wider text-emerald-400">
+                <span>Écrire sur WhatsApp</span>
+                <ArrowRight className="size-4" />
+              </div>
+            </a>
+          </div>
+
+          {/* Mentions rassurantes sous les cartes de contact */}
+          <div className="mt-8 pt-5 border-t border-white/10 max-w-3xl mx-auto flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-white/75">
+            <span className="flex items-center gap-1.5">
+              <Check className="size-3.5 text-primary" strokeWidth={2.5} />
+              Sans engagement &amp; sans paiement en ligne
+            </span>
+            <span className="hidden sm:inline text-white/30">•</span>
+            <span className="flex items-center gap-1.5">
+              <Check className="size-3.5 text-primary" strokeWidth={2.5} />
+              Rappel rapide pour convenir de la date
+            </span>
+            <span className="hidden sm:inline text-white/30">•</span>
+            <span className="flex items-center gap-1.5">
+              <Check className="size-3.5 text-primary" strokeWidth={2.5} />
+              Règlement sur place une fois le nettoyage réalisé
+            </span>
           </div>
         </div>
       </section>
-
-      {/* SECTION 7 : QUESTIONS FRÉQUENTES (Fond blanc nacré, composition asymétrique Lovable avec accordéon et carte contact) */}
-      <FaqSection />
-
-      {/* SECTION FINALE : BANDE ORANGE */}
-      <ContactBand />
     </>
   );
 }
