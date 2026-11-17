@@ -79,7 +79,7 @@ const B2B_ADVANTAGES = [
 const B2B_OFFERS = [
   {
     title: "Nettoyage de flottes commerciales",
-    desc: "Entretien régulier ou ponctuel de vos citadines et utilitaires d'entreprise. Dépoussiérage, désinfection de l'habitacle et lavage soigné.",
+    desc: "Entretien régulier ou ponctuel de vos citadines et utilitaires d'entreprise. Dépoussiérage, assainissement de l'habitacle et lavage soigné.",
     highlight: "Pour 2 à 15+ véhicules",
   },
   {

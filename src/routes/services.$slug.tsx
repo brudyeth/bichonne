@@ -31,22 +31,22 @@ const SERVICE_PAGES: Record<string, ServicePageData> = {
   "nettoyage-interieur-voiture-lille": {
     slug: "nettoyage-interieur-voiture-lille",
     title: "Nettoyage intérieur voiture Lille",
-    metaTitle: "Nettoyage intérieur voiture Lille (69 €) | Bichonne ta Caisse",
+    metaTitle: "Nettoyage intérieur voiture Lille (99 €) | Bichonne ta Caisse",
     metaDescription:
-      "Nettoyage intérieur auto en profondeur à domicile à Lille : shampoing sièges et tapis inclus (69 €) ou formule Express dès 49 €. Intervention rapide à domicile ou au travail.",
+      "Nettoyage intérieur auto en profondeur à domicile à Lille : shampouinage sièges et tapis inclus (99 €) ou formule Express dès 69 €. Intervention rapide à domicile ou au travail.",
     h1: "Nettoyage intérieur de voiture à domicile à Lille",
-    lead: "Retrouvez un habitacle propre, sain et désinfecté. Notre formule signature Intérieur Premium comprend l'aspiration intégrale, la rénovation des plastiques et le shampouinage en profondeur des sièges et moquettes pour 69 € (ou formule Express dès 49 €).",
+    lead: "Retrouvez un habitacle propre, sain et assaini. Notre formule signature Intérieur Premium comprend l'aspiration intégrale, la protection anti-UV des plastiques et le shampouinage en profondeur des sièges, tapis et moquettes pour 99 € (ou formule Express dès 69 €).",
     city: "Lille",
     postalCode: "59000",
     introParagraphs: [
       "Le nettoyage intérieur d'une voiture demande un savoir-faire et des outils spécifiques pour déloger la poussière incrustée, les taches de café ou d'aliments et les odeurs persistantes. À Lille et dans toute la métropole, Bichonne ta Caisse se déplace directement à votre domicile ou sur votre lieu de travail avec tout le matériel requis.",
-      "Contrairement aux stations de lavage traditionnelles, nous prenons le temps d'aspirer minutieusement chaque recoin (coffre, glissières de sièges, bacs de portières), de nettoyer et dégraisser les plastiques sans effet gras artificiel, et d'extraire la saleté incrustée dans les fibres textiles grâce au shampouinage professionnel.",
+      "Contrairement aux stations de lavage traditionnelles, nous prenons le temps d'aspirer minutieusement chaque recoin (coffre, rails de sièges, bacs de portières, pédalier), de nettoyer et protéger les plastiques contre les UV, et d'assainir les fibres textiles grâce au shampouinage professionnel.",
     ],
     localFaq: [
       {
-        question: "Le shampoing des sièges est-il vraiment inclus dans les 69 € ?",
+        question: "Le shampouinage des sièges est-il vraiment inclus dans les 99 € ?",
         answer:
-          "Oui, absolument. Le shampouinage en profondeur des sièges en tissu, des moquettes et des tapis est intégralement inclus dans notre formule signature Intérieur Premium à 69 € pour tous types de véhicules.",
+          "Oui, absolument. Le shampouinage en profondeur des sièges en tissu, des moquettes et des tapis est intégralement inclus dans notre formule signature Intérieur Premium à 99 € pour tous types de véhicules.",
       },
       {
         question: "Combien de temps faut-il pour le séchage des sièges ?",
@@ -60,7 +60,7 @@ const SERVICE_PAGES: Record<string, ServicePageData> = {
     title: "Shampoing sièges et tapis voiture Lille",
     metaTitle: "Shampoing sièges et moquettes voiture Lille | Bichonne ta Caisse",
     metaDescription:
-      "Shampoing en profondeur par injection-extraction des sièges, tissus et moquettes auto à Lille. Élimination des taches et mauvaises odeurs à domicile dès 69 €.",
+      "Shampouinage en profondeur par injection-extraction des sièges, tissus et moquettes auto à Lille. Assainissement et élimination des taches à domicile dès 99 €.",
     h1: "Shampoing des sièges et moquettes automobile à Lille",
     lead: "Éliminez les auréoles, taches tenaces et mauvaises odeurs de vos selleries textiles. Un résultat spectaculaire et visible dès le premier passage.",
     city: "Lille",
@@ -87,14 +87,14 @@ const SERVICE_PAGES: Record<string, ServicePageData> = {
     title: "Nettoyage voiture à domicile Wambrechies",
     metaTitle: "Nettoyage voiture à domicile Wambrechies | Bichonne ta Caisse",
     metaDescription:
-      "Nettoyage auto à domicile à Wambrechies (59118) : Intérieur Express dès 49 €, Intérieur Premium avec shampoing à 69 € et Formule Complète à 109 €. Déplacement offert.",
+      "Nettoyage auto à domicile à Wambrechies (59118) : Intérieur Express dès 69 €, Intérieur Premium avec shampouinage à 99 € et Formule Complète à 139 €. Déplacement offert.",
     h1: "Nettoyage automobile à domicile à Wambrechies",
     lead: "Basé à proximité immédiate de Wambrechies, Bichonne ta Caisse intervient à votre domicile ou sur votre lieu de travail pour redonner une propreté éclatante à votre véhicule.",
     city: "Wambrechies",
     postalCode: "59118",
     introParagraphs: [
       "Habitants de Wambrechies et des bords de Deûle, profitez d'un service d'entretien automobile d'artisan local sans vous déplacer. Que vous soyez garé dans votre allée, votre cour ou sur votre parking de travail, nous venons équipés de tout le matériel professionnel nécessaire.",
-      "Bénéficiez du déplacement offert et de nos trois formules transparentes : Intérieur Express à 49 €, Intérieur Premium avec shampoing des sièges inclus à 69 €, et Formule Complète à 109 €.",
+      "Bénéficiez du déplacement offert et de nos trois formules transparentes : Intérieur Express à 69 €, Intérieur Premium avec shampouinage des sièges inclus à 99 €, et Formule Complète à 139 €.",
     ],
     localFaq: [
       {
@@ -114,7 +114,7 @@ const SERVICE_PAGES: Record<string, ServicePageData> = {
     title: "Nettoyage voiture Marcq-en-Barœul",
     metaTitle: "Nettoyage voiture Marcq-en-Barœul à domicile | Bichonne ta Caisse",
     metaDescription:
-      "Nettoyage de voiture à domicile à Marcq-en-Barœul : Intérieur Express dès 49 €, Intérieur Premium avec shampoing à 69 € et Formule Complète à 109 €. Déplacement offert.",
+      "Nettoyage de voiture à domicile à Marcq-en-Barœul : Intérieur Express dès 69 €, Intérieur Premium avec shampouinage à 99 € et Formule Complète à 139 €. Déplacement offert.",
     h1: "Nettoyage de voiture à domicile à Marcq-en-Barœul",
     lead: "Prenez soin de votre véhicule à Marcq-en-Barœul sans quitter votre domicile. Intervention soignée pour citadines, berlines et SUV haut de gamme.",
     city: "Marcq-en-Barœul",
@@ -141,7 +141,7 @@ const SERVICE_PAGES: Record<string, ServicePageData> = {
     title: "Nettoyage voiture Lambersart",
     metaTitle: "Nettoyage voiture Lambersart à domicile | Bichonne ta Caisse",
     metaDescription:
-      "Nettoyage automobile à domicile à Lambersart (59130) : formules dès 49 €, intérieur avec shampoing sièges à 69 € et formule complète à 109 €. Déplacement gratuit.",
+      "Nettoyage automobile à domicile à Lambersart (59130) : formules dès 69 €, intérieur avec shampouinage sièges à 99 € et formule complète à 139 €. Déplacement gratuit.",
     h1: "Nettoyage automobile à domicile à Lambersart",
     lead: "Service premium de detailing et nettoyage automobile à Lambersart. Redonnez à votre voiture la fraîcheur et la propreté du premier jour.",
     city: "Lambersart",
@@ -154,7 +154,7 @@ const SERVICE_PAGES: Record<string, ServicePageData> = {
       {
         question: "Combien coûte le nettoyage complet à Lambersart ?",
         answer:
-          "La Formule Complète est au tarif fixe de 109 € (intérieur approfondi avec shampoing sièges + carrosserie extérieure). Le déplacement à Lambersart est offert.",
+          "La Formule Complète est au tarif fixe de 139 € (intérieur approfondi avec shampouinage sièges + carrosserie extérieure). Le déplacement à Lambersart est offert.",
       },
     ],
   },
@@ -163,7 +163,7 @@ const SERVICE_PAGES: Record<string, ServicePageData> = {
     title: "Nettoyage voiture La Madeleine",
     metaTitle: "Nettoyage voiture La Madeleine à domicile | Bichonne ta Caisse",
     metaDescription:
-      "Nettoyage auto à domicile à La Madeleine (59110) : intervention chez vous ou sur votre lieu de travail avec tout le matériel pro. Dès 49 €.",
+      "Nettoyage auto à domicile à La Madeleine (59110) : intervention chez vous ou sur votre lieu de travail avec tout le matériel pro. Dès 69 €.",
     h1: "Nettoyage automobile à domicile à La Madeleine",
     lead: "Votre nettoyage automobile à domicile à La Madeleine (59110). Aspiration profonde, injection-extraction des sièges et lavage carrosserie doux.",
     city: "La Madeleine",
@@ -176,7 +176,7 @@ const SERVICE_PAGES: Record<string, ServicePageData> = {
       {
         question: "Le tarif dépend-il de la taille du véhicule à La Madeleine ?",
         answer:
-          "Non, nos tarifs sont strictement identiques pour une citadine, une berline, un break ou un grand SUV (49 € Intérieur Express, 69 € Intérieur Premium, 109 € Formule Complète).",
+          "Non, nos tarifs sont strictement identiques pour une citadine, une berline, un break ou un grand SUV (69 € Intérieur Express, 99 € Intérieur Premium, 139 € Formule Complète).",
       },
     ],
   },
@@ -185,7 +185,7 @@ const SERVICE_PAGES: Record<string, ServicePageData> = {
     title: "Nettoyage voiture Roubaix",
     metaTitle: "Nettoyage voiture à domicile Roubaix | Bichonne ta Caisse",
     metaDescription:
-      "Service de nettoyage automobile à domicile à Roubaix et environs : Intérieur Express à 49 €, Intérieur Premium avec shampoing sièges à 69 €, Formule Complète à 109 €. Devis rapide.",
+      "Service de nettoyage automobile à domicile à Roubaix et environs : Intérieur Express à 69 €, Intérieur Premium avec shampouinage sièges à 99 €, Formule Complète à 139 €. Devis rapide.",
     h1: "Nettoyage automobile à domicile à Roubaix",
     lead: "Nettoyage soigné de voiture chez vous ou au bureau à Roubaix et agglomération. Équipement professionnel d'injection-extraction et finitions manuelles.",
     city: "Roubaix",
@@ -207,14 +207,14 @@ const SERVICE_PAGES: Record<string, ServicePageData> = {
     title: "Nettoyage voiture Tourcoing",
     metaTitle: "Nettoyage voiture à domicile Tourcoing | Bichonne ta Caisse",
     metaDescription:
-      "Nettoyage auto à domicile à Tourcoing : formules dès 49 € (Intérieur Express), shampoing injection-extraction à 69 € et soin complet à 109 €. Devis en ligne.",
+      "Nettoyage auto à domicile à Tourcoing : formules dès 69 € (Intérieur Express), shampouinage injection-extraction à 99 € et soin complet à 139 €. Devis en ligne.",
     h1: "Nettoyage automobile à domicile à Tourcoing",
     lead: "Intervention de nettoyage automobile à domicile à Tourcoing (59200) et environs. Retrouvez un véhicule impeccable sans bouger de chez vous.",
     city: "Tourcoing",
     postalCode: "59200",
     introParagraphs: [
       "Tourquennois, facilitez-vous la vie avec notre service mobile de nettoyage automobile. Nous intervenons avec notre équipement professionnel chez vous ou sur votre lieu d'activité.",
-      "De l'entretien Intérieur Express (49 €) jusqu'à la Formule Complète avec shampoing des tissus et lavage carrosserie (109 €), nous prenons soin de votre véhicule dans les moindres recoins.",
+      "De l'entretien Intérieur Express (69 €) jusqu'à la Formule Complète avec shampouinage des tissus et lavage carrosserie (139 €), nous prenons soin de votre véhicule dans les moindres recoins.",
     ],
     localFaq: [
       {

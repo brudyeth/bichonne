@@ -864,11 +864,12 @@ function Page() {
                             populaire
                           </p>
                           <p className="text-sm font-semibold text-foreground">
-                            Passez à l'Intérieur Premium pour +20 € seulement
+                            Passez à l'Intérieur Premium pour +30 € seulement
                           </p>
                           <p className="text-xs text-muted-foreground leading-relaxed">
-                            Profitez du shampoing complet des sièges et tapis, dressing des
-                            plastiques, vitres intérieures et finitions soignées (69 € au total).
+                            Profitez du shampouinage et de l'assainissement des sièges, tapis et
+                            moquettes, du nettoyage des rails, aérations, contours de portes,
+                            pédalier et de la protection anti-UV des plastiques (99 € au total).
                           </p>
                         </div>
                         <button
@@ -876,7 +877,7 @@ function Page() {
                           onClick={() => setFormula("interieur-premium")}
                           className="self-start sm:self-center shrink-0 rounded-lg bg-primary px-3.5 py-2 text-xs font-bold text-primary-foreground uppercase tracking-wide hover:bg-primary/90 transition-colors shadow-xs"
                         >
-                          Passer au Premium (+20 €)
+                          Passer au Premium (+30 €)
                         </button>
                       </div>
                     )}
@@ -892,7 +893,7 @@ function Page() {
                           <p className="text-xs text-muted-foreground leading-relaxed">
                             Profitez d'un véhicule impeccable à l'extérieur comme à l'intérieur :
                             mousse active, lavage manuel carrosserie, jantes et séchage microfibre
-                            (109 € au total).
+                            (139 € au total).
                           </p>
                         </div>
                         <button
@@ -915,7 +916,7 @@ function Page() {
                           onClick={() => setFormula("interieur-premium")}
                           className="text-primary font-semibold hover:underline shrink-0"
                         >
-                          Revenir à l'Intérieur Premium (69 €)
+                          Revenir à l'Intérieur Premium (99 €)
                         </button>
                       </div>
                     )}

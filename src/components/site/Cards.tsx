@@ -55,7 +55,7 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
                     <div className="flex items-center gap-1.5">
                       <Sparkles className="size-3.5 text-primary shrink-0" />
                       <span>
-                        Shampoing des sièges et tapis{" "}
+                        Shampouinage des sièges, tapis &amp; moquettes{" "}
                         <span className="text-primary font-bold">inclus</span>
                       </span>
                     </div>
@@ -123,17 +123,17 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
           }
 
           if (isComplet) {
-            // CARTE BLEU-GRIS CLAIR : FORMULE COMPLÈTE (109 €)
+            // CARTE BLEU-GRIS CLAIR : FORMULE COMPLÈTE (139 €)
             return (
               <article
                 key={f.id}
                 id={f.id}
-                className="relative flex flex-col justify-between h-full rounded-2xl bg-[#EEF2F7] text-[#11114E] border border-slate-300/80 p-4 sm:p-5 lg:p-4.5 xl:p-5 shadow-lg transition-all duration-200"
+                className="relative flex flex-col justify-between h-full rounded-2xl bg-[#E9EDF1] text-[#11114E] border border-slate-300/80 p-4 sm:p-5 lg:p-4.5 xl:p-5 shadow-lg transition-all duration-200"
               >
-                {/* Badge supérieur : LE SOIN INTÉGRAL */}
+                {/* Badge supérieur : INTÉRIEUR + EXTÉRIEUR */}
                 <div className="absolute -top-3 left-5 sm:left-6">
                   <span className="inline-flex items-center gap-1 rounded-full bg-[#11114E] text-white px-3 py-0.5 text-[11px] font-bold uppercase tracking-wider shadow-sm">
-                    Soin intégral
+                    Intérieur + Extérieur
                   </span>
                 </div>
 
@@ -172,8 +172,9 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
                         </p>
                       </div>
                       <p className="text-xs text-slate-700 leading-snug pl-6">
-                        Aspiration complète, shampoing sièges &amp; tapis, plastiques, vitres
-                        intérieures et traitement anti-odeur.
+                        Toutes les prestations de l'Intérieur Premium : aspiration, shampouinage et
+                        assainissement des textiles, rails, aérations, contours de portes, pédalier
+                        et protection anti-UV.
                       </p>
                     </div>
 
@@ -252,12 +253,12 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
             );
           }
 
-          // CARTE BLEU-GRIS CLAIR : INTÉRIEUR EXPRESS (49 €)
+          // CARTE BLEU-GRIS CLAIR : INTÉRIEUR EXPRESS (69 €)
           return (
             <article
               key={f.id}
               id={f.id}
-              className="relative flex flex-col justify-between h-full rounded-2xl bg-[#EEF2F7] text-[#11114E] border border-slate-300/80 p-4 sm:p-5 lg:p-4.5 xl:p-5 shadow-lg transition-all duration-200"
+              className="relative flex flex-col justify-between h-full rounded-2xl bg-[#E9EDF1] text-[#11114E] border border-slate-300/80 p-4 sm:p-5 lg:p-4.5 xl:p-5 shadow-lg transition-all duration-200"
             >
               <div className="flex-1 flex flex-col">
                 {/* En-tête : Nom, Prix & Durée */}
@@ -296,7 +297,7 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
                     </span>
                   </div>
                   <p className="text-[11px] text-slate-600 font-semibold pl-5.5">
-                    Inclus dans Intérieur Premium — 69 €
+                    Inclus dans Intérieur Premium — 99 €
                   </p>
                 </div>
 

@@ -100,7 +100,7 @@ function ResultatsPage() {
               to="/formules"
               className="btn border border-white/20 bg-white/[0.05] text-white hover:bg-white/10 text-xs sm:text-sm font-bold uppercase tracking-wider px-4 py-2.5"
             >
-              Voir les formules dès 49 €
+              Voir les formules dès 69 €
             </Link>
           </div>
 

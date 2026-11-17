@@ -64,32 +64,50 @@ describe("App routing", () => {
 });
 
 describe("Business configuration & pricing", () => {
-  it("has exact expected formula prices: 49 €, 69 €, 109 € and new descriptions", () => {
+  it("has exact expected formula prices: 69 €, 99 €, 139 € and updated descriptions", () => {
     const express = FORMULAS.find((f) => f.id === "interieur-express");
     const premium = FORMULAS.find((f) => f.id === "interieur-premium");
     const comp = FORMULAS.find((f) => f.id === "complet");
 
-    expect(express?.price).toBe(49);
+    expect(express?.price).toBe(69);
     expect(express?.duration).toBe("1 h à 1 h 30");
-    expect(express?.short).toBe("Pour un entretien rapide de votre habitacle.");
-    expect(express?.items).toContain("Aspiration de l'habitacle et du coffre");
-    expect(express?.items).toContain("Nettoyage des plastiques intérieurs");
+    expect(express?.short).toBe("Nettoyage d'entretien rapide pour un habitacle net au quotidien.");
+    expect(express?.items).toContain("Aspiration des tapis, moquettes et du coffre");
+    expect(express?.items).toContain(
+      "Dépoussiérage du tableau de bord et des surfaces accessibles",
+    );
+    expect(express?.items).toContain(
+      "Nettoyage de l'écran, du rétroviseur intérieur et des plastiques courants",
+    );
     expect(express?.items).toContain("Nettoyage de surface des sièges et tissus");
 
-    expect(premium?.price).toBe(69);
+    expect(premium?.price).toBe(99);
     expect(premium?.duration).toBe("2 à 3 h");
-    expect(premium?.short).toBe("Pour un nettoyage intérieur en profondeur.");
+    expect(premium?.short).toBe(
+      "Prestations de l'Express + nettoyage approfondi, shampouinage des textiles et finitions détaillées.",
+    );
     expect(premium?.highlight).toBe(true);
-    expect(premium?.items).toContain("Shampoing des sièges et tapis");
-    expect(premium?.items).toContain("Finitions soignées");
+    expect(premium?.items).toContain("Toutes les prestations de l'Intérieur Express");
+    expect(premium?.items).toContain(
+      "Shampouinage des sièges, tapis et moquettes (injection-extraction)",
+    );
+    expect(premium?.items).toContain("Assainissement des moquettes et traitement anti-odeur");
+    expect(premium?.items).toContain("Dépoussiérage des rails de sièges et bouches d'aération");
+    expect(premium?.items).toContain(
+      "Nettoyage des marchepieds, contours de portes et du pédalier",
+    );
+    expect(premium?.items).toContain("Protection anti-UV des plastiques intérieurs");
 
-    expect(comp?.price).toBe(109);
+    expect(comp?.price).toBe(139);
     expect(comp?.duration).toBe("3 à 5 h");
-    expect(comp?.short).toBe("Le soin intégral de votre véhicule, intérieur et extérieur.");
+    expect(comp?.short).toBe(
+      "L'association complète de l'Intérieur Premium et du lavage extérieur.",
+    );
     expect(comp?.items).toContain("Intégralité de la formule Intérieur Premium");
     expect(comp?.items).toContain("Prélavage à la mousse active");
     expect(comp?.items).toContain("Lavage manuel de la carrosserie");
     expect(comp?.items).toContain("Nettoyage des jantes");
+    expect(comp?.items).toContain("Rinçage et séchage manuel à la microfibre");
   });
 
   it("has the 2 exact complementary prestations, names, and prices", () => {
@@ -160,7 +178,7 @@ describe("SEO metadata configuration", () => {
 
     expect(titleMeta?.["title"]).toBe("Nettoyage voiture à domicile Lille | Bichonne ta Caisse");
     expect(descMeta?.["content"]).toBe(
-      "Nettoyage automobile à domicile à Lille et métropole lilloise dès 49 € : Intérieur Express, Intérieur Premium et Formule Complète. Déplacement offert jusqu'à 20 km.",
+      "Nettoyage automobile à domicile à Lille et métropole lilloise dès 69 € : Intérieur Express, Intérieur Premium et Formule Complète. Déplacement offert jusqu'à 20 km.",
     );
     expect(canonicalLink?.["href"]).toBe("https://bichonnetacaisse.fr/");
   });
@@ -187,7 +205,7 @@ describe("SEO metadata configuration", () => {
 
     const formulesDesc = formulesHead?.meta?.find((m) => m["name"] === "description");
     expect(formulesDesc?.["content"]).toBe(
-      "Découvrez nos formules de nettoyage auto à domicile à Lille : Intérieur Express 49 €, Intérieur Premium 69 € et Formule Complète 109 €. Intervention dans la métropole lilloise.",
+      "Découvrez nos formules de nettoyage auto à domicile à Lille : Intérieur Express 69 €, Intérieur Premium 99 € et Formule Complète 139 €. Intervention dans la métropole lilloise.",
     );
 
     const contactRoute = router.routesById["/contact"];

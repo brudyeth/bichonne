@@ -75,9 +75,9 @@ function CGVPage() {
               Article 2 — Prestations & Devis
             </h2>
             <p>
-              {BUSINESS.name} propose trois formules principales : Intérieur Express (49 €),
-              Intérieur Premium avec shampoing des sièges et tapis inclus (69 €), et Formule
-              Complète soin intérieur et extérieur (109 €), ainsi que des prestations
+              {BUSINESS.name} propose trois formules principales : Intérieur Express (69 €),
+              Intérieur Premium avec shampouinage des sièges et tapis inclus (99 €), et Formule
+              Complète soin intérieur et extérieur (139 €), ainsi que des prestations
               complémentaires (poils d'animaux / véhicule très sale, soin nourrissant des cuirs,
               etc.).
             </p>

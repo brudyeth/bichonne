@@ -550,7 +550,7 @@ export function BeforeAfterSection() {
                 to="/formules"
                 className="btn btn-ghost text-xs sm:text-sm text-[#11114E] hover:text-primary px-4 py-2.5 w-full sm:w-auto font-semibold"
               >
-                <span>Découvrir nos formules dès 49 €</span>
+                <span>Découvrir nos formules dès 69 €</span>
               </Link>
             </div>
           </div>

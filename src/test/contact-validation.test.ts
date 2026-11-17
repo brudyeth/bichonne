@@ -109,31 +109,31 @@ describe("Utility vehicle pricing rules", () => {
     return total;
   }
 
-  it("calculates Intérieur Express (49 €) correctly for all vehicle types", () => {
-    expect(calculateTotal(49, "standard")).toBe(49);
-    expect(calculateTotal(49, "utilitaire")).toBe(69);
-    expect(calculateTotal(49, "grand-utilitaire")).toBe(69);
-  });
-
-  it("calculates Intérieur Premium (69 €) correctly for all vehicle types", () => {
+  it("calculates Intérieur Express (69 €) correctly for all vehicle types", () => {
     expect(calculateTotal(69, "standard")).toBe(69);
     expect(calculateTotal(69, "utilitaire")).toBe(89);
     expect(calculateTotal(69, "grand-utilitaire")).toBe(89);
   });
 
-  it("calculates Formule Complète (109 €) correctly for all vehicle types, including utilitaires (+20 € = 129 €)", () => {
-    expect(calculateTotal(109, "standard")).toBe(109);
-    expect(calculateTotal(109, "utilitaire")).toBe(129);
-    expect(calculateTotal(109, "grand-utilitaire")).toBe(129);
+  it("calculates Intérieur Premium (99 €) correctly for all vehicle types", () => {
+    expect(calculateTotal(99, "standard")).toBe(99);
+    expect(calculateTotal(99, "utilitaire")).toBe(119);
+    expect(calculateTotal(99, "grand-utilitaire")).toBe(119);
+  });
+
+  it("calculates Formule Complète (139 €) correctly for all vehicle types, including utilitaires (+20 € = 159 €)", () => {
+    expect(calculateTotal(139, "standard")).toBe(139);
+    expect(calculateTotal(139, "utilitaire")).toBe(159);
+    expect(calculateTotal(139, "grand-utilitaire")).toBe(159);
   });
 
   it("correctly combines utility surcharge (+20 €) with care options", () => {
-    // Formule Complète 109 € + Utilitaire 20 € + Soin cuir 15 € = 144 €
-    expect(calculateTotal(109, "utilitaire", [15])).toBe(144);
-    // Formule Complète 109 € + Grand utilitaire 20 € + Poils 15 € + Cuir 15 € = 159 €
-    expect(calculateTotal(109, "grand-utilitaire", [15, 15])).toBe(159);
-    // Intérieur Premium 69 € + Utilitaire 20 € + Poils 15 € = 104 €
-    expect(calculateTotal(69, "utilitaire", [15])).toBe(104);
+    // Formule Complète 139 € + Utilitaire 20 € + Soin cuir 15 € = 174 €
+    expect(calculateTotal(139, "utilitaire", [15])).toBe(174);
+    // Formule Complète 139 € + Grand utilitaire 20 € + Poils 15 € + Cuir 15 € = 189 €
+    expect(calculateTotal(139, "grand-utilitaire", [15, 15])).toBe(189);
+    // Intérieur Premium 99 € + Utilitaire 20 € + Poils 15 € = 134 €
+    expect(calculateTotal(99, "utilitaire", [15])).toBe(134);
   });
 });
 
@@ -165,11 +165,11 @@ describe("Travel fee calculation rules (Place de la République, Lille)", () => 
   });
 
   it("calculates total with formula, utility surcharge and travel fee", () => {
-    // Formule Complète (109 €) + Utilitaire (+20 €) + 30 km travel (+10 €) = 139 €
-    const baseFormula = 109;
+    // Formule Complète (139 €) + Utilitaire (+20 €) + 30 km travel (+10 €) = 169 €
+    const baseFormula = 139;
     const utility = 20;
     const travel = calculateTravelFee(30);
-    expect(baseFormula + utility + travel).toBe(139);
+    expect(baseFormula + utility + travel).toBe(169);
   });
 });
 
