@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Check, Clock, Sparkles, Plus, Info, PawPrint, X } from "lucide-react";
 import { FORMULAS, CARES, euro, INTENSIVE_DIRT_NOTICE } from "@/lib/business";
+import { AutoFormulaLineIcon } from "./AutoFormulaIcons";
 
 export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
   return (
@@ -26,22 +27,28 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
                 </div>
 
                 <div className="flex-1 flex flex-col">
-                  {/* En-tête : Nom, Prix & Durée */}
-                  <div className="space-y-1.5 pt-1">
-                    <h3 className="font-display text-lg sm:text-xl font-bold uppercase tracking-wide leading-tight text-[#11114E]">
-                      {f.name}
-                    </h3>
+                  {/* En-tête : Nom, Prix, Durée & Icône minimaliste */}
+                  <div className="flex items-start justify-between gap-2 pt-1">
+                    <div className="space-y-1.5 min-w-0">
+                      <h3 className="font-display text-lg sm:text-xl font-bold uppercase tracking-wide leading-tight text-[#11114E]">
+                        {f.name}
+                      </h3>
 
-                    <div className="flex items-baseline gap-1.5">
-                      <span className="font-display text-3xl sm:text-4xl lg:text-[42px] font-bold text-primary tracking-tight leading-none">
-                        {euro(f.price)}
-                      </span>
-                      <span className="text-xs font-semibold text-slate-500">/ véhicule</span>
+                      <div className="flex items-baseline gap-1.5">
+                        <span className="font-display text-3xl sm:text-4xl lg:text-[42px] font-bold text-primary tracking-tight leading-none">
+                          {euro(f.price)}
+                        </span>
+                        <span className="text-xs font-semibold text-slate-500">/ véhicule</span>
+                      </div>
+
+                      <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-600">
+                        <Clock className="size-3.5 text-primary shrink-0" />
+                        <span>Durée estimée : {f.duration}</span>
+                      </div>
                     </div>
 
-                    <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-600">
-                      <Clock className="size-3.5 text-primary shrink-0" />
-                      <span>Durée estimée : {f.duration}</span>
+                    <div className="shrink-0 rounded-xl bg-[#FFF8F3] border border-primary/20 px-2 py-1.5">
+                      <AutoFormulaLineIcon id={f.id} className="w-[70px] h-[42px]" />
                     </div>
                   </div>
 
@@ -138,22 +145,28 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
                 </div>
 
                 <div className="flex-1 flex flex-col">
-                  {/* En-tête : Nom, Prix & Durée */}
-                  <div className="space-y-1.5 pt-1">
-                    <h3 className="font-display text-lg sm:text-xl font-bold uppercase tracking-wide leading-tight text-[#11114E]">
-                      {f.name}
-                    </h3>
+                  {/* En-tête : Nom, Prix, Durée & Icône minimaliste */}
+                  <div className="flex items-start justify-between gap-2 pt-1">
+                    <div className="space-y-1.5 min-w-0">
+                      <h3 className="font-display text-lg sm:text-xl font-bold uppercase tracking-wide leading-tight text-[#11114E]">
+                        {f.name}
+                      </h3>
 
-                    <div className="flex items-baseline gap-1.5">
-                      <span className="font-display text-3xl sm:text-4xl lg:text-[42px] font-bold text-primary tracking-tight leading-none">
-                        {euro(f.price)}
-                      </span>
-                      <span className="text-xs font-semibold text-slate-500">/ véhicule</span>
+                      <div className="flex items-baseline gap-1.5">
+                        <span className="font-display text-3xl sm:text-4xl lg:text-[42px] font-bold text-primary tracking-tight leading-none">
+                          {euro(f.price)}
+                        </span>
+                        <span className="text-xs font-semibold text-slate-500">/ véhicule</span>
+                      </div>
+
+                      <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-600">
+                        <Clock className="size-3.5 text-primary shrink-0" />
+                        <span>Durée estimée : {f.duration}</span>
+                      </div>
                     </div>
 
-                    <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-600">
-                      <Clock className="size-3.5 text-primary shrink-0" />
-                      <span>Durée estimée : {f.duration}</span>
+                    <div className="shrink-0 rounded-xl bg-white/90 border border-slate-200/80 px-2 py-1.5">
+                      <AutoFormulaLineIcon id={f.id} className="w-[70px] h-[42px]" />
                     </div>
                   </div>
 
@@ -261,22 +274,28 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
               className="relative flex flex-col justify-between h-full rounded-2xl bg-[#E9EDF1] text-[#11114E] border border-slate-300/80 p-4 sm:p-5 lg:p-4.5 xl:p-5 shadow-lg transition-all duration-200"
             >
               <div className="flex-1 flex flex-col">
-                {/* En-tête : Nom, Prix & Durée */}
-                <div className="space-y-1.5 pt-1">
-                  <h3 className="font-display text-lg sm:text-xl font-bold uppercase tracking-wide leading-tight text-[#11114E]">
-                    {f.name}
-                  </h3>
+                {/* En-tête : Nom, Prix, Durée & Icône minimaliste */}
+                <div className="flex items-start justify-between gap-2 pt-1">
+                  <div className="space-y-1.5 min-w-0">
+                    <h3 className="font-display text-lg sm:text-xl font-bold uppercase tracking-wide leading-tight text-[#11114E]">
+                      {f.name}
+                    </h3>
 
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="font-display text-3xl sm:text-4xl lg:text-[42px] font-bold text-primary tracking-tight leading-none">
-                      {euro(f.price)}
-                    </span>
-                    <span className="text-xs font-semibold text-slate-500">/ véhicule</span>
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="font-display text-3xl sm:text-4xl lg:text-[42px] font-bold text-primary tracking-tight leading-none">
+                        {euro(f.price)}
+                      </span>
+                      <span className="text-xs font-semibold text-slate-500">/ véhicule</span>
+                    </div>
+
+                    <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-600">
+                      <Clock className="size-3.5 text-primary shrink-0" />
+                      <span>Durée estimée : {f.duration}</span>
+                    </div>
                   </div>
 
-                  <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-600">
-                    <Clock className="size-3.5 text-primary shrink-0" />
-                    <span>Durée estimée : {f.duration}</span>
+                  <div className="shrink-0 rounded-xl bg-white/90 border border-slate-200/80 px-2 py-1.5">
+                    <AutoFormulaLineIcon id={f.id} className="w-[70px] h-[42px]" />
                   </div>
                 </div>
 

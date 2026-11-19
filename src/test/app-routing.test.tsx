@@ -5,6 +5,15 @@ import { describe, expect, it } from "vitest";
 import { routeTree } from "@/routeTree.gen";
 import { BUSINESS, CARES, FORMULAS, TRAVEL_CONDITIONS } from "@/lib/business";
 import {
+  TEXTILE_FIXED_PRESTATIONS,
+  TEXTILE_HONEST_NOTICE,
+  TEXTILE_OPTIONS,
+  TEXTILE_PRESTATIONS,
+  TEXTILE_QUOTE_PRESTATIONS,
+  TEXTILE_STEAM_OPTION,
+  calculateTextileEstimate,
+} from "@/lib/textiles";
+import {
   BOOKING_OPTIONS,
   NAV,
   HeaderBookingDropdown,
@@ -22,19 +31,21 @@ describe("App routing", () => {
     expect(matches.at(-1)?.routeId).not.toBe(rootRouteId);
   });
 
-  it("matches /formules, /entreprises, /contact and /resultats routes", () => {
+  it("matches /formules, /canapes-textiles, /entreprises, /contact and /resultats routes", () => {
     const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
 
     expect(router.matchRoutes("/formules").at(-1)?.routeId).not.toBe(rootRouteId);
+    expect(router.matchRoutes("/canapes-textiles").at(-1)?.routeId).not.toBe(rootRouteId);
     expect(router.matchRoutes("/entreprises").at(-1)?.routeId).not.toBe(rootRouteId);
     expect(router.matchRoutes("/contact").at(-1)?.routeId).not.toBe(rootRouteId);
     expect(router.matchRoutes("/resultats").at(-1)?.routeId).not.toBe(rootRouteId);
   });
 
-  it("keeps main navigation (NAV) streamlined with Accueil and Formules & tarifs", () => {
+  it("displays Accueil, Nettoyage automobile and Canapés & textiles as direct top-level NAV links", () => {
     expect(NAV).toEqual([
       { to: "/", label: "Accueil" },
-      { to: "/formules", label: "Formules & tarifs" },
+      { to: "/formules", label: "Nettoyage automobile" },
+      { to: "/canapes-textiles", label: "Canapés & textiles" },
     ]);
   });
 
@@ -156,6 +167,113 @@ describe("Business configuration & pricing", () => {
     expect(BUSINESS.whatsappNumber).toBe("33659140939");
     expect(BUSINESS.facebookUrl).toBe("https://www.facebook.com/profile.php?id=61595404295972");
     expect(BUSINESS.instagramUrl).toBe("https://www.instagram.com/bichonne.tacaisse/");
+  });
+
+  it("has the exact textile pricing grid, updated durations, no textile supplement, and honest non-disinfection wording", () => {
+    const canape23 = TEXTILE_FIXED_PRESTATIONS.find((p) => p.id === "canape-2-3");
+    const canape45 = TEXTILE_FIXED_PRESTATIONS.find((p) => p.id === "canape-4-5");
+    const fauteuil = TEXTILE_FIXED_PRESTATIONS.find((p) => p.id === "fauteuil");
+    const matelas1 = TEXTILE_FIXED_PRESTATIONS.find((p) => p.id === "matelas-1");
+    const matelas2 = TEXTILE_FIXED_PRESTATIONS.find((p) => p.id === "matelas-2");
+
+    expect(canape23?.price).toBe(69);
+    expect(canape23?.duration).toBe("Environ 1 h");
+    expect(canape45?.price).toBe(89);
+    expect(canape45?.duration).toBe("Environ 1 h 30");
+    expect(fauteuil?.price).toBe(39);
+    expect(fauteuil?.duration).toBe("30 à 45 min");
+    expect(matelas1?.price).toBe(39);
+    expect(matelas1?.duration).toBe("30 à 45 min");
+    expect(matelas2?.price).toBe(59);
+    expect(matelas2?.duration).toBe("Environ 1 h");
+
+    expect(TEXTILE_OPTIONS).toHaveLength(0);
+
+    const angle = TEXTILE_QUOTE_PRESTATIONS.find((p) => p.id === "canape-angle-u");
+    expect(angle?.price).toBeNull();
+    expect(angle?.unitNote).toBe("selon ses dimensions");
+
+    const tapis = TEXTILE_QUOTE_PRESTATIONS.find((p) => p.id === "tapis-moquette-chaises");
+    expect(tapis?.price).toBeNull();
+    expect(tapis?.unitNote).toBe("selon les dimensions ou la quantité");
+
+    const serialized = JSON.stringify({
+      TEXTILE_PRESTATIONS,
+      TEXTILE_STEAM_OPTION,
+      TEXTILE_HONEST_NOTICE,
+    }).toLowerCase();
+    expect(serialized).not.toMatch(/d[ée]sinfect/);
+  });
+
+  it("calculates optional Traitement vapeur (+10 € par élément traité) accurately across single and multi-item orders", () => {
+    expect(TEXTILE_STEAM_OPTION.name).toBe("Traitement vapeur");
+    expect(TEXTILE_STEAM_OPTION.pricePerItem).toBe(10);
+    expect(TEXTILE_STEAM_OPTION.priceLabel).toBe("+10 €");
+    expect(TEXTILE_STEAM_OPTION.unitLabel).toBe("par élément traité");
+    expect(TEXTILE_STEAM_OPTION.short).toBe(
+      "Un soin complémentaire à la vapeur pour une hygiène renforcée. La chaleur aide à réduire la présence d'acariens en surface, à décoller certaines salissures et à rafraîchir vos textiles.",
+    );
+
+    // Non sélectionné par défaut -> 0 € de supplément
+    const disabled = calculateTextileEstimate({
+      quantities: { "canape-2-3": 2 },
+      steamEnabled: false,
+      steamQuantities: { "canape-2-3": 2 },
+    });
+    expect(disabled.steamPiecesCount).toBe(0);
+    expect(disabled.steamSurcharge).toBe(0);
+    expect(disabled.baseTotal).toBe(138);
+
+    // 1 canapé : +10 €
+    const oneSofa = calculateTextileEstimate({
+      quantities: { "canape-2-3": 1 },
+      steamEnabled: true,
+      steamQuantities: { "canape-2-3": 1 },
+    });
+    expect(oneSofa.fixedSubtotal).toBe(69);
+    expect(oneSofa.steamSurcharge).toBe(10);
+    expect(oneSofa.baseTotal).toBe(79);
+
+    // 2 canapés : +20 €
+    const twoSofas = calculateTextileEstimate({
+      quantities: { "canape-2-3": 2 },
+      steamEnabled: true,
+      steamQuantities: { "canape-2-3": 2 },
+    });
+    expect(twoSofas.fixedSubtotal).toBe(138);
+    expect(twoSofas.steamSurcharge).toBe(20);
+    expect(twoSofas.baseTotal).toBe(158);
+
+    // 5 fauteuils : +50 €
+    const fiveArmchairs = calculateTextileEstimate({
+      quantities: { fauteuil: 5 },
+      steamEnabled: true,
+      steamQuantities: { fauteuil: 5 },
+    });
+    expect(fiveArmchairs.fixedSubtotal).toBe(195);
+    expect(fiveArmchairs.steamSurcharge).toBe(50);
+    expect(fiveArmchairs.baseTotal).toBe(245);
+
+    // Commande multi-pièces avec choix partiel des éléments traités à la vapeur
+    const mixedPartial = calculateTextileEstimate({
+      quantities: { "canape-2-3": 1, fauteuil: 2, "matelas-2": 1 },
+      steamEnabled: true,
+      steamQuantities: { "canape-2-3": 1, fauteuil: 1, "matelas-2": 0 },
+    });
+    expect(mixedPartial.totalFixedPieces).toBe(4);
+    expect(mixedPartial.fixedSubtotal).toBe(69 + 78 + 59);
+    expect(mixedPartial.steamPiecesCount).toBe(2);
+    expect(mixedPartial.steamSurcharge).toBe(20);
+    expect(mixedPartial.baseTotal).toBe(226);
+
+    // Plafonnement : impossible de facturer plus de pièces vapeur que de pièces commandées
+    const clamped = calculateTextileEstimate({
+      quantities: { fauteuil: 2 },
+      steamEnabled: true,
+      steamQuantities: { fauteuil: 5 },
+    });
+    expect(clamped.steamPiecesCount).toBe(2);
+    expect(clamped.steamSurcharge).toBe(20);
   });
 });
 

@@ -15,6 +15,7 @@ import {
 import heroDetailingWebp from "@/assets/hero-detailing.webp";
 import heroDetailingPng from "@/assets/hero-detailing.png";
 import { FormulaCards } from "@/components/site/Cards";
+import { TextileLineIcon } from "@/components/site/TextileIcons";
 import { BUSINESS, whatsappLink } from "@/lib/business";
 
 const LOCAL_BUSINESS_SCHEMA = {
@@ -245,7 +246,7 @@ function Index() {
           className="pointer-events-none absolute inset-0 bg-noise opacity-12 mix-blend-overlay"
         />
 
-        {/* Image hero desktop avec fusion organique en fondu */}
+        {/* Image hero desktop avec fusion organique en fondu latéral et inférieur vers #11114E */}
         <div
           aria-hidden="true"
           className="hidden lg:block absolute right-0 top-0 bottom-0 w-[56%] xl:w-[60%] pointer-events-none select-none z-0"
@@ -270,7 +271,15 @@ function Index() {
               style={{ filter: "contrast(1.04) brightness(1.1) saturate(1.04)" }}
             />
           </picture>
+          {/* Fondu progressif du bas de la photo vers le bleu nuit #11114E */}
+          <div className="absolute inset-x-0 bottom-0 h-44 xl:h-52 bg-gradient-to-t from-[#11114E] via-[#11114E]/65 to-transparent" />
         </div>
+
+        {/* Voile de transition fluide en bas du hero vers la section formules (#11114E) */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-24 sm:h-32 lg:h-40 bg-gradient-to-b from-transparent via-[#11114E]/70 to-[#11114E] z-[1]"
+        />
 
         <div className="container-site relative z-10">
           <div className="max-w-xl lg:max-w-2xl lg:w-[54%] space-y-5 animate-rise">
@@ -389,16 +398,21 @@ function Index() {
       {/* ========================================================================= */}
       <section
         id="formules"
-        className="relative overflow-hidden bg-[#11114E] text-white py-12 sm:py-14 md:py-16 border-t border-white/10"
+        className="relative overflow-hidden bg-[#11114E] text-white pt-8 sm:pt-10 md:pt-12 pb-12 sm:pb-14 md:pb-16"
         aria-labelledby="formulas-heading"
       >
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-20 -left-20 size-[650px] rounded-full bg-[#243888]/20 blur-[150px]"
+          className="pointer-events-none absolute top-16 -left-24 size-[620px] rounded-full bg-[#243888]/18 blur-[155px]"
         />
         <div
           aria-hidden="true"
           className="pointer-events-none absolute bottom-0 right-0 size-[600px] rounded-full bg-[#282A74]/20 blur-[150px]"
+        />
+        {/* Continuité chromatique en haut de section pour garantir une jonction sans rupture */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-[#11114E] to-transparent z-[1]"
         />
 
         <div className="container-site relative z-10">
@@ -446,7 +460,96 @@ function Index() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 3. RÉSULTATS : 3 EXEMPLES CONCRETS + BOUTON VERS LA PAGE DÉDIÉE          */}
+      {/* 3. AUSSI À DOMICILE : CANAPÉS, MATELAS ET TEXTILES                        */}
+      {/* ========================================================================= */}
+      <section
+        className="bg-[#E9EDF1] text-[#11114E] py-10 sm:py-12 border-t border-slate-200/90"
+        aria-labelledby="textiles-secondary-heading"
+      >
+        <div className="container-site">
+          <div className="rounded-2xl bg-white border border-slate-200/90 p-5 sm:p-7 md:p-8 shadow-sm grid gap-6 lg:grid-cols-12 lg:items-center">
+            <div className="lg:col-span-6 space-y-3">
+              <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest">
+                <span className="w-6 h-[2px] bg-primary" />
+                <span>Service complémentaire à domicile</span>
+              </div>
+              <h2
+                id="textiles-secondary-heading"
+                className="text-2xl sm:text-3xl font-display font-bold uppercase tracking-tight text-[#11114E]"
+              >
+                Aussi à domicile : canapés, matelas et textiles
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-xl">
+                Bichonne ta Caisse intervient également chez vous dans la métropole lilloise pour
+                nettoyer en profondeur vos canapés, fauteuils et matelas par injection-extraction,
+                ainsi que vos tapis et chaises sur devis.
+              </p>
+              <div className="pt-1">
+                <Link
+                  to="/canapes-textiles"
+                  className="btn btn-primary w-full sm:w-auto text-xs sm:text-sm font-bold uppercase tracking-wider px-5 py-3 shadow-md"
+                >
+                  <span>Découvrir le nettoyage textile</span>
+                  <ArrowRight className="size-4" />
+                </Link>
+              </div>
+            </div>
+
+            <div className="lg:col-span-6 grid grid-cols-3 gap-2.5 sm:gap-3.5">
+              <Link
+                to="/canapes-textiles"
+                className="group rounded-xl bg-[#F6F8FC] border border-slate-200/80 hover:border-primary/50 p-3 sm:p-4 text-center flex flex-col items-center justify-between transition-all hover:-translate-y-0.5"
+              >
+                <TextileLineIcon
+                  id="canape-2-3"
+                  className="w-[68px] h-[40px] sm:w-[76px] sm:h-[44px]"
+                />
+                <div className="mt-2">
+                  <p className="font-display text-sm sm:text-base font-bold uppercase tracking-wide text-[#11114E]">
+                    Canapés
+                  </p>
+                  <p className="text-xs font-bold text-primary">Dès 69 €</p>
+                </div>
+              </Link>
+
+              <Link
+                to="/canapes-textiles"
+                className="group rounded-xl bg-[#F6F8FC] border border-slate-200/80 hover:border-primary/50 p-3 sm:p-4 text-center flex flex-col items-center justify-between transition-all hover:-translate-y-0.5"
+              >
+                <TextileLineIcon
+                  id="fauteuil"
+                  className="w-[68px] h-[40px] sm:w-[76px] sm:h-[44px]"
+                />
+                <div className="mt-2">
+                  <p className="font-display text-sm sm:text-base font-bold uppercase tracking-wide text-[#11114E]">
+                    Fauteuils
+                  </p>
+                  <p className="text-xs font-bold text-primary">39 €</p>
+                </div>
+              </Link>
+
+              <Link
+                to="/canapes-textiles"
+                className="group rounded-xl bg-[#F6F8FC] border border-slate-200/80 hover:border-primary/50 p-3 sm:p-4 text-center flex flex-col items-center justify-between transition-all hover:-translate-y-0.5"
+              >
+                <TextileLineIcon
+                  id="matelas-2"
+                  className="w-[68px] h-[40px] sm:w-[76px] sm:h-[44px]"
+                />
+                <div className="mt-2">
+                  <p className="font-display text-sm sm:text-base font-bold uppercase tracking-wide text-[#11114E]">
+                    Matelas
+                  </p>
+                  <p className="text-xs font-bold text-primary">Dès 39 €</p>
+                </div>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 4. RÉSULTATS : 3 EXEMPLES CONCRETS + BOUTON VERS LA PAGE DÉDIÉE           */}
       {/* ========================================================================= */}
       <section
         className="relative overflow-hidden bg-gradient-to-b from-[#FAFBFD] via-[#F4F6FB] to-[#EDF1F7] text-[#11114E] py-12 sm:py-14 md:py-16"
@@ -576,7 +679,7 @@ function Index() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 4. CONTACT : APPEL CLAIR À DEMANDER UN DEVIS / CONTACTER L'ENTREPRISE     */}
+      {/* 5. CONTACT : APPEL CLAIR À DEMANDER UN DEVIS / CONTACTER L'ENTREPRISE     */}
       {/* ========================================================================= */}
       <section
         className="relative overflow-hidden bg-[#11114E] text-white py-12 sm:py-14 md:py-16 border-t border-white/10"

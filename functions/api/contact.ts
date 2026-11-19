@@ -91,6 +91,7 @@ export async function onRequestPost(context: EventContext): Promise<Response> {
 
   try {
     const data = (await request.json()) as {
+      activity?: "auto" | "textiles";
       name?: string;
       phone?: string;
       email?: string;
@@ -100,6 +101,8 @@ export async function onRequestPost(context: EventContext): Promise<Response> {
       isGrandUtility?: boolean;
       address?: string;
       city?: string;
+      travelDistanceKm?: number | null;
+      travelFee?: number | null;
       parking?: string;
       waterAccess?: boolean;
       electricityAccess?: boolean;
@@ -108,9 +111,6 @@ export async function onRequestPost(context: EventContext): Promise<Response> {
       selectedCares?: string[];
       isVeryDirty?: boolean;
       hasPetHair?: boolean;
-      dateChoice?: string;
-      preferredDate?: string;
-      timeSlot?: string;
       message?: string;
       estimatedTotal?: number;
       hp?: string;
@@ -118,15 +118,17 @@ export async function onRequestPost(context: EventContext): Promise<Response> {
     };
 
     const {
+      activity,
       name,
       phone,
       email,
       vehicle,
       vehicleCategory,
       utilitySurcharge,
-      isGrandUtility,
       address,
       city,
+      travelDistanceKm,
+      travelFee,
       parking,
       waterAccess,
       electricityAccess,
@@ -135,9 +137,6 @@ export async function onRequestPost(context: EventContext): Promise<Response> {
       selectedCares,
       isVeryDirty,
       hasPetHair,
-      dateChoice,
-      preferredDate,
-      timeSlot,
       message,
       estimatedTotal,
       hp,
@@ -297,51 +296,74 @@ export async function onRequestPost(context: EventContext): Promise<Response> {
     const safeCares = selectedCares?.length
       ? selectedCares.map((c) => escapeHtml(String(c))).join(", ")
       : "Aucun";
-    const safeDate = preferredDate?.trim() ? escapeHtml(preferredDate.trim()) : "Non sélectionnée";
-    const safeTimeSlot = timeSlot?.trim() ? escapeHtml(timeSlot.trim()) : "Flexible";
+    const isTextiles = activity === "textiles" || vehicleCategory === "textile";
     const safeMessage = message?.trim()
       ? escapeHtml(message.trim()).replace(/\n/g, "<br>")
       : "Aucun message complémentaire.";
 
+    const travelFeeText =
+      typeof travelFee === "number" && typeof travelDistanceKm === "number"
+        ? travelFee === 0
+          ? `0,00 € (Déplacement offert : ${travelDistanceKm} km aller depuis Place de la République, Lille)`
+          : `${travelFee.toFixed(2).replace(".", ",")} € (Distance routière estimée : ${travelDistanceKm} km aller)`
+        : "Frais de déplacement à confirmer";
+
+    const totalDisplay =
+      typeof estimatedTotal === "number"
+        ? `${estimatedTotal} €`
+        : isTextiles
+          ? "Sur devis (+ frais de déplacement à confirmer)"
+          : "À définir";
+
     const textLines = [
-      `Nouvelle demande de devis - Bichonne ta Caisse`,
+      isTextiles
+        ? `Nouvelle demande Canapés & textiles - Bichonne ta Caisse`
+        : `Nouvelle demande de devis - Bichonne ta Caisse`,
       `----------------------------------------------`,
       `Client : ${name.trim()}`,
       `Téléphone : ${phone.trim()}`,
       `E-mail : ${email?.trim() || "Non renseigné"}`,
       ``,
-      `Véhicule : ${vehicle?.trim() || "Non précisé"}${
-        vehicleCategory === "utilitaire"
-          ? " (Utilitaire)"
-          : vehicleCategory === "grand-utilitaire"
-            ? " (Grand utilitaire)"
-            : ""
-      }`,
-      `Catégorie : ${
-        vehicleCategory === "utilitaire"
-          ? "Véhicule utilitaire"
-          : vehicleCategory === "grand-utilitaire"
-            ? "Grand utilitaire"
-            : "Véhicule particulier standard"
-      }`,
-      utilitySurcharge ? `Supplément utilitaire : +${utilitySurcharge} €` : null,
+      isTextiles
+        ? `Textile / Dimensions : ${vehicle?.trim() || "Non précisé"}`
+        : `Véhicule : ${vehicle?.trim() || "Non précisé"}${
+            vehicleCategory === "utilitaire"
+              ? " (Utilitaire)"
+              : vehicleCategory === "grand-utilitaire"
+                ? " (Grand utilitaire)"
+                : ""
+          }`,
+      !isTextiles
+        ? `Catégorie : ${
+            vehicleCategory === "utilitaire"
+              ? "Véhicule utilitaire"
+              : vehicleCategory === "grand-utilitaire"
+                ? "Grand utilitaire"
+                : "Véhicule particulier standard"
+          }`
+        : null,
+      !isTextiles && utilitySurcharge ? `Supplément utilitaire : +${utilitySurcharge} €` : null,
       `Adresse d'intervention : ${address?.trim() || "Non précisée"}`,
       `Ville d'intervention : ${city?.trim() || "Non précisée"}`,
-      `Lieu de stationnement : ${parking?.trim() || "Non précisé"}`,
+      isTextiles
+        ? `Accès logement : ${parking?.trim() || "Non précisé"}`
+        : `Lieu de stationnement : ${parking?.trim() || "Non précisé"}`,
       `Accès à l'eau : ${waterAccess ? "Oui" : "Non"}`,
       `Prise électrique : ${electricityAccess ? "Oui" : "Non"}`,
+      `Déplacement : ${travelFeeText}`,
       ``,
-      `Formule : ${formulaName?.trim() || "À définir ensemble"} (${typeof formulaPrice === "number" ? `${formulaPrice} €` : "—"})`,
-      `Soins ciblés : ${selectedCares?.length ? selectedCares.join(", ") : "Aucun"}`,
-      `Véhicule particulièrement sale : ${isVeryDirty ? "Oui" : "Non"}`,
-      `Présence de poils d'animaux : ${hasPetHair ? "Oui" : "Non"}`,
-      `Supplément saleté / poils : ${isVeryDirty || hasPetHair ? "+15 € (une seule fois)" : "Aucun"}`,
+      `Prestation : ${formulaName?.trim() || "À définir ensemble"} (${typeof formulaPrice === "number" ? `${formulaPrice} €` : isTextiles ? "Sur devis" : "—"})`,
+      `Options : ${selectedCares?.length ? selectedCares.join(", ") : "Aucune"}`,
+      !isTextiles
+        ? `Supplément saleté / poils : ${isVeryDirty || hasPetHair ? "+15 € (une seule fois)" : "Aucun"}`
+        : null,
       ``,
-      `Rendez-vous : ${dateChoice === "calendar" ? `Date souhaitée : ${preferredDate || "Non sélectionnée"}` : "À convenir ensemble"}`,
-      `Créneau horaire : ${timeSlot || "Flexible"}`,
+      `Date & horaire d'intervention : À convenir ensemble lors du rappel`,
       ``,
-      `Tarif estimé : ${typeof estimatedTotal === "number" ? `${estimatedTotal} €` : "À définir"}${
-        utilitySurcharge ? ` (dont supplément utilitaire +${utilitySurcharge} €)` : ""
+      `Tarif estimé : ${totalDisplay}${
+        !isTextiles && utilitySurcharge
+          ? ` (dont supplément utilitaire +${utilitySurcharge} €)`
+          : ""
       }`,
       ``,
       `Message complémentaire :`,
@@ -349,41 +371,47 @@ export async function onRequestPost(context: EventContext): Promise<Response> {
     ].filter((l): l is string => l !== null);
 
     const htmlBody = `
-      <h2>Nouvelle demande de devis - Bichonne ta Caisse</h2>
+      <h2>${isTextiles ? "Nouvelle demande Canapés &amp; textiles" : "Nouvelle demande de devis"} - Bichonne ta Caisse</h2>
       <h3>Coordonnées</h3>
       <p><strong>Nom et prénom :</strong> ${safeName}</p>
       <p><strong>Téléphone :</strong> <a href="tel:${safePhone}">${safePhone}</a></p>
       <p><strong>E-mail :</strong> ${safeEmail ? `<a href="mailto:${safeEmail}">${safeEmail}</a>` : "Non renseigné"}</p>
       
-      <h3>Véhicule & Intervention</h3>
-      <p><strong>Marque et modèle :</strong> ${safeVehicle}</p>
-      <p><strong>Catégorie :</strong> ${
-        vehicleCategory === "utilitaire"
-          ? "Véhicule utilitaire"
-          : vehicleCategory === "grand-utilitaire"
-            ? "Grand utilitaire"
-            : "Véhicule particulier standard"
-      }</p>
-      ${utilitySurcharge ? `<p><strong>Supplément utilitaire :</strong> +${utilitySurcharge} €</p>` : ""}
+      <h3>${isTextiles ? "Textile &amp; Intervention" : "Véhicule &amp; Intervention"}</h3>
+      <p><strong>${isTextiles ? "Textile / Dimensions" : "Marque et modèle"} :</strong> ${safeVehicle}</p>
+      ${
+        !isTextiles
+          ? `<p><strong>Catégorie :</strong> ${
+              vehicleCategory === "utilitaire"
+                ? "Véhicule utilitaire"
+                : vehicleCategory === "grand-utilitaire"
+                  ? "Grand utilitaire"
+                  : "Véhicule particulier standard"
+            }</p>`
+          : ""
+      }
+      ${!isTextiles && utilitySurcharge ? `<p><strong>Supplément utilitaire :</strong> +${utilitySurcharge} €</p>` : ""}
       <p><strong>Adresse :</strong> ${safeAddress}</p>
       <p><strong>Ville :</strong> ${safeCity}</p>
-      <p><strong>Lieu de stationnement :</strong> ${safeParking}</p>
+      <p><strong>${isTextiles ? "Accès logement" : "Lieu de stationnement"} :</strong> ${safeParking}</p>
       <p><strong>Accès à l'eau :</strong> ${waterAccess ? "Oui" : "Non"}</p>
       <p><strong>Prise électrique :</strong> ${electricityAccess ? "Oui" : "Non"}</p>
+      <p><strong>Déplacement :</strong> ${escapeHtml(travelFeeText)}</p>
 
-      <h3>Prestations & État</h3>
-      <p><strong>Formule :</strong> ${safeFormula} ${typeof formulaPrice === "number" ? `(${formulaPrice} €)` : ""}</p>
-      <p><strong>Soins ciblés :</strong> ${safeCares}</p>
-      <p><strong>Particulièrement sale :</strong> ${isVeryDirty ? "Oui" : "Non"}</p>
-<p><strong>Poils d'animaux :</strong> ${hasPetHair ? "Oui" : "Non"}</p>
-<p><strong>Supplément saleté / poils :</strong> ${isVeryDirty || hasPetHair ? "+15 € (une seule fois)" : "Aucun"}</p>
-      <h3>Disponibilité</h3>
-      <p><strong>Date :</strong> ${dateChoice === "calendar" ? `Date souhaitée : ${safeDate}` : "À convenir ensemble"}</p>
-      <p><strong>Créneau :</strong> ${safeTimeSlot}</p>
+      <h3>Prestations &amp; Options</h3>
+      <p><strong>Prestation :</strong> ${safeFormula} ${typeof formulaPrice === "number" ? `(${formulaPrice} €)` : isTextiles ? "(Sur devis)" : ""}</p>
+      <p><strong>Options :</strong> ${safeCares}</p>
+      ${
+        !isTextiles
+          ? `<p><strong>Supplément saleté / poils :</strong> ${isVeryDirty || hasPetHair ? "+15 € (une seule fois)" : "Aucun"}</p>`
+          : ""
+      }
+      <h3>Date d'intervention</h3>
+      <p><strong>Date &amp; horaire :</strong> À convenir ensemble lors de notre rappel téléphonique</p>
 
       <h3>Tarif estimé</h3>
-      <p style="font-size: 1.25rem; font-weight: bold; color: #ea580c;">${typeof estimatedTotal === "number" ? `${estimatedTotal} €` : "À définir"}${
-        utilitySurcharge ? ` (dont utilitaire +${utilitySurcharge} €)` : ""
+      <p style="font-size: 1.25rem; font-weight: bold; color: #ea580c;">${escapeHtml(totalDisplay)}${
+        !isTextiles && utilitySurcharge ? ` (dont utilitaire +${utilitySurcharge} €)` : ""
       }</p>
 
       <h3>Message complémentaire</h3>
@@ -400,7 +428,9 @@ export async function onRequestPost(context: EventContext): Promise<Response> {
         from: `Bichonne ta Caisse <${senderEmail}>`,
         to: [recipientEmail],
         reply_to: safeEmail && isValidEmail(email) ? safeEmail : undefined,
-        subject: `Demande de devis - ${safeName} (${city?.trim() || "Métropole lilloise"})`,
+        subject: isTextiles
+          ? `Demande Canapés & textiles - ${safeName} (${city?.trim() || "Métropole lilloise"})`
+          : `Demande de devis - ${safeName} (${city?.trim() || "Métropole lilloise"})`,
         text: textLines.join("\n"),
         html: htmlBody,
       }),

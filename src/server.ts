@@ -382,6 +382,7 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
 
   try {
     const data = (await request.json()) as {
+      activity?: "auto" | "textiles";
       name?: string;
       phone?: string;
       email?: string;
@@ -413,6 +414,7 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
     };
 
     const {
+      activity,
       name,
       phone,
       email,
@@ -629,11 +631,14 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
         "Frais de déplacement à confirmer lors de notre rappel (selon l'itinéraire routier)";
     }
 
+    const isTextiles = activity === "textiles" || vehicleCategory === "textile";
+
     // Récapitulatif du total estimé avec frais de déplacement vérifiés
     let finalTotalDisplay = "";
     if (typeof formulaPrice === "number") {
-      const basePrestationTotal =
-        formulaPrice + (utilitySurcharge || 0) + (isVeryDirty ? 15 : 0) + (hasPetHair ? 15 : 0);
+      const basePrestationTotal = isTextiles
+        ? formulaPrice + (isVeryDirty || hasPetHair ? 15 : 0)
+        : formulaPrice + (utilitySurcharge || 0) + (isVeryDirty ? 15 : 0) + (hasPetHair ? 15 : 0);
 
       if (verifiedTravelFee !== null && verifiedTravelFee > 0) {
         const totalWithTravel = Math.round((basePrestationTotal + verifiedTravelFee) * 100) / 100;
@@ -643,43 +648,62 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
       } else {
         finalTotalDisplay = `${basePrestationTotal} € (+ frais de déplacement à confirmer)`;
       }
+    } else if (typeof estimatedTotal === "number") {
+      finalTotalDisplay = `${estimatedTotal} €`;
+    } else if (isTextiles) {
+      finalTotalDisplay =
+        verifiedTravelFee !== null && verifiedTravelFee > 0
+          ? `Sur devis (+ ${verifiedTravelFee.toFixed(2).replace(".", ",")} € de frais de déplacement)`
+          : verifiedTravelFee === 0
+            ? "Sur devis (déplacement offert inclus)"
+            : "Sur devis (+ frais de déplacement à confirmer)";
     } else {
-      finalTotalDisplay = typeof estimatedTotal === "number" ? `${estimatedTotal} €` : "À définir";
+      finalTotalDisplay = "À définir";
     }
 
     const textLines = [
-      `Nouvelle demande de devis - Bichonne ta Caisse`,
+      isTextiles
+        ? `Nouvelle demande Canapés & textiles - Bichonne ta Caisse`
+        : `Nouvelle demande de devis - Bichonne ta Caisse`,
       `----------------------------------------------`,
       `Client : ${name.trim()}`,
       `Téléphone : ${phone.trim()}`,
       `E-mail : ${email?.trim() || "Non renseigné"}`,
       ``,
-      `Véhicule : ${vehicle?.trim() || "Non précisé"}${
-        vehicleCategory === "utilitaire"
-          ? " (Utilitaire)"
-          : vehicleCategory === "grand-utilitaire"
-            ? " (Grand utilitaire)"
-            : ""
-      }`,
-      `Catégorie : ${
-        vehicleCategory === "utilitaire"
-          ? "Véhicule utilitaire"
-          : vehicleCategory === "grand-utilitaire"
-            ? "Grand utilitaire"
-            : "Véhicule particulier standard"
-      }`,
-      utilitySurcharge ? `Supplément utilitaire : +${utilitySurcharge} €` : null,
+      isTextiles
+        ? `Textile / Dimensions : ${vehicle?.trim() || "Non précisé"}`
+        : `Véhicule : ${vehicle?.trim() || "Non précisé"}${
+            vehicleCategory === "utilitaire"
+              ? " (Utilitaire)"
+              : vehicleCategory === "grand-utilitaire"
+                ? " (Grand utilitaire)"
+                : ""
+          }`,
+      !isTextiles
+        ? `Catégorie : ${
+            vehicleCategory === "utilitaire"
+              ? "Véhicule utilitaire"
+              : vehicleCategory === "grand-utilitaire"
+                ? "Grand utilitaire"
+                : "Véhicule particulier standard"
+          }`
+        : null,
+      !isTextiles && utilitySurcharge ? `Supplément utilitaire : +${utilitySurcharge} €` : null,
       `Adresse d'intervention : ${address?.trim() || "Non précisée"}`,
       `Ville d'intervention : ${city?.trim() || "Non précisée"}`,
-      `Lieu de stationnement : ${parking?.trim() || "Non précisé"}`,
+      isTextiles
+        ? `Accès logement : ${parking?.trim() || "Non précisé"}`
+        : `Lieu de stationnement : ${parking?.trim() || "Non précisé"}`,
       `Accès à l'eau : ${waterAccess ? "Oui" : "Non"}`,
       `Prise électrique : ${electricityAccess ? "Oui" : "Non"}`,
       `Déplacement : ${travelFeeText}`,
       ``,
-      `Formule : ${formulaName?.trim() || "À définir ensemble"} (${typeof formulaPrice === "number" ? `${formulaPrice} €` : "—"})`,
-      `Soins ciblés : ${selectedCares?.length ? selectedCares.join(", ") : "Aucun"}`,
-      `Véhicule particulièrement sale : ${isVeryDirty ? "Oui (+15 €)" : "Non"}`,
-      `Présence de poils d'animaux : ${hasPetHair ? "Oui (+15 €)" : "Non"}`,
+      `Formule : ${formulaName?.trim() || "À définir ensemble"} (${typeof formulaPrice === "number" ? `${formulaPrice} €` : isTextiles ? "Sur devis" : "—"})`,
+      `Options : ${selectedCares?.length ? selectedCares.join(", ") : "Aucune"}`,
+      !isTextiles
+        ? `Véhicule particulièrement sale : ${isVeryDirty ? "Oui (+15 €)" : "Non"}`
+        : null,
+      !isTextiles ? `Présence de poils d'animaux : ${hasPetHair ? "Oui (+15 €)" : "Non"}` : null,
       ``,
       `Date et horaire d'intervention : À convenir ensemble lors du rappel`,
       ``,
@@ -690,34 +714,42 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
     ].filter((l): l is string => l !== null);
 
     const htmlBody = `
-      <h2>Nouvelle demande de devis - Bichonne ta Caisse</h2>
+      <h2>${isTextiles ? "Nouvelle demande Canapés &amp; textiles" : "Nouvelle demande de devis"} - Bichonne ta Caisse</h2>
       <h3>Coordonnées</h3>
       <p><strong>Nom et prénom :</strong> ${safeName}</p>
       <p><strong>Téléphone :</strong> <a href="tel:${safePhone}">${safePhone}</a></p>
       <p><strong>E-mail :</strong> ${safeEmail ? `<a href="mailto:${safeEmail}">${safeEmail}</a>` : "Non renseigné"}</p>
       
-      <h3>Véhicule & Intervention</h3>
-      <p><strong>Marque et modèle :</strong> ${safeVehicle}</p>
-      <p><strong>Catégorie :</strong> ${
-        vehicleCategory === "utilitaire"
-          ? "Véhicule utilitaire"
-          : vehicleCategory === "grand-utilitaire"
-            ? "Grand utilitaire"
-            : "Véhicule particulier standard"
-      }</p>
-      ${utilitySurcharge ? `<p><strong>Supplément utilitaire :</strong> +${utilitySurcharge} €</p>` : ""}
+      <h3>${isTextiles ? "Textile &amp; Intervention" : "Véhicule &amp; Intervention"}</h3>
+      <p><strong>${isTextiles ? "Textile / Dimensions" : "Marque et modèle"} :</strong> ${safeVehicle}</p>
+      ${
+        !isTextiles
+          ? `<p><strong>Catégorie :</strong> ${
+              vehicleCategory === "utilitaire"
+                ? "Véhicule utilitaire"
+                : vehicleCategory === "grand-utilitaire"
+                  ? "Grand utilitaire"
+                  : "Véhicule particulier standard"
+            }</p>`
+          : ""
+      }
+      ${!isTextiles && utilitySurcharge ? `<p><strong>Supplément utilitaire :</strong> +${utilitySurcharge} €</p>` : ""}
       <p><strong>Adresse :</strong> ${safeAddress}</p>
       <p><strong>Ville :</strong> ${safeCity}</p>
-      <p><strong>Lieu de stationnement :</strong> ${safeParking}</p>
+      <p><strong>${isTextiles ? "Accès logement" : "Lieu de stationnement"} :</strong> ${safeParking}</p>
       <p><strong>Accès à l'eau :</strong> ${waterAccess ? "Oui" : "Non"}</p>
       <p><strong>Prise électrique :</strong> ${electricityAccess ? "Oui" : "Non"}</p>
       <p><strong>Déplacement :</strong> ${escapeHtml(travelFeeText)}</p>
 
-      <h3>Prestations & État</h3>
-      <p><strong>Formule :</strong> ${safeFormula} ${typeof formulaPrice === "number" ? `(${formulaPrice} €)` : ""}</p>
-      <p><strong>Soins ciblés :</strong> ${safeCares}</p>
-      <p><strong>Particulièrement sale :</strong> ${isVeryDirty ? "Oui (+15 €)" : "Non"}</p>
-      <p><strong>Poils d'animaux :</strong> ${hasPetHair ? "Oui (+15 €)" : "Non"}</p>
+      <h3>Prestations &amp; Options</h3>
+      <p><strong>Prestation :</strong> ${safeFormula} ${typeof formulaPrice === "number" ? `(${formulaPrice} €)` : isTextiles ? "(Sur devis)" : ""}</p>
+      <p><strong>Options :</strong> ${safeCares}</p>
+      ${
+        !isTextiles
+          ? `<p><strong>Particulièrement sale :</strong> ${isVeryDirty ? "Oui (+15 €)" : "Non"}</p>
+      <p><strong>Poils d'animaux :</strong> ${hasPetHair ? "Oui (+15 €)" : "Non"}</p>`
+          : ""
+      }
 
       <h3>Date d'intervention</h3>
       <p><strong>Date &amp; horaire :</strong> À convenir ensemble lors de notre rappel téléphonique</p>
@@ -739,7 +771,9 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
         from: `Bichonne ta Caisse <${senderEmail}>`,
         to: [recipientEmail],
         reply_to: safeEmail && isValidEmail(email) ? safeEmail : undefined,
-        subject: `Demande de devis - ${safeName} (${city?.trim() || "Métropole lilloise"})`,
+        subject: isTextiles
+          ? `Demande Canapés & textiles - ${safeName} (${city?.trim() || "Métropole lilloise"})`
+          : `Demande de devis - ${safeName} (${city?.trim() || "Métropole lilloise"})`,
         text: textLines.join("\n"),
         html: htmlBody,
       }),

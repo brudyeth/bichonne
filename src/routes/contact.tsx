@@ -17,20 +17,49 @@ import {
   CheckCircle2,
   Info,
   Loader2,
+  Sofa,
+  Minus,
+  Plus,
 } from "lucide-react";
 import { PageHero, Facebook3DIcon, Instagram3DIcon } from "@/components/site/Layout";
+import { TextileSteamIcon } from "@/components/site/TextileIcons";
 import { BUSINESS, FORMULAS, INTENSIVE_DIRT_NOTICE, euro, whatsappLink } from "@/lib/business";
+import {
+  TEXTILE_FIXED_PRESTATIONS,
+  TEXTILE_HONEST_NOTICE,
+  TEXTILE_PRESTATIONS,
+  TEXTILE_QUOTE_PRESTATIONS,
+  TEXTILE_STEAM_OPTION,
+  calculateTextileEstimate,
+} from "@/lib/textiles";
 
-type Search = { formule?: string | undefined };
+type Search = {
+  formule?: string | undefined;
+  activite?: "auto" | "textiles" | undefined;
+  prestation?: string | undefined;
+};
 
 export const Route = createFileRoute("/contact")({
   validateSearch: (s: Record<string, unknown>): Search => {
-    const raw = typeof s["formule"] === "string" ? s["formule"] : undefined;
-    if (!raw) return { formule: undefined };
-    if (FORMULAS.some((f) => f.id === raw)) return { formule: raw };
-    if (raw === "interieur") return { formule: "interieur-premium" };
-    if (raw === "exterieur") return { formule: "interieur-express" };
-    return { formule: undefined };
+    const rawFormule = typeof s["formule"] === "string" ? s["formule"] : undefined;
+    let formule: string | undefined;
+    if (rawFormule) {
+      if (FORMULAS.some((f) => f.id === rawFormule)) formule = rawFormule;
+      else if (rawFormule === "interieur") formule = "interieur-premium";
+      else if (rawFormule === "exterieur") formule = "interieur-express";
+    }
+
+    const rawActivite = s["activite"];
+    const activite =
+      rawActivite === "textiles" ? "textiles" : rawActivite === "auto" ? "auto" : undefined;
+
+    const rawPrestation = typeof s["prestation"] === "string" ? s["prestation"] : undefined;
+    const prestation =
+      rawPrestation && TEXTILE_PRESTATIONS.some((p) => p.id === rawPrestation)
+        ? rawPrestation
+        : undefined;
+
+    return { formule, activite, prestation };
   },
   head: () => ({
     meta: [
@@ -111,23 +140,67 @@ const PARKING_CHOICES = [
   "Autre",
 ] as const;
 
-const STEPS = [
-  { num: 1, label: "Prestation", title: "Votre prestation", icon: Sparkles },
-  { num: 2, label: "Véhicule", title: "Votre véhicule & Lieu", icon: Car },
-  { num: 3, label: "Coordonnées", title: "Vos coordonnées & Confirmation", icon: CheckCircle2 },
+const TEXTILE_ACCESS_CHOICES = [
+  "Rez-de-chaussée ou maison",
+  "Appartement avec ascenseur",
+  "Appartement sans ascenseur",
+  "Autre",
 ] as const;
 
 function Page() {
-  const { formule } = Route.useSearch();
+  const { formule, activite, prestation } = Route.useSearch();
   const formTopRef = useRef<HTMLDivElement>(null);
 
   // Étape courante (1 à 3)
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
 
-  // Étape 1 : Prestation
+  // Activité choisie (nettoyage auto par défaut, ou canapés & textiles)
+  const [activity, setActivity] = useState<"auto" | "textiles">(
+    activite === "textiles" || prestation ? "textiles" : "auto",
+  );
+
+  // Étape 1 : Prestation auto
   const [formula, setFormula] = useState(formule ?? "");
   const [cares, setCares] = useState<string[]>([]);
   const [hasIntensiveDirt, setHasIntensiveDirt] = useState(false);
+
+  // Étape 1 & 2 : Prestations canapés & textiles (multi-pièces + traitement vapeur facultatif)
+  const [textileQuantities, setTextileQuantities] = useState<Record<string, number>>(() => {
+    if (prestation && TEXTILE_FIXED_PRESTATIONS.some((p) => p.id === prestation)) {
+      return { [prestation]: 1 };
+    }
+    return {};
+  });
+  const [textileQuoteIds, setTextileQuoteIds] = useState<string[]>(() => {
+    if (prestation && TEXTILE_QUOTE_PRESTATIONS.some((p) => p.id === prestation)) {
+      return [prestation];
+    }
+    return [];
+  });
+  // Le traitement vapeur n'est JAMAIS sélectionné par défaut
+  const [textileSteamEnabled, setTextileSteamEnabled] = useState(false);
+  const [textileSteamQuantities, setTextileSteamQuantities] = useState<Record<string, number>>({});
+  const [textileSteamCustomCount, setTextileSteamCustomCount] = useState(1);
+  const [textileDetails, setTextileDetails] = useState("");
+  const [textileAccess, setTextileAccess] = useState<string>("Rez-de-chaussée ou maison");
+
+  useEffect(() => {
+    if (activite === "textiles" || prestation) {
+      setActivity("textiles");
+      if (prestation) {
+        if (TEXTILE_FIXED_PRESTATIONS.some((p) => p.id === prestation)) {
+          setTextileQuantities((prev) =>
+            (prev[prestation] ?? 0) > 0 ? prev : { ...prev, [prestation]: 1 },
+          );
+        } else if (TEXTILE_QUOTE_PRESTATIONS.some((p) => p.id === prestation)) {
+          setTextileQuoteIds((prev) => (prev.includes(prestation) ? prev : [...prev, prestation]));
+        }
+      }
+    } else if (activite === "auto" || formule) {
+      setActivity("auto");
+      if (formule) setFormula(formule);
+    }
+  }, [activite, prestation, formule]);
 
   // Étape 2 : Véhicule & Lieu
   const [vehicle, setVehicle] = useState("");
@@ -182,6 +255,129 @@ function Page() {
 
   const selectedFormula = FORMULAS.find((x) => x.id === formula);
   const selectedCaresList = FORM_CARES.filter((c) => cares.includes(c.id));
+
+  const textileEstimate = useMemo(
+    () =>
+      calculateTextileEstimate({
+        quantities: textileQuantities,
+        quoteIds: textileQuoteIds,
+        steamEnabled: textileSteamEnabled,
+        steamQuantities: textileSteamQuantities,
+        steamCustomCount: textileSteamCustomCount,
+      }),
+    [
+      textileQuantities,
+      textileQuoteIds,
+      textileSteamEnabled,
+      textileSteamQuantities,
+      textileSteamCustomCount,
+    ],
+  );
+
+  const isTextileQuoteOnly = activity === "textiles" && textileEstimate.isQuoteOnlyOrder;
+
+  const updateTextileQuantity = (id: string, delta: number) => {
+    setTextileQuantities((prev) => {
+      const nextQty = Math.max(0, Math.min(20, (prev[id] ?? 0) + delta));
+      const updated = { ...prev };
+      if (nextQty === 0) {
+        delete updated[id];
+      } else {
+        updated[id] = nextQty;
+      }
+
+      // Synchronise le nombre de pièces vapeur si la quantité diminue
+      setTextileSteamQuantities((steamPrev) => {
+        const currentSteam = steamPrev[id] ?? 0;
+        if (nextQty === 0) {
+          if (!(id in steamPrev)) return steamPrev;
+          const nextSteam = { ...steamPrev };
+          delete nextSteam[id];
+          return nextSteam;
+        }
+        if (currentSteam > nextQty) {
+          return { ...steamPrev, [id]: nextQty };
+        }
+        return steamPrev;
+      });
+
+      return updated;
+    });
+  };
+
+  const toggleTextileSteam = (enabled: boolean) => {
+    setTextileSteamEnabled(enabled);
+    if (enabled) {
+      // Pré-coche les éléments déjà sélectionnés dans la commande ; l'utilisateur peut ensuite ajuster pièce par pièce
+      const nextSteam: Record<string, number> = {};
+      for (const line of textileEstimate.fixedLines) {
+        nextSteam[line.id] = line.quantity;
+      }
+      setTextileSteamQuantities(nextSteam);
+      if (textileEstimate.totalFixedPieces === 0 && textileSteamCustomCount < 1) {
+        setTextileSteamCustomCount(1);
+      }
+    } else {
+      setTextileSteamQuantities({});
+    }
+  };
+
+  const updateTextileSteamQuantity = (id: string, maxQty: number, nextVal: number) => {
+    const clamped = Math.max(0, Math.min(maxQty, nextVal));
+    setTextileSteamQuantities((prev) => {
+      const updated = { ...prev };
+      if (clamped === 0) {
+        delete updated[id];
+      } else {
+        updated[id] = clamped;
+      }
+      return updated;
+    });
+  };
+
+  const textileSelectionLabel = useMemo(() => {
+    const parts: string[] = [
+      ...textileEstimate.fixedLines.map((l) =>
+        l.quantity > 1
+          ? `${l.quantity} × ${l.name} (${euro(l.subtotal)})`
+          : `${l.name} (${euro(l.subtotal)})`,
+      ),
+      ...textileEstimate.quoteItems.map((q) => `${q.name} (Sur devis)`),
+    ];
+    return parts.length > 0 ? parts.join(", ") : "À définir ensemble (devis personnalisé)";
+  }, [textileEstimate]);
+
+  const textileSteamDetailLabel = useMemo(() => {
+    if (!textileSteamEnabled || textileEstimate.steamPiecesCount === 0) return "";
+    if (textileEstimate.totalFixedPieces === 0) {
+      return `${textileEstimate.steamPiecesCount} ${textileEstimate.steamPiecesCount > 1 ? "pièces" : "pièce"} (+${euro(textileEstimate.steamSurcharge)})`;
+    }
+    const itemsList = textileEstimate.fixedLines
+      .filter((l) => l.steamCount > 0)
+      .map((l) => (l.steamCount > 1 ? `${l.steamCount} × ${l.name}` : l.name))
+      .join(", ");
+    return `${textileEstimate.steamPiecesCount} ${textileEstimate.steamPiecesCount > 1 ? "pièces" : "pièce"} : ${itemsList} (+${euro(textileEstimate.steamSurcharge)})`;
+  }, [textileSteamEnabled, textileEstimate]);
+
+  const steps = useMemo(
+    () =>
+      [
+        { num: 1, label: "Prestation", title: "Votre prestation", icon: Sparkles },
+        {
+          num: 2,
+          label: activity === "textiles" ? "Textile & Lieu" : "Véhicule",
+          title: activity === "textiles" ? "Votre textile & Lieu" : "Votre véhicule & Lieu",
+          icon: activity === "textiles" ? Sofa : Car,
+        },
+        {
+          num: 3,
+          label: "Coordonnées",
+          title: "Vos coordonnées & Confirmation",
+          icon: CheckCircle2,
+        },
+      ] as const,
+    [activity],
+  );
 
   // Fermeture du menu d'autocomplétion lors d'un clic extérieur
   useEffect(() => {
@@ -322,27 +518,34 @@ function Page() {
     }
   };
 
-  // Supplément véhicule utilitaire fixe de 20 €, applicable à toutes les formules (petits, moyens et grands utilitaires)
+  // Supplément véhicule utilitaire fixe de 20 €, applicable à toutes les formules auto
   const isUtilityVehicle =
-    vehicleCategory === "utilitaire" || vehicleCategory === "grand-utilitaire";
+    activity === "auto" &&
+    (vehicleCategory === "utilitaire" || vehicleCategory === "grand-utilitaire");
 
   // Total prestation de base (hors frais kilométriques éventuels)
   const baseTotal = useMemo(() => {
+    if (activity === "textiles") {
+      return textileEstimate.baseTotal;
+    }
     let t = selectedFormula?.price ?? 0;
     t += selectedCaresList.reduce((acc, c) => acc + c.price, 0);
     if (isUtilityVehicle && selectedFormula) {
       t += 20;
     }
     return t;
-  }, [selectedFormula, selectedCaresList, isUtilityVehicle]);
+  }, [activity, textileEstimate, selectedFormula, selectedCaresList, isUtilityVehicle]);
 
   // Total incluant les frais kilométriques si calculés avec succès
   const totalWithTravel = useMemo(() => {
+    if (activity === "textiles" && isTextileQuoteOnly) {
+      return null;
+    }
     if (travelCalculation && typeof travelCalculation.fee === "number") {
       return Math.round((baseTotal + travelCalculation.fee) * 100) / 100;
     }
     return null;
-  }, [baseTotal, travelCalculation]);
+  }, [activity, isTextileQuoteOnly, baseTotal, travelCalculation]);
 
   // Total estimé affiché
   const total = totalWithTravel !== null ? totalWithTravel : baseTotal;
@@ -363,9 +566,15 @@ function Page() {
       setCurrentStep(2);
       scrollToFormTop();
     } else if (currentStep === 2) {
-      if (!vehicle.trim()) {
+      if (activity === "auto" && !vehicle.trim()) {
         setStepError(
           "Veuillez indiquer la marque et le modèle du véhicule (ex. : Renault Clio, Peugeot 208...).",
+        );
+        return;
+      }
+      if (activity === "textiles" && !textileDetails.trim()) {
+        setStepError(
+          "Veuillez décrire brièvement votre textile ou ses dimensions (ex. : canapé 3 places beige, tapis 200x300 cm...).",
         );
         return;
       }
@@ -453,6 +662,76 @@ function Page() {
 
   // Formatage du message pour WhatsApp et Copie
   const summary = useMemo(() => {
+    if (activity === "textiles") {
+      const steamText =
+        textileSteamEnabled && textileEstimate.steamPiecesCount > 0
+          ? `Traitement vapeur — ${textileSteamDetailLabel}`
+          : "Aucun";
+
+      const lines: (string | null)[] = [
+        "Bonjour, je souhaite un devis Canapés & textiles pour Bichonne ta Caisse.",
+        "",
+        "📋 COORDONNÉES :",
+        `• Nom et prénom : ${name.trim() || "-"}`,
+        `• Téléphone : ${phone.trim() || "-"}`,
+        address.trim() ? `• Adresse : ${address.trim()}` : null,
+        city.trim() ? `• Ville : ${city.trim()}` : null,
+        email.trim() ? `• E-mail : ${email.trim()}` : null,
+        "",
+        "🛋️ TEXTILE & INTERVENTION :",
+        `• Prestation(s) souhaitée(s) : ${textileSelectionLabel}`,
+        `• Option traitement vapeur : ${steamText}`,
+        `• Détails / Dimensions : ${textileDetails.trim() || "Non précisé"}`,
+        `• Accès logement : ${textileAccess}`,
+        `• Accès à l'eau : ${hasWater ? "Oui" : "Non"}`,
+        `• Prise électrique accessible : ${hasElectricity ? "Oui" : "Non"}`,
+        `• Déplacement : ${
+          travelCalculation
+            ? travelCalculation.fee === 0
+              ? `Offert (${travelCalculation.distanceOneWayKm} km aller - dans les 20 km de Lille)`
+              : `+${travelCalculation.fee.toFixed(2).replace(".", ",")} € (Distance routière estimée : ${travelCalculation.distanceOneWayKm} km aller · ${(travelCalculation.distanceOneWayKm - 20).toFixed(1)} km supp. A/R)`
+            : address.trim()
+              ? "Frais de déplacement à confirmer (selon l'itinéraire routier)"
+              : "Offert jusqu'à 20 km de Lille (0,50 €/km supp. A/R au-delà)"
+        }`,
+        "",
+        "📅 DISPONIBILITÉ :",
+        "• Date & horaire d'intervention : À convenir ensemble lors du rappel",
+        "",
+        isTextileQuoteOnly
+          ? `💰 TARIF ESTIMÉ : Sur devis${
+              textileEstimate.steamSurcharge > 0
+                ? ` (+ traitement vapeur : +${euro(textileEstimate.steamSurcharge)})`
+                : ""
+            }${
+              travelCalculation && travelCalculation.fee > 0
+                ? ` (+ frais déplacement : +${travelCalculation.fee.toFixed(2).replace(".", ",")} €)`
+                : !travelCalculation && address.trim()
+                  ? " (+ frais de déplacement à confirmer)"
+                  : ""
+            }`
+          : total
+            ? `💰 TARIF ESTIMÉ : ${euro(total)}${
+                textileEstimate.hasQuoteOnlyItems ? " (+ éléments sur devis)" : ""
+              }${
+                textileEstimate.steamSurcharge > 0
+                  ? ` (dont traitement vapeur : +${euro(textileEstimate.steamSurcharge)})`
+                  : ""
+              }${
+                travelCalculation && travelCalculation.fee > 0
+                  ? ` (dont frais déplacement : +${travelCalculation.fee.toFixed(2).replace(".", ",")} €)`
+                  : !travelCalculation && address.trim()
+                    ? " (+ frais de déplacement à confirmer)"
+                    : ""
+              }`
+            : "💰 TARIF ESTIMÉ : Sur devis",
+        "",
+        message.trim() ? `💬 INFORMATIONS COMPLÉMENTAIRES :\n${message.trim()}` : null,
+      ];
+
+      return lines.filter((l): l is string => l !== null).join("\n");
+    }
+
     const careText = selectedCaresList.length
       ? selectedCaresList.map((c) => `${c.name} (+${euro(c.price)})`).join(", ")
       : "Aucune";
@@ -516,6 +795,7 @@ function Page() {
 
     return lines.filter((l): l is string => l !== null).join("\n");
   }, [
+    activity,
     name,
     phone,
     address,
@@ -530,6 +810,13 @@ function Page() {
     selectedFormula,
     selectedCaresList,
     hasIntensiveDirt,
+    textileEstimate,
+    textileSteamEnabled,
+    textileSelectionLabel,
+    textileSteamDetailLabel,
+    textileDetails,
+    textileAccess,
+    isTextileQuoteOnly,
     total,
     travelCalculation,
     message,
@@ -556,11 +843,15 @@ function Page() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          activity,
           name: name.trim(),
           phone: phone.trim(),
           email: email.trim() || undefined,
-          vehicle: vehicle.trim() || undefined,
-          vehicleCategory,
+          vehicle:
+            activity === "textiles"
+              ? textileDetails.trim() || undefined
+              : vehicle.trim() || undefined,
+          vehicleCategory: activity === "textiles" ? "textile" : vehicleCategory,
           utilitySurcharge: isUtilityVehicle ? 20 : undefined,
           isGrandUtility: false,
           address: address.trim() || undefined,
@@ -569,19 +860,31 @@ function Page() {
           travelFee: travelCalculation ? travelCalculation.fee : null,
           travelLat: travelCalculation?.lat,
           travelLon: travelCalculation?.lon,
-          parking,
+          parking: activity === "textiles" ? textileAccess : parking,
           waterAccess: hasWater,
           electricityAccess: hasElectricity,
-          formulaName: selectedFormula?.name,
-          formulaPrice: selectedFormula?.price,
-          selectedCares: [
-            ...selectedCaresList.map((c) => `${c.name} (+${euro(c.price)})`),
-            ...(hasIntensiveDirt ? ["Salissures intensives (sur devis)"] : []),
-          ],
-          isVeryDirty: cares.includes("poils-sale") || hasIntensiveDirt,
-          hasPetHair: cares.includes("poils-sale") || hasIntensiveDirt,
+          formulaName: activity === "textiles" ? textileSelectionLabel : selectedFormula?.name,
+          formulaPrice:
+            activity === "textiles"
+              ? textileEstimate.fixedSubtotal > 0
+                ? textileEstimate.fixedSubtotal
+                : undefined
+              : selectedFormula?.price,
+          selectedCares:
+            activity === "textiles"
+              ? textileSteamEnabled && textileEstimate.steamPiecesCount > 0
+                ? [`Traitement vapeur — ${textileSteamDetailLabel}`]
+                : []
+              : [
+                  ...selectedCaresList.map((c) => `${c.name} (+${euro(c.price)})`),
+                  ...(hasIntensiveDirt ? ["Salissures intensives (sur devis)"] : []),
+                ],
+          isVeryDirty:
+            activity === "textiles" ? false : cares.includes("poils-sale") || hasIntensiveDirt,
+          hasPetHair:
+            activity === "textiles" ? false : cares.includes("poils-sale") || hasIntensiveDirt,
           message: message.trim() || undefined,
-          estimatedTotal: total || undefined,
+          estimatedTotal: isTextileQuoteOnly ? undefined : total || undefined,
           hp: hp || undefined,
         }),
       });
@@ -650,10 +953,14 @@ function Page() {
         <PageHero
           transparent
           eyebrow="Réservation & Devis gratuit"
-          title="Réservez votre nettoyage auto"
+          title={
+            activity === "textiles"
+              ? "Réservez votre nettoyage textile"
+              : "Réservez votre nettoyage auto"
+          }
         >
-          Obtenez une estimation de votre prestation et proposez une date d'intervention. Nous vous
-          recontactons pour confirmer votre rendez-vous.
+          Obtenez une estimation de votre prestation à domicile et transmettez votre demande. Nous
+          vous recontactons pour convenir ensemble de votre rendez-vous.
         </PageHero>
 
         <section className="relative z-10 py-10 md:py-14">
@@ -755,7 +1062,7 @@ function Page() {
                     Étape {currentStep} sur 3
                   </span>
                   <span className="text-xs font-medium text-muted-foreground">
-                    {STEPS[currentStep - 1]?.title}
+                    {steps[currentStep - 1]?.title}
                   </span>
                 </div>
 
@@ -772,10 +1079,9 @@ function Page() {
                   aria-label="Progression du formulaire"
                   className="grid grid-cols-3 gap-2 pb-5 border-b border-border"
                 >
-                  {STEPS.map((s) => {
+                  {steps.map((s) => {
                     const isPassed = s.num < currentStep;
                     const isCurrent = s.num === currentStep;
-                    const IconComponent = s.icon;
 
                     return (
                       <button
@@ -819,173 +1125,563 @@ function Page() {
                       1. Votre prestation
                     </h2>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Choisissez votre formule principale et personnalisez votre prestation selon
-                      vos besoins.
+                      Choisissez le type de nettoyage souhaité et personnalisez votre prestation
+                      selon vos besoins.
                     </p>
                   </div>
 
-                  {/* Sélection formule */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-foreground flex items-center justify-between">
-                      <span>Formule de nettoyage</span>
-                      {selectedFormula && (
-                        <span className="text-xs font-normal text-muted-foreground">
-                          Prix :{" "}
-                          <strong className="text-primary">{euro(selectedFormula.price)}</strong>
-                          {" · "}
-                          Durée : <strong>{selectedFormula.duration}</strong>
-                        </span>
-                      )}
-                    </label>
-                    <select
-                      className={field}
-                      value={formula}
-                      onChange={(e) => setFormula(e.target.value)}
+                  {/* Sélecteur d'activité (Nettoyage auto prioritaire / Canapés & textiles) */}
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActivity("auto");
+                        setStepError("");
+                      }}
+                      className={`flex items-center gap-2.5 rounded-xl border p-3 text-left transition-all cursor-pointer ${
+                        activity === "auto"
+                          ? "border-primary bg-primary/10 ring-1 ring-primary text-[#11114E]"
+                          : "border-border bg-background hover:bg-secondary/60 text-muted-foreground"
+                      }`}
                     >
-                      <option value="">À définir ensemble</option>
-                      {FORMULAS.map((x) => (
-                        <option key={x.id} value={x.id}>
-                          {x.name} — {euro(x.price)} ({x.duration})
-                        </option>
-                      ))}
-                    </select>
-                    {selectedFormula && (
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {selectedFormula.short} (Durée estimée : {selectedFormula.duration})
-                      </p>
-                    )}
-
-                    {/* Suggestion de montée en gamme */}
-                    {formula === "interieur-express" && (
-                      <div className="mt-3 rounded-xl border border-primary/30 bg-primary/5 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-200">
-                        <div className="space-y-1">
-                          <p className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
-                            <Sparkles className="size-3.5" /> Suggestion confort · Formule la plus
-                            populaire
-                          </p>
-                          <p className="text-sm font-semibold text-foreground">
-                            Passez à l'Intérieur Premium pour +30 € seulement
-                          </p>
-                          <p className="text-xs text-muted-foreground leading-relaxed">
-                            Profitez du shampouinage et de l'assainissement des sièges, tapis et
-                            moquettes, du nettoyage des rails, aérations, contours de portes,
-                            pédalier et de la protection anti-UV des plastiques (99 € au total).
-                          </p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setFormula("interieur-premium")}
-                          className="self-start sm:self-center shrink-0 rounded-lg bg-primary px-3.5 py-2 text-xs font-bold text-primary-foreground uppercase tracking-wide hover:bg-primary/90 transition-colors shadow-xs"
-                        >
-                          Passer au Premium (+30 €)
-                        </button>
-                      </div>
-                    )}
-                    {formula === "interieur-premium" && (
-                      <div className="mt-3 rounded-xl border border-primary/30 bg-primary/5 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-200">
-                        <div className="space-y-1">
-                          <p className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
-                            <Sparkles className="size-3.5" /> Suggestion confort · Soin intégral
-                          </p>
-                          <p className="text-sm font-semibold text-foreground">
-                            Passez à la Formule Complète pour +40 € seulement
-                          </p>
-                          <p className="text-xs text-muted-foreground leading-relaxed">
-                            Profitez d'un véhicule impeccable à l'extérieur comme à l'intérieur :
-                            mousse active, lavage manuel carrosserie, jantes et séchage microfibre
-                            (139 € au total).
-                          </p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setFormula("complet")}
-                          className="self-start sm:self-center shrink-0 rounded-lg bg-primary px-3.5 py-2 text-xs font-bold text-primary-foreground uppercase tracking-wide hover:bg-primary/90 transition-colors shadow-xs"
-                        >
-                          Passer au Complet (+40 €)
-                        </button>
-                      </div>
-                    )}
-                    {formula === "complet" && (
-                      <div className="mt-2.5 rounded-xl border border-border/80 bg-secondary/50 px-3.5 py-2.5 flex items-center justify-between gap-3 text-xs">
-                        <span className="text-muted-foreground">
-                          Formule Complète sélectionnée (intérieur complet + carrosserie
-                          extérieure).
+                      <span
+                        className={`grid size-8 shrink-0 place-items-center rounded-lg ${
+                          activity === "auto"
+                            ? "bg-primary text-white"
+                            : "bg-secondary text-muted-foreground"
+                        }`}
+                      >
+                        <Car className="size-4" />
+                      </span>
+                      <div className="min-w-0">
+                        <span className="text-xs sm:text-sm font-bold block leading-tight text-[#11114E]">
+                          Nettoyage auto
                         </span>
-                        <button
-                          type="button"
-                          onClick={() => setFormula("interieur-premium")}
-                          className="text-primary font-semibold hover:underline shrink-0"
-                        >
-                          Revenir à l'Intérieur Premium (99 €)
-                        </button>
+                        <span className="text-[11px] text-muted-foreground block truncate">
+                          Dès 69 €
+                        </span>
                       </div>
-                    )}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActivity("textiles");
+                        setStepError("");
+                      }}
+                      className={`flex items-center gap-2.5 rounded-xl border p-3 text-left transition-all cursor-pointer ${
+                        activity === "textiles"
+                          ? "border-primary bg-primary/10 ring-1 ring-primary text-[#11114E]"
+                          : "border-border bg-background hover:bg-secondary/60 text-muted-foreground"
+                      }`}
+                    >
+                      <span
+                        className={`grid size-8 shrink-0 place-items-center rounded-lg ${
+                          activity === "textiles"
+                            ? "bg-primary text-white"
+                            : "bg-secondary text-muted-foreground"
+                        }`}
+                      >
+                        <Sofa className="size-4" />
+                      </span>
+                      <div className="min-w-0">
+                        <span className="text-xs sm:text-sm font-bold block leading-tight text-[#11114E]">
+                          Canapés &amp; textiles
+                        </span>
+                        <span className="text-[11px] text-muted-foreground block truncate">
+                          Dès 39 €
+                        </span>
+                      </div>
+                    </button>
                   </div>
 
-                  {/* Prestations complémentaires */}
-                  <div className="space-y-3 pt-1">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-semibold text-foreground">
-                        Prestations complémentaires{" "}
-                        <span className="text-xs font-normal text-muted-foreground">
-                          (facultatif)
-                        </span>
-                      </span>
-                      <span className="text-xs text-muted-foreground">15 € par prestation</span>
-                    </div>
-
-                    <div className="space-y-2.5">
-                      {FORM_CARES.map((c) => (
-                        <label
-                          key={c.id}
-                          className="flex cursor-pointer items-start justify-between gap-3 rounded-xl border p-4 has-[:checked]:border-primary has-[:checked]:bg-secondary/40 transition-colors"
+                  {activity === "auto" ? (
+                    <>
+                      {/* Sélection formule auto */}
+                      <div className="space-y-2">
+                        <label className="text-sm font-semibold text-foreground flex items-center justify-between">
+                          <span>Formule de nettoyage</span>
+                          {selectedFormula && (
+                            <span className="text-xs font-normal text-muted-foreground">
+                              Prix :{" "}
+                              <strong className="text-primary">
+                                {euro(selectedFormula.price)}
+                              </strong>
+                              {" · "}
+                              Durée : <strong>{selectedFormula.duration}</strong>
+                            </span>
+                          )}
+                        </label>
+                        <select
+                          className={field}
+                          value={formula}
+                          onChange={(e) => setFormula(e.target.value)}
                         >
+                          <option value="">À définir ensemble</option>
+                          {FORMULAS.map((x) => (
+                            <option key={x.id} value={x.id}>
+                              {x.name} — {euro(x.price)} ({x.duration})
+                            </option>
+                          ))}
+                        </select>
+                        {selectedFormula && (
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {selectedFormula.short} (Durée estimée : {selectedFormula.duration})
+                          </p>
+                        )}
+
+                        {/* Suggestion de montée en gamme */}
+                        {formula === "interieur-express" && (
+                          <div className="mt-3 rounded-xl border border-primary/30 bg-primary/5 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-200">
+                            <div className="space-y-1">
+                              <p className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
+                                <Sparkles className="size-3.5" /> Suggestion confort · Formule la
+                                plus populaire
+                              </p>
+                              <p className="text-sm font-semibold text-foreground">
+                                Passez à l'Intérieur Premium pour +30 € seulement
+                              </p>
+                              <p className="text-xs text-muted-foreground leading-relaxed">
+                                Profitez du shampouinage et de l'assainissement des sièges, tapis et
+                                moquettes, du nettoyage des rails, aérations, contours de portes,
+                                pédalier et de la protection anti-UV des plastiques (99 € au total).
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setFormula("interieur-premium")}
+                              className="self-start sm:self-center shrink-0 rounded-lg bg-primary px-3.5 py-2 text-xs font-bold text-primary-foreground uppercase tracking-wide hover:bg-primary/90 transition-colors shadow-xs"
+                            >
+                              Passer au Premium (+30 €)
+                            </button>
+                          </div>
+                        )}
+                        {formula === "interieur-premium" && (
+                          <div className="mt-3 rounded-xl border border-primary/30 bg-primary/5 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-200">
+                            <div className="space-y-1">
+                              <p className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
+                                <Sparkles className="size-3.5" /> Suggestion confort · Soin intégral
+                              </p>
+                              <p className="text-sm font-semibold text-foreground">
+                                Passez à la Formule Complète pour +40 € seulement
+                              </p>
+                              <p className="text-xs text-muted-foreground leading-relaxed">
+                                Profitez d'un véhicule impeccable à l'extérieur comme à l'intérieur
+                                : mousse active, lavage manuel carrosserie, jantes et séchage
+                                microfibre (139 € au total).
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setFormula("complet")}
+                              className="self-start sm:self-center shrink-0 rounded-lg bg-primary px-3.5 py-2 text-xs font-bold text-primary-foreground uppercase tracking-wide hover:bg-primary/90 transition-colors shadow-xs"
+                            >
+                              Passer au Complet (+40 €)
+                            </button>
+                          </div>
+                        )}
+                        {formula === "complet" && (
+                          <div className="mt-2.5 rounded-xl border border-border/80 bg-secondary/50 px-3.5 py-2.5 flex items-center justify-between gap-3 text-xs">
+                            <span className="text-muted-foreground">
+                              Formule Complète sélectionnée (intérieur complet + carrosserie
+                              extérieure).
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setFormula("interieur-premium")}
+                              className="text-primary font-semibold hover:underline shrink-0"
+                            >
+                              Revenir à l'Intérieur Premium (99 €)
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Prestations complémentaires */}
+                      <div className="space-y-3 pt-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-semibold text-foreground">
+                            Prestations complémentaires{" "}
+                            <span className="text-xs font-normal text-muted-foreground">
+                              (facultatif)
+                            </span>
+                          </span>
+                          <span className="text-xs text-muted-foreground">15 € par prestation</span>
+                        </div>
+
+                        <div className="space-y-2.5">
+                          {FORM_CARES.map((c) => (
+                            <label
+                              key={c.id}
+                              className="flex cursor-pointer items-start justify-between gap-3 rounded-xl border p-4 has-[:checked]:border-primary has-[:checked]:bg-secondary/40 transition-colors"
+                            >
+                              <div className="flex items-start gap-3">
+                                <input
+                                  type="checkbox"
+                                  className="size-4 accent-primary mt-1"
+                                  checked={cares.includes(c.id)}
+                                  onChange={(e) =>
+                                    setCares(
+                                      e.target.checked
+                                        ? [...cares, c.id]
+                                        : cares.filter((x) => x !== c.id),
+                                    )
+                                  }
+                                />
+                                <div>
+                                  <p className="text-sm font-semibold text-foreground">{c.name}</p>
+                                  <p className="text-xs text-muted-foreground mt-0.5">{c.short}</p>
+                                </div>
+                              </div>
+                              <span className="font-bold text-primary shrink-0 text-sm">
+                                +{euro(c.price)}
+                              </span>
+                            </label>
+                          ))}
+                        </div>
+
+                        {/* Mention informative sur les nettoyages intensifs */}
+                        <div className="rounded-xl border border-border/80 bg-secondary/40 p-3.5 sm:p-4 text-xs text-muted-foreground leading-relaxed">
+                          <p className="font-medium text-foreground mb-1 flex items-center gap-1.5">
+                            <Info className="size-3.5 text-primary shrink-0" />
+                            Cas de salissures intensives ou dépoilage extrême
+                          </p>
+                          <p>{INTENSIVE_DIRT_NOTICE}</p>
+                          <label className="mt-2.5 flex items-start gap-2 pt-2 border-t border-border/50 cursor-pointer text-foreground/90 font-medium">
+                            <input
+                              type="checkbox"
+                              className="size-4 accent-primary mt-0.5"
+                              checked={hasIntensiveDirt}
+                              onChange={(e) => setHasIntensiveDirt(e.target.checked)}
+                            />
+                            <span>
+                              Mon véhicule présente des salissures intensives nécessitant une étude
+                              personnalisée (devis sur mesure).
+                            </span>
+                          </label>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      {/* Sélection multi-pièces : canapés, fauteuils & matelas */}
+                      <div className="space-y-2.5">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-sm font-semibold text-foreground">
+                            Sélectionnez vos éléments à nettoyer
+                          </span>
+                          {textileEstimate.totalFixedPieces > 0 && (
+                            <span className="text-xs font-semibold text-primary">
+                              {textileEstimate.totalFixedPieces}{" "}
+                              {textileEstimate.totalFixedPieces > 1 ? "pièces" : "pièce"}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="space-y-2">
+                          {TEXTILE_FIXED_PRESTATIONS.map((item) => {
+                            const qty = textileQuantities[item.id] ?? 0;
+                            const isSelected = qty > 0;
+                            return (
+                              <div
+                                key={item.id}
+                                className={`flex items-center justify-between gap-3 rounded-xl border px-3.5 py-2.5 transition-colors ${
+                                  isSelected
+                                    ? "border-primary bg-primary/[0.06]"
+                                    : "border-border bg-background hover:bg-secondary/40"
+                                }`}
+                              >
+                                <div className="min-w-0">
+                                  <p className="text-sm font-semibold text-foreground leading-tight">
+                                    {item.name}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    <strong className="text-primary">{item.priceLabel}</strong> /{" "}
+                                    pièce • {item.duration}
+                                  </p>
+                                </div>
+
+                                <div className="flex items-center gap-2 shrink-0">
+                                  <button
+                                    type="button"
+                                    onClick={() => updateTextileQuantity(item.id, -1)}
+                                    disabled={qty === 0}
+                                    aria-label={`Retirer un ${item.name}`}
+                                    className="grid size-8 place-items-center rounded-lg border border-border bg-white text-[#11114E] hover:border-primary hover:text-primary disabled:opacity-35 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                                  >
+                                    <Minus className="size-3.5" />
+                                  </button>
+                                  <span
+                                    aria-live="polite"
+                                    className={`w-6 text-center text-sm font-bold tabular-nums ${
+                                      isSelected ? "text-[#11114E]" : "text-muted-foreground"
+                                    }`}
+                                  >
+                                    {qty}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => updateTextileQuantity(item.id, 1)}
+                                    aria-label={`Ajouter un ${item.name}`}
+                                    className="grid size-8 place-items-center rounded-lg border border-primary/40 bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors cursor-pointer"
+                                  >
+                                    <Plus className="size-3.5" />
+                                  </button>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {/* Prestations sur devis (facultatif) */}
+                        <div className="pt-1 space-y-1.5">
+                          <span className="text-xs font-semibold text-muted-foreground block">
+                            Ou prestation sur devis (facultatif)
+                          </span>
+                          <div className="grid gap-2 sm:grid-cols-2">
+                            {TEXTILE_QUOTE_PRESTATIONS.map((item) => {
+                              const checked = textileQuoteIds.includes(item.id);
+                              return (
+                                <label
+                                  key={item.id}
+                                  className={`flex cursor-pointer items-center justify-between gap-2.5 rounded-xl border px-3.5 py-2.5 text-xs transition-colors ${
+                                    checked
+                                      ? "border-primary bg-primary/[0.06]"
+                                      : "border-border bg-background hover:bg-secondary/40"
+                                  }`}
+                                >
+                                  <span className="flex items-center gap-2 min-w-0">
+                                    <input
+                                      type="checkbox"
+                                      className="size-4 accent-primary shrink-0"
+                                      checked={checked}
+                                      onChange={(e) =>
+                                        setTextileQuoteIds(
+                                          e.target.checked
+                                            ? [...textileQuoteIds, item.id]
+                                            : textileQuoteIds.filter((x) => x !== item.id),
+                                        )
+                                      }
+                                    />
+                                    <span className="font-semibold text-foreground leading-tight">
+                                      {item.name}
+                                    </span>
+                                  </span>
+                                  <span className="font-bold text-primary shrink-0">Sur devis</span>
+                                </label>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Option facultative : Traitement vapeur (+10 € par élément traité, jamais coché par défaut) */}
+                      <div
+                        className={`rounded-xl border transition-colors ${
+                          textileSteamEnabled
+                            ? "border-primary bg-[#FFF8F3]/70"
+                            : "border-border bg-background"
+                        }`}
+                      >
+                        <label className="flex cursor-pointer items-start justify-between gap-3 p-4">
                           <div className="flex items-start gap-3">
                             <input
                               type="checkbox"
-                              className="size-4 accent-primary mt-1"
-                              checked={cares.includes(c.id)}
-                              onChange={(e) =>
-                                setCares(
-                                  e.target.checked
-                                    ? [...cares, c.id]
-                                    : cares.filter((x) => x !== c.id),
-                                )
-                              }
+                              className="size-4 accent-primary mt-1 shrink-0"
+                              checked={textileSteamEnabled}
+                              onChange={(e) => toggleTextileSteam(e.target.checked)}
                             />
-                            <div>
-                              <p className="text-sm font-semibold text-foreground">{c.name}</p>
-                              <p className="text-xs text-muted-foreground mt-0.5">{c.short}</p>
+                            <div className="space-y-0.5">
+                              <div className="flex items-center gap-2">
+                                <TextileSteamIcon className="size-6 shrink-0" />
+                                <span className="text-sm font-bold text-[#11114E]">
+                                  {TEXTILE_STEAM_OPTION.name}
+                                </span>
+                                <span className="text-xs font-normal text-muted-foreground">
+                                  (facultatif)
+                                </span>
+                              </div>
+                              <p className="text-xs text-muted-foreground leading-snug">
+                                {TEXTILE_STEAM_OPTION.short}
+                              </p>
                             </div>
                           </div>
-                          <span className="font-bold text-primary shrink-0 text-sm">
-                            +{euro(c.price)}
-                          </span>
+                          <div className="text-right shrink-0">
+                            <span className="font-bold text-primary text-sm block whitespace-nowrap">
+                              {TEXTILE_STEAM_OPTION.priceLabel}
+                            </span>
+                            <span className="text-[11px] font-medium text-slate-500 block whitespace-nowrap">
+                              {TEXTILE_STEAM_OPTION.unitLabel}
+                            </span>
+                            {textileSteamEnabled && textileEstimate.steamSurcharge > 0 && (
+                              <span className="text-[11px] font-bold text-[#11114E] block mt-0.5">
+                                Total : +{euro(textileEstimate.steamSurcharge)}
+                              </span>
+                            )}
+                          </div>
                         </label>
-                      ))}
-                    </div>
 
-                    {/* Mention informative sur les nettoyages intensifs */}
-                    <div className="rounded-xl border border-border/80 bg-secondary/40 p-3.5 sm:p-4 text-xs text-muted-foreground leading-relaxed">
-                      <p className="font-medium text-foreground mb-1 flex items-center gap-1.5">
-                        <Info className="size-3.5 text-primary shrink-0" />
-                        Cas de salissures intensives ou dépoilage extrême
-                      </p>
-                      <p>{INTENSIVE_DIRT_NOTICE}</p>
-                      <label className="mt-2.5 flex items-start gap-2 pt-2 border-t border-border/50 cursor-pointer text-foreground/90 font-medium">
-                        <input
-                          type="checkbox"
-                          className="size-4 accent-primary mt-0.5"
-                          checked={hasIntensiveDirt}
-                          onChange={(e) => setHasIntensiveDirt(e.target.checked)}
-                        />
-                        <span>
-                          Mon véhicule présente des salissures intensives nécessitant une étude
-                          personnalisée (devis sur mesure).
-                        </span>
-                      </label>
-                    </div>
-                  </div>
+                        {/* Sélecteur détaillé des éléments concernés lorsque le traitement vapeur est activé */}
+                        {textileSteamEnabled && (
+                          <div className="border-t border-primary/20 px-4 py-3 space-y-2.5 bg-white/80 rounded-b-xl">
+                            {textileEstimate.fixedLines.length > 0 ? (
+                              <>
+                                <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                                  <span className="font-semibold text-[#11114E]">
+                                    {textileEstimate.totalFixedPieces > 1
+                                      ? "Choisissez les éléments à traiter à la vapeur :"
+                                      : "Élément concerné par le traitement vapeur :"}
+                                  </span>
+                                  {textileEstimate.totalFixedPieces > 1 && (
+                                    <div className="flex items-center gap-2.5">
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const all: Record<string, number> = {};
+                                          for (const l of textileEstimate.fixedLines) {
+                                            all[l.id] = l.quantity;
+                                          }
+                                          setTextileSteamQuantities(all);
+                                        }}
+                                        className="text-primary font-semibold hover:underline cursor-pointer"
+                                      >
+                                        Tout sélectionner
+                                      </button>
+                                      <span className="text-slate-300">|</span>
+                                      <button
+                                        type="button"
+                                        onClick={() => setTextileSteamQuantities({})}
+                                        className="text-slate-500 font-medium hover:underline cursor-pointer"
+                                      >
+                                        Aucun
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+
+                                <div className="space-y-1.5">
+                                  {textileEstimate.fixedLines.map((line) => (
+                                    <div
+                                      key={line.id}
+                                      className="flex items-center justify-between gap-3 rounded-lg border border-slate-200/80 bg-[#F8FAFC] px-3 py-2 text-xs"
+                                    >
+                                      <div className="min-w-0">
+                                        <span className="font-semibold text-[#11114E] block">
+                                          {line.name}
+                                          {line.quantity > 1 ? ` (×${line.quantity})` : ""}
+                                        </span>
+                                        <span className="text-[11px] text-slate-500">
+                                          {line.steamCount > 0
+                                            ? `${line.steamCount} ${line.steamCount > 1 ? "pièces traitées" : "pièce traitée"} : +${euro(line.steamSubtotal)}`
+                                            : "Sans traitement vapeur"}
+                                        </span>
+                                      </div>
+
+                                      {line.quantity === 1 ? (
+                                        <label className="inline-flex items-center gap-2 cursor-pointer shrink-0 font-semibold text-[#11114E]">
+                                          <input
+                                            type="checkbox"
+                                            className="size-4 accent-primary"
+                                            checked={line.steamCount === 1}
+                                            onChange={(e) =>
+                                              updateTextileSteamQuantity(
+                                                line.id,
+                                                1,
+                                                e.target.checked ? 1 : 0,
+                                              )
+                                            }
+                                          />
+                                          <span className="text-primary font-bold">+10 €</span>
+                                        </label>
+                                      ) : (
+                                        <div className="flex items-center gap-1.5 shrink-0">
+                                          <button
+                                            type="button"
+                                            onClick={() =>
+                                              updateTextileSteamQuantity(
+                                                line.id,
+                                                line.quantity,
+                                                line.steamCount - 1,
+                                              )
+                                            }
+                                            disabled={line.steamCount === 0}
+                                            aria-label={`Diminuer le traitement vapeur pour ${line.name}`}
+                                            className="grid size-7 place-items-center rounded-md border border-slate-300 bg-white text-[#11114E] hover:border-primary hover:text-primary disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer"
+                                          >
+                                            <Minus className="size-3" />
+                                          </button>
+                                          <span className="min-w-[2.4rem] text-center font-bold text-[#11114E] tabular-nums">
+                                            {line.steamCount}/{line.quantity}
+                                          </span>
+                                          <button
+                                            type="button"
+                                            onClick={() =>
+                                              updateTextileSteamQuantity(
+                                                line.id,
+                                                line.quantity,
+                                                line.steamCount + 1,
+                                              )
+                                            }
+                                            disabled={line.steamCount >= line.quantity}
+                                            aria-label={`Augmenter le traitement vapeur pour ${line.name}`}
+                                            className="grid size-7 place-items-center rounded-md border border-primary/40 bg-primary/10 text-primary hover:bg-primary hover:text-white disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer"
+                                          >
+                                            <Plus className="size-3" />
+                                          </button>
+                                        </div>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              </>
+                            ) : (
+                              <div className="flex items-center justify-between gap-3 text-xs">
+                                <div>
+                                  <span className="font-semibold text-[#11114E] block">
+                                    Nombre d'éléments à traiter à la vapeur
+                                  </span>
+                                  <span className="text-[11px] text-slate-500">
+                                    {TEXTILE_STEAM_OPTION.priceLabel} par élément traité
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2 shrink-0">
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      setTextileSteamCustomCount((c) => Math.max(1, c - 1))
+                                    }
+                                    disabled={textileSteamCustomCount <= 1}
+                                    aria-label="Diminuer le nombre d'éléments vapeur"
+                                    className="grid size-7 place-items-center rounded-md border border-slate-300 bg-white text-[#11114E] hover:border-primary hover:text-primary disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer"
+                                  >
+                                    <Minus className="size-3" />
+                                  </button>
+                                  <span className="w-6 text-center font-bold text-[#11114E] tabular-nums">
+                                    {textileSteamCustomCount}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      setTextileSteamCustomCount((c) => Math.min(20, c + 1))
+                                    }
+                                    aria-label="Augmenter le nombre d'éléments vapeur"
+                                    className="grid size-7 place-items-center rounded-md border border-primary/40 bg-primary/10 text-primary hover:bg-primary hover:text-white cursor-pointer"
+                                  >
+                                    <Plus className="size-3" />
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="rounded-xl border border-border/80 bg-secondary/40 p-3.5 text-xs text-muted-foreground leading-relaxed flex items-start gap-2">
+                        <Info className="size-4 text-primary shrink-0 mt-0.5" />
+                        <p>{TEXTILE_HONEST_NOTICE}</p>
+                      </div>
+                    </>
+                  )}
 
                   {/* Sous-total estimé étape 1 */}
                   <div className="flex items-center justify-between rounded-xl bg-secondary px-5 py-3.5 border">
@@ -993,11 +1689,40 @@ function Page() {
                       <span className="font-semibold text-foreground text-sm block">
                         Tarif estimé
                       </span>
-                      <span className="text-xs text-muted-foreground">Actualisé en temps réel</span>
+                      <span className="text-xs text-muted-foreground">
+                        {activity === "textiles" &&
+                        textileSteamEnabled &&
+                        textileEstimate.steamSurcharge > 0
+                          ? `Inclut traitement vapeur (+${euro(textileEstimate.steamSurcharge)})`
+                          : "Actualisé en temps réel"}
+                      </span>
                     </div>
-                    <span className="font-display text-3xl font-bold text-primary">
-                      {total ? euro(total) : "—"}
-                    </span>
+                    <div className="text-right">
+                      <span className="font-display text-3xl font-bold text-primary">
+                        {activity === "textiles"
+                          ? isTextileQuoteOnly
+                            ? "Sur devis"
+                            : euro(total)
+                          : total
+                            ? euro(total)
+                            : "—"}
+                      </span>
+                      {activity === "textiles" &&
+                        isTextileQuoteOnly &&
+                        textileSteamEnabled &&
+                        textileEstimate.steamSurcharge > 0 && (
+                          <span className="block text-[11px] font-semibold text-[#11114E]">
+                            +{euro(textileEstimate.steamSurcharge)} traitement vapeur
+                          </span>
+                        )}
+                      {activity === "textiles" &&
+                        !isTextileQuoteOnly &&
+                        textileEstimate.hasQuoteOnlyItems && (
+                          <span className="block text-[11px] font-semibold text-muted-foreground">
+                            + éléments sur devis
+                          </span>
+                        )}
+                    </div>
                   </div>
 
                   {/* Navigation étape 1 */}
@@ -1007,7 +1732,9 @@ function Page() {
                       onClick={goToNextStep}
                       className="btn btn-primary w-full py-3.5 text-base justify-center shadow-sm"
                     >
-                      Continuer vers Votre véhicule
+                      {activity === "textiles"
+                        ? "Continuer vers Votre textile"
+                        : "Continuer vers Votre véhicule"}
                       <ArrowRight className="size-5 ml-1" />
                     </button>
                   </div>
@@ -1021,141 +1748,183 @@ function Page() {
                 <div className="space-y-6 animate-in fade-in duration-200">
                   <div>
                     <h2 className="text-3xl font-display uppercase tracking-wide">
-                      2. Votre véhicule
+                      {activity === "textiles" ? "2. Votre textile & Lieu" : "2. Votre véhicule"}
                     </h2>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Précisez le véhicule et les conditions de stationnement pour vérifier la
-                      faisabilité.
+                      {activity === "textiles"
+                        ? "Précisez la configuration de votre canapé, matelas ou tapis et l'accès sur place."
+                        : "Précisez le véhicule et les conditions de stationnement pour vérifier la faisabilité."}
                     </p>
                   </div>
 
-                  {/* Marque et modèle */}
-                  <label className="block space-y-1.5">
-                    <span className="text-sm font-semibold text-foreground">
-                      Marque et modèle du véhicule *
-                    </span>
-                    <input
-                      type="text"
-                      required
-                      className={field}
-                      value={vehicle}
-                      onChange={(e) => {
-                        setVehicle(e.target.value);
-                        if (stepError) setStepError("");
-                      }}
-                      placeholder="Ex. : Peugeot 208, Renault Clio 5, Tesla Model 3..."
-                    />
-                  </label>
-
-                  {/* Catégorie du véhicule */}
-                  <div className="space-y-2 pt-1">
-                    <span className="text-sm font-semibold text-foreground block">
-                      Catégorie du véhicule
-                    </span>
-                    <div className="grid gap-2.5 sm:grid-cols-3">
-                      <label
-                        className={`flex flex-col justify-between p-3.5 rounded-xl border cursor-pointer transition-all ${
-                          vehicleCategory === "standard"
-                            ? "border-primary bg-primary/10 text-foreground ring-1 ring-primary"
-                            : "border-border bg-background text-foreground hover:bg-secondary/60"
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="vehicleCategory"
-                          value="standard"
-                          checked={vehicleCategory === "standard"}
-                          onChange={() => setVehicleCategory("standard")}
-                          className="sr-only"
-                        />
-                        <div>
-                          <span className="text-sm font-bold block">Véhicule standard</span>
-                          <span className="text-xs text-muted-foreground mt-0.5 block">
-                            Citadine, berline, break, SUV...
-                          </span>
-                        </div>
-                        <span className="text-xs font-semibold text-muted-foreground mt-2">
-                          Tarif standard
+                  {activity === "textiles" ? (
+                    <>
+                      <label className="block space-y-1.5">
+                        <span className="text-sm font-semibold text-foreground">
+                          Description du textile, dimensions ou quantité *
                         </span>
-                      </label>
-
-                      <label
-                        className={`flex flex-col justify-between p-3.5 rounded-xl border cursor-pointer transition-all ${
-                          vehicleCategory === "utilitaire"
-                            ? "border-primary bg-primary/10 text-foreground ring-1 ring-primary"
-                            : "border-border bg-background text-foreground hover:bg-secondary/60"
-                        }`}
-                      >
                         <input
-                          type="radio"
-                          name="vehicleCategory"
-                          value="utilitaire"
-                          checked={vehicleCategory === "utilitaire"}
-                          onChange={() => setVehicleCategory("utilitaire")}
-                          className="sr-only"
+                          type="text"
+                          required
+                          className={field}
+                          value={textileDetails}
+                          onChange={(e) => {
+                            setTextileDetails(e.target.value);
+                            if (stepError) setStepError("");
+                          }}
+                          placeholder="Ex. : Canapé tissu 3 places beige, matelas 160x200, tapis 200x300 cm, 6 chaises..."
                         />
-                        <div>
-                          <span className="text-sm font-bold block">Véhicule utilitaire</span>
-                          <span className="text-xs text-muted-foreground mt-0.5 block">
-                            Kangoo, Berlingo, Trafic, Expert...
-                          </span>
-                        </div>
-                        <span className="text-xs font-bold text-primary mt-2">+20 €</span>
                       </label>
 
-                      <label
-                        className={`flex flex-col justify-between p-3.5 rounded-xl border cursor-pointer transition-all ${
-                          vehicleCategory === "grand-utilitaire"
-                            ? "border-primary bg-primary/10 text-foreground ring-1 ring-primary"
-                            : "border-border bg-background text-foreground hover:bg-secondary/60"
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="vehicleCategory"
-                          value="grand-utilitaire"
-                          checked={vehicleCategory === "grand-utilitaire"}
-                          onChange={() => setVehicleCategory("grand-utilitaire")}
-                          className="sr-only"
-                        />
-                        <div>
-                          <span className="text-sm font-bold block">Grand utilitaire</span>
-                          <span className="text-xs text-muted-foreground mt-0.5 block">
-                            Master, Boxer, Crafter, Ducato...
-                          </span>
-                        </div>
-                        <span className="text-xs font-bold text-primary mt-2">+20 €</span>
-                      </label>
-                    </div>
-
-                    {isUtilityVehicle && (
-                      <div className="rounded-lg bg-primary/10 border border-primary/20 p-2.5 text-xs text-foreground flex items-center gap-2 animate-in fade-in duration-200">
-                        <Info className="size-3.5 text-primary shrink-0" />
-                        <span>
-                          Supplément utilitaire de <strong>+20 €</strong> appliqué à votre formule
-                          {selectedFormula ? ` (${selectedFormula.name})` : ""}.
+                      <label className="block space-y-1.5">
+                        <span className="text-sm font-semibold text-foreground">
+                          Accès au logement
                         </span>
+                        <select
+                          className={field}
+                          value={textileAccess}
+                          onChange={(e) => setTextileAccess(e.target.value)}
+                        >
+                          {TEXTILE_ACCESS_CHOICES.map((choice) => (
+                            <option key={choice} value={choice}>
+                              {choice}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    </>
+                  ) : (
+                    <>
+                      {/* Marque et modèle */}
+                      <label className="block space-y-1.5">
+                        <span className="text-sm font-semibold text-foreground">
+                          Marque et modèle du véhicule *
+                        </span>
+                        <input
+                          type="text"
+                          required
+                          className={field}
+                          value={vehicle}
+                          onChange={(e) => {
+                            setVehicle(e.target.value);
+                            if (stepError) setStepError("");
+                          }}
+                          placeholder="Ex. : Peugeot 208, Renault Clio 5, Tesla Model 3..."
+                        />
+                      </label>
+
+                      {/* Catégorie du véhicule */}
+                      <div className="space-y-2 pt-1">
+                        <span className="text-sm font-semibold text-foreground block">
+                          Catégorie du véhicule
+                        </span>
+                        <div className="grid gap-2.5 sm:grid-cols-3">
+                          <label
+                            className={`flex flex-col justify-between p-3.5 rounded-xl border cursor-pointer transition-all ${
+                              vehicleCategory === "standard"
+                                ? "border-primary bg-primary/10 text-foreground ring-1 ring-primary"
+                                : "border-border bg-background text-foreground hover:bg-secondary/60"
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name="vehicleCategory"
+                              value="standard"
+                              checked={vehicleCategory === "standard"}
+                              onChange={() => setVehicleCategory("standard")}
+                              className="sr-only"
+                            />
+                            <div>
+                              <span className="text-sm font-bold block">Véhicule standard</span>
+                              <span className="text-xs text-muted-foreground mt-0.5 block">
+                                Citadine, berline, break, SUV...
+                              </span>
+                            </div>
+                            <span className="text-xs font-semibold text-muted-foreground mt-2">
+                              Tarif standard
+                            </span>
+                          </label>
+
+                          <label
+                            className={`flex flex-col justify-between p-3.5 rounded-xl border cursor-pointer transition-all ${
+                              vehicleCategory === "utilitaire"
+                                ? "border-primary bg-primary/10 text-foreground ring-1 ring-primary"
+                                : "border-border bg-background text-foreground hover:bg-secondary/60"
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name="vehicleCategory"
+                              value="utilitaire"
+                              checked={vehicleCategory === "utilitaire"}
+                              onChange={() => setVehicleCategory("utilitaire")}
+                              className="sr-only"
+                            />
+                            <div>
+                              <span className="text-sm font-bold block">Véhicule utilitaire</span>
+                              <span className="text-xs text-muted-foreground mt-0.5 block">
+                                Kangoo, Berlingo, Trafic, Expert...
+                              </span>
+                            </div>
+                            <span className="text-xs font-bold text-primary mt-2">+20 €</span>
+                          </label>
+
+                          <label
+                            className={`flex flex-col justify-between p-3.5 rounded-xl border cursor-pointer transition-all ${
+                              vehicleCategory === "grand-utilitaire"
+                                ? "border-primary bg-primary/10 text-foreground ring-1 ring-primary"
+                                : "border-border bg-background text-foreground hover:bg-secondary/60"
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name="vehicleCategory"
+                              value="grand-utilitaire"
+                              checked={vehicleCategory === "grand-utilitaire"}
+                              onChange={() => setVehicleCategory("grand-utilitaire")}
+                              className="sr-only"
+                            />
+                            <div>
+                              <span className="text-sm font-bold block">Grand utilitaire</span>
+                              <span className="text-xs text-muted-foreground mt-0.5 block">
+                                Master, Boxer, Crafter, Ducato...
+                              </span>
+                            </div>
+                            <span className="text-xs font-bold text-primary mt-2">+20 €</span>
+                          </label>
+                        </div>
+
+                        {isUtilityVehicle && (
+                          <div className="rounded-lg bg-primary/10 border border-primary/20 p-2.5 text-xs text-foreground flex items-center gap-2 animate-in fade-in duration-200">
+                            <Info className="size-3.5 text-primary shrink-0" />
+                            <span>
+                              Supplément utilitaire de <strong>+20 €</strong> appliqué à votre
+                              formule
+                              {selectedFormula ? ` (${selectedFormula.name})` : ""}.
+                            </span>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
 
-                  {/* Emplacement stationnement */}
-                  <label className="block space-y-1.5">
-                    <span className="text-sm font-semibold text-foreground">
-                      Où sera stationné le véhicule lors de l'intervention ?
-                    </span>
-                    <select
-                      className={field}
-                      value={parking}
-                      onChange={(e) => setParking(e.target.value)}
-                    >
-                      {PARKING_CHOICES.map((choice) => (
-                        <option key={choice} value={choice}>
-                          {choice}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+                      {/* Emplacement stationnement */}
+                      <label className="block space-y-1.5">
+                        <span className="text-sm font-semibold text-foreground">
+                          Où sera stationné le véhicule lors de l'intervention ?
+                        </span>
+                        <select
+                          className={field}
+                          value={parking}
+                          onChange={(e) => setParking(e.target.value)}
+                        >
+                          {PARKING_CHOICES.map((choice) => (
+                            <option key={choice} value={choice}>
+                              {choice}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    </>
+                  )}
 
                   {/* Accès eau & électricité */}
                   <div className="grid gap-3 sm:grid-cols-2 pt-1">
@@ -1245,8 +2014,9 @@ function Page() {
                   </div>
 
                   <p className="text-xs text-muted-foreground px-1">
-                    Ne vous inquiétez pas si vous répondez « Non » : nous disposons de solutions
-                    mobiles autonomes pour nous adapter.
+                    {activity === "textiles"
+                      ? "Pour les prestations canapés & textiles, une prise électrique classique et un accès au robinet d'eau sont nécessaires à proximité."
+                      : "Ne vous inquiétez pas si vous répondez « Non » : nous disposons de solutions mobiles autonomes pour nous adapter."}
                   </p>
 
                   {/* Message d'erreur éventuel */}
@@ -1269,12 +2039,32 @@ function Page() {
                       <span className="text-xs text-muted-foreground">
                         {isUtilityVehicle
                           ? "Dont supplément utilitaire (+20 €)"
-                          : "Actualisé en temps réel"}
+                          : activity === "textiles" &&
+                              textileSteamEnabled &&
+                              textileEstimate.steamSurcharge > 0
+                            ? `Inclut traitement vapeur (+${euro(textileEstimate.steamSurcharge)})`
+                            : "Actualisé en temps réel"}
                       </span>
                     </div>
-                    <span className="font-display text-3xl font-bold text-primary">
-                      {total ? euro(total) : "—"}
-                    </span>
+                    <div className="text-right">
+                      <span className="font-display text-3xl font-bold text-primary">
+                        {activity === "textiles"
+                          ? isTextileQuoteOnly
+                            ? "Sur devis"
+                            : euro(total)
+                          : total
+                            ? euro(total)
+                            : "—"}
+                      </span>
+                      {activity === "textiles" &&
+                        isTextileQuoteOnly &&
+                        textileSteamEnabled &&
+                        textileEstimate.steamSurcharge > 0 && (
+                          <span className="block text-[11px] font-semibold text-[#11114E]">
+                            +{euro(textileEstimate.steamSurcharge)} traitement vapeur
+                          </span>
+                        )}
+                    </div>
                   </div>
 
                   {/* Navigation étape 2 */}
@@ -1548,16 +2338,18 @@ function Page() {
                     </div>
 
                     <div className="grid gap-2 text-xs sm:text-sm">
-                      <div className="flex justify-between py-1 border-b border-border/50">
-                        <span className="text-muted-foreground">Prestation :</span>
+                      <div className="flex justify-between gap-4 py-1 border-b border-border/50">
+                        <span className="text-muted-foreground shrink-0">Prestation :</span>
                         <span className="font-semibold text-right">
-                          {selectedFormula
-                            ? `${selectedFormula.name} (${euro(selectedFormula.price)}) · ${selectedFormula.duration}`
-                            : "À définir ensemble"}
+                          {activity === "textiles"
+                            ? textileSelectionLabel
+                            : selectedFormula
+                              ? `${selectedFormula.name} (${euro(selectedFormula.price)}) · ${selectedFormula.duration}`
+                              : "À définir ensemble"}
                         </span>
                       </div>
 
-                      {selectedCaresList.length > 0 && (
+                      {activity === "auto" && selectedCaresList.length > 0 && (
                         <div className="flex justify-between py-1 border-b border-border/50">
                           <span className="text-muted-foreground">
                             Prestations complémentaires :
@@ -1569,7 +2361,20 @@ function Page() {
                         </div>
                       )}
 
-                      {hasIntensiveDirt && (
+                      {activity === "textiles" &&
+                        textileSteamEnabled &&
+                        textileEstimate.steamPiecesCount > 0 && (
+                          <div className="flex justify-between gap-4 py-1 border-b border-border/50">
+                            <span className="text-muted-foreground shrink-0">
+                              Traitement vapeur :
+                            </span>
+                            <span className="font-semibold text-right text-primary">
+                              {textileSteamDetailLabel}
+                            </span>
+                          </div>
+                        )}
+
+                      {activity === "auto" && hasIntensiveDirt && (
                         <div className="flex justify-between py-1 border-b border-border/50">
                           <span className="text-muted-foreground">Salissures intensives :</span>
                           <span className="font-semibold text-right text-primary">
@@ -1613,13 +2418,25 @@ function Page() {
                       </div>
 
                       <div className="flex justify-between py-1 border-b border-border/50">
-                        <span className="text-muted-foreground">Véhicule :</span>
+                        <span className="text-muted-foreground">
+                          {activity === "textiles" ? "Textile & accès :" : "Véhicule :"}
+                        </span>
                         <span className="font-semibold text-right">
-                          {vehicle.trim() || "Non précisé"}
-                          {vehicleCategory === "utilitaire" && " (Utilitaire)"}
-                          {vehicleCategory === "grand-utilitaire" && " (Grand utilitaire)"}
-                          {" · "}
-                          {parking}
+                          {activity === "textiles" ? (
+                            <>
+                              {textileDetails.trim() || "Non précisé"}
+                              {" · "}
+                              {textileAccess}
+                            </>
+                          ) : (
+                            <>
+                              {vehicle.trim() || "Non précisé"}
+                              {vehicleCategory === "utilitaire" && " (Utilitaire)"}
+                              {vehicleCategory === "grand-utilitaire" && " (Grand utilitaire)"}
+                              {" · "}
+                              {parking}
+                            </>
+                          )}
                         </span>
                       </div>
 
@@ -1654,8 +2471,29 @@ function Page() {
                       </div>
                       <div className="text-right">
                         <span className="font-display text-4xl font-bold text-primary">
-                          {total ? euro(total) : "—"}
+                          {activity === "textiles"
+                            ? isTextileQuoteOnly
+                              ? "Sur devis"
+                              : euro(total)
+                            : total
+                              ? euro(total)
+                              : "—"}
                         </span>
+                        {activity === "textiles" &&
+                          isTextileQuoteOnly &&
+                          textileSteamEnabled &&
+                          textileEstimate.steamSurcharge > 0 && (
+                            <span className="block text-[11px] font-semibold text-[#11114E]">
+                              +{euro(textileEstimate.steamSurcharge)} traitement vapeur
+                            </span>
+                          )}
+                        {activity === "textiles" &&
+                          !isTextileQuoteOnly &&
+                          textileEstimate.hasQuoteOnlyItems && (
+                            <span className="block text-[11px] font-semibold text-muted-foreground">
+                              + éléments sur devis
+                            </span>
+                          )}
                         {!travelCalculation && address.trim() && (
                           <span className="block text-[11px] font-medium text-amber-600 dark:text-amber-400">
                             + frais de déplacement à confirmer

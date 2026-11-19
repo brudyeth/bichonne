@@ -10,13 +10,15 @@ import {
   Car,
   Building2,
   ArrowRight,
+  Sofa,
 } from "lucide-react";
 import { Logo } from "./Logo";
 import { BUSINESS, whatsappLink } from "@/lib/business";
 
 export const NAV = [
   { to: "/", label: "Accueil" },
-  { to: "/formules", label: "Formules & tarifs" },
+  { to: "/formules", label: "Nettoyage automobile" },
+  { to: "/canapes-textiles", label: "Canapés & textiles" },
 ] as const;
 
 export function Facebook3DIcon({ className = "size-6" }: { className?: string }) {
@@ -128,11 +130,15 @@ export function HeaderBookingDropdown({
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const location = useLocation();
-  const currentPath = location.pathname;
+  const rawPath = location.pathname;
+  const currentPath = rawPath.length > 1 && rawPath.endsWith("/") ? rawPath.slice(0, -1) : rawPath;
   const active =
     isActive !== undefined
       ? isActive
-      : currentPath.startsWith("/contact") || currentPath.startsWith("/entreprises");
+      : currentPath === "/contact" ||
+        currentPath.startsWith("/contact/") ||
+        currentPath === "/entreprises" ||
+        currentPath.startsWith("/entreprises/");
 
   const handleMouseEnter = () => {
     if (timeoutRef.current) {
@@ -194,24 +200,20 @@ export function HeaderBookingDropdown({
         aria-haspopup="menu"
         aria-controls="booking-dropdown-menu"
         aria-label="Menu Réservation & Devis"
-        className={`relative inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm xl:text-[15px] font-semibold text-white/90 hover:text-white hover:bg-white/[0.08] active:bg-white/[0.14] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 transition-all duration-200 ease-out cursor-pointer select-none motion-reduce:transition-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.2)] ${
-          isOpen ? "bg-white/[0.08] text-white" : ""
-        } ${active ? "text-white font-bold" : ""}`}
+        aria-current={active ? "page" : undefined}
+        className={`inline-flex items-center gap-1.5 whitespace-nowrap px-2 xl:px-3 py-1.5 rounded-[7px] text-[14px] xl:text-[15px] transition-colors duration-200 ease-out cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47721]/50 motion-reduce:transition-none ${
+          active
+            ? "bg-[#F47721]/[0.12] text-[#F47721] font-semibold"
+            : "bg-transparent text-white font-medium hover:text-white/80"
+        }`}
       >
         <span>Réservation &amp; Devis</span>
         <ChevronDown
-          className={`size-4 text-primary shrink-0 transition-transform duration-200 motion-reduce:transition-none ${
-            isOpen ? "rotate-180" : ""
-          }`}
+          className={`size-4 shrink-0 transition-transform duration-200 motion-reduce:transition-none ${
+            active ? "text-[#F47721]" : "text-white/80"
+          } ${isOpen ? "rotate-180" : ""}`}
           aria-hidden="true"
         />
-        {/* Petit trait orange sous la rubrique active */}
-        {active && (
-          <span
-            aria-hidden="true"
-            className="absolute -bottom-1 inset-x-2.5 h-[2px] bg-primary rounded-full shadow-[0_0_8px_rgba(244,119,33,0.7)]"
-          />
-        )}
       </button>
 
       {/* Menu déroulant élégant avec pont invisible pour le survol continu */}
@@ -279,9 +281,21 @@ export function Header() {
   const location = useLocation();
   const pathname = location.pathname;
 
-  const isAccueilActive = pathname === "/";
-  const isFormulesActive = pathname.startsWith("/formules");
-  const isBookingActive = pathname.startsWith("/contact") || pathname.startsWith("/entreprises");
+  const normalizedPath =
+    pathname.length > 1 && pathname.endsWith("/") ? pathname.slice(0, -1) : pathname;
+  const isAccueilActive = normalizedPath === "/";
+  const isAutoActive =
+    normalizedPath === "/formules" ||
+    normalizedPath.startsWith("/formules/") ||
+    normalizedPath === "/soins-cibles" ||
+    normalizedPath.startsWith("/services/");
+  const isTextilesActive =
+    normalizedPath === "/canapes-textiles" || normalizedPath.startsWith("/canapes-textiles/");
+  const isBookingActive =
+    normalizedPath === "/contact" ||
+    normalizedPath.startsWith("/contact/") ||
+    normalizedPath === "/entreprises" ||
+    normalizedPath.startsWith("/entreprises/");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -294,83 +308,83 @@ export function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 text-white transition-all duration-300 ease-out ${
-        scrolled
-          ? "bg-[#11114E]/95 backdrop-blur-md shadow-md shadow-[#11114E]/30"
-          : "bg-[#11114E]/25 backdrop-blur-sm sm:backdrop-blur-md shadow-none"
+      className={`sticky top-0 z-50 text-white transition-colors duration-300 ease-out ${
+        scrolled ? "bg-[#11114E]/95 backdrop-blur-md" : "bg-[#11114E]/35 backdrop-blur-md"
       }`}
     >
-      {/* Ligne de séparation discrète : 1 px, lumineuse et semi-transparente, centrée à ~78% avec fondu aux deux extrémités */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute bottom-0 inset-x-0 flex justify-center"
-      >
-        <div className="h-[1px] w-[78%] max-w-5xl bg-gradient-to-r from-transparent via-white/18 to-transparent" />
-      </div>
-
-      <div className="container-site relative z-10 flex h-16 sm:h-[68px] items-center justify-between gap-4 py-2.5 sm:py-3">
-        {/* Zone gauche : identité */}
-        <Link to="/" aria-label="Accueil Bichonne ta Caisse" className="shrink-0 flex items-center">
-          <Logo light variant="split" />
+      <div className="w-full max-w-[1600px] mx-auto flex h-16 sm:h-[68px] items-center justify-between gap-3 xl:gap-6 2xl:gap-10 pl-4 pr-4 sm:pl-6 sm:pr-6 md:pl-9 md:pr-9 lg:pl-6 lg:pr-6 xl:pl-[70px] xl:pr-[70px]">
+        {/* Zone gauche : identité de marque */}
+        <Link
+          to="/"
+          aria-label="Accueil Bichonne ta Caisse"
+          className="shrink-0 flex items-center py-1 transition-opacity duration-200 hover:opacity-90"
+        >
+          <Logo light variant="wordmark" />
         </Link>
 
-        {/* Zone centrale : navigation */}
+        {/* Zone centrale : navigation principale */}
         <nav
           aria-label="Navigation principale"
-          className="hidden lg:flex items-center gap-2 xl:gap-4 text-sm font-semibold shrink-0"
+          className="hidden lg:flex flex-1 items-center justify-center gap-1 xl:gap-4 2xl:gap-6 min-w-0"
         >
           <Link
             to="/"
-            className={`relative inline-flex items-center px-3.5 py-2 rounded-lg text-sm xl:text-[15px] font-semibold text-white/90 hover:text-white hover:bg-white/[0.08] active:bg-white/[0.14] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 transition-all duration-200 ease-out cursor-pointer select-none motion-reduce:transition-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.2)] ${
-              isAccueilActive ? "text-white font-bold" : ""
+            aria-current={isAccueilActive ? "page" : undefined}
+            className={`inline-flex items-center whitespace-nowrap px-2 xl:px-3 py-1.5 rounded-[7px] text-[14px] xl:text-[15px] transition-colors duration-200 ease-out cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47721]/50 motion-reduce:transition-none ${
+              isAccueilActive
+                ? "bg-[#F47721]/[0.12] text-[#F47721] font-semibold"
+                : "bg-transparent text-white font-medium hover:text-white/80"
             }`}
           >
             <span>Accueil</span>
-            {isAccueilActive && (
-              <span
-                aria-hidden="true"
-                className="absolute -bottom-1 inset-x-2.5 h-[2px] bg-primary rounded-full shadow-[0_0_8px_rgba(244,119,33,0.7)]"
-              />
-            )}
           </Link>
 
           <Link
             to="/formules"
-            className={`relative inline-flex items-center px-3.5 py-2 rounded-lg text-sm xl:text-[15px] font-semibold text-white/90 hover:text-white hover:bg-white/[0.08] active:bg-white/[0.14] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 transition-all duration-200 ease-out cursor-pointer select-none motion-reduce:transition-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.2)] ${
-              isFormulesActive ? "text-white font-bold" : ""
+            aria-current={isAutoActive ? "page" : undefined}
+            className={`inline-flex items-center whitespace-nowrap px-2 xl:px-3 py-1.5 rounded-[7px] text-[14px] xl:text-[15px] transition-colors duration-200 ease-out cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47721]/50 motion-reduce:transition-none ${
+              isAutoActive
+                ? "bg-[#F47721]/[0.12] text-[#F47721] font-semibold"
+                : "bg-transparent text-white font-medium hover:text-white/80"
             }`}
           >
-            <span>Formules &amp; tarifs</span>
-            {isFormulesActive && (
-              <span
-                aria-hidden="true"
-                className="absolute -bottom-1 inset-x-2.5 h-[2px] bg-primary rounded-full shadow-[0_0_8px_rgba(244,119,33,0.7)]"
-              />
-            )}
+            <span>Nettoyage automobile</span>
+          </Link>
+
+          <Link
+            to="/canapes-textiles"
+            aria-current={isTextilesActive ? "page" : undefined}
+            className={`inline-flex items-center whitespace-nowrap px-2 xl:px-3 py-1.5 rounded-[7px] text-[14px] xl:text-[15px] transition-colors duration-200 ease-out cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47721]/50 motion-reduce:transition-none ${
+              isTextilesActive
+                ? "bg-[#F47721]/[0.12] text-[#F47721] font-semibold"
+                : "bg-transparent text-white font-medium hover:text-white/80"
+            }`}
+          >
+            <span>Canapés &amp; textiles</span>
           </Link>
 
           <HeaderBookingDropdown isActive={isBookingActive} />
         </nav>
 
-        {/* Zone droite : contact et réseaux sociaux (aucun bouton orange) */}
-        <div className="hidden lg:flex items-center gap-4 xl:gap-5 shrink-0">
+        {/* Zone droite : téléphone et réseaux sociaux */}
+        <div className="hidden lg:flex items-center gap-3 xl:gap-6 shrink-0">
           <a
             href={BUSINESS.phoneTel}
-            className="flex items-center gap-1.5 xl:gap-2 font-bold whitespace-nowrap text-sm xl:text-base text-white/95 hover:text-white transition-colors drop-shadow-[0_1px_2px_rgba(0,0,0,0.2)]"
+            className="inline-flex items-center gap-2 font-semibold whitespace-nowrap text-[14px] xl:text-[15px] text-white/90 hover:text-white transition-colors duration-200"
           >
-            <Phone className="size-4 text-primary shrink-0" />
+            <Phone className="size-4 text-[#F47721] shrink-0" />
             <span>{BUSINESS.phoneDisplay}</span>
           </a>
-          <div className="flex items-center gap-2 xl:gap-2.5">
+          <div className="flex items-center gap-2.5">
             <a
               href={BUSINESS.facebookUrl}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Retrouvez-nous sur Facebook"
               title="Retrouvez-nous sur Facebook"
-              className="inline-flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+              className="inline-flex items-center justify-center opacity-90 hover:opacity-100 transition-opacity duration-200"
             >
-              <Facebook3DIcon className="size-6 sm:size-7" />
+              <Facebook3DIcon className="size-6" />
             </a>
             <a
               href={BUSINESS.instagramUrl}
@@ -378,47 +392,21 @@ export function Header() {
               rel="noopener noreferrer"
               aria-label="Retrouvez-nous sur Instagram"
               title="Retrouvez-nous sur Instagram"
-              className="inline-flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+              className="inline-flex items-center justify-center opacity-90 hover:opacity-100 transition-opacity duration-200"
             >
-              <Instagram3DIcon className="size-6 sm:size-7" />
+              <Instagram3DIcon className="size-6" />
             </a>
           </div>
         </div>
 
-        {/* Commandes mobiles */}
-        <div className="flex lg:hidden items-center gap-2">
-          <a
-            href={BUSINESS.phoneTel}
-            aria-label={`Appeler le ${BUSINESS.phoneDisplay}`}
-            className="grid size-10 sm:size-11 place-items-center rounded-full bg-primary text-primary-foreground shadow-xs active:scale-95 transition-transform"
-          >
-            <Phone className="size-4.5 sm:size-5" />
-          </a>
-          <a
-            href={BUSINESS.facebookUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Retrouvez-nous sur Facebook"
-            title="Retrouvez-nous sur Facebook"
-            className="grid size-10 sm:size-11 place-items-center rounded-full border border-white/20 hover:scale-105 active:scale-95 transition-transform backdrop-blur-xs"
-          >
-            <Facebook3DIcon className="size-5.5 sm:size-6" />
-          </a>
-          <a
-            href={BUSINESS.instagramUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Retrouvez-nous sur Instagram"
-            title="Retrouvez-nous sur Instagram"
-            className="grid size-10 sm:size-11 place-items-center rounded-full border border-white/20 hover:scale-105 active:scale-95 transition-transform backdrop-blur-xs"
-          >
-            <Instagram3DIcon className="size-5.5 sm:size-6" />
-          </a>
+        {/* Bouton de menu mobile à droite */}
+        <div className="flex lg:hidden items-center shrink-0">
           <button
+            type="button"
             onClick={() => setOpen(!open)}
-            aria-label="Menu"
+            aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
             aria-expanded={open}
-            className="grid size-10 sm:size-11 place-items-center rounded-full border border-white/25 hover:border-white/40 active:scale-95 transition-colors backdrop-blur-xs"
+            className="grid size-10 place-items-center rounded-lg text-white/90 hover:text-white hover:bg-white/10 transition-colors duration-200 cursor-pointer"
           >
             {open ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
@@ -433,37 +421,57 @@ export function Header() {
         >
           <Link
             to="/"
+            aria-current={isAccueilActive ? "page" : undefined}
             onClick={() => setOpen(false)}
-            className="relative flex items-center justify-between px-3.5 py-2.5 rounded-xl font-display text-xl uppercase tracking-wide text-white/95 hover:text-white hover:bg-white/[0.08] active:bg-white/[0.14] transition-colors"
+            className={`flex items-center px-3.5 py-2.5 rounded-[7px] font-display text-xl uppercase tracking-wide transition-colors duration-200 ease-out ${
+              isAccueilActive
+                ? "bg-[#F47721]/[0.12] text-[#F47721] font-semibold"
+                : "bg-transparent text-white font-medium hover:text-white/80"
+            }`}
           >
             <span>Accueil</span>
-            {isAccueilActive && (
-              <span className="size-2 rounded-full bg-primary shadow-[0_0_8px_rgba(244,119,33,0.8)]" />
-            )}
           </Link>
 
           <Link
             to="/formules"
+            aria-current={isAutoActive ? "page" : undefined}
             onClick={() => setOpen(false)}
-            className="relative flex items-center justify-between px-3.5 py-2.5 rounded-xl font-display text-xl uppercase tracking-wide text-white/95 hover:text-white hover:bg-white/[0.08] active:bg-white/[0.14] transition-colors"
+            className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-[7px] font-display text-xl uppercase tracking-wide transition-colors duration-200 ease-out ${
+              isAutoActive
+                ? "bg-[#F47721]/[0.12] text-[#F47721] font-semibold"
+                : "bg-transparent text-white font-medium hover:text-white/80"
+            }`}
           >
-            <span>Formules &amp; tarifs</span>
-            {isFormulesActive && (
-              <span className="size-2 rounded-full bg-primary shadow-[0_0_8px_rgba(244,119,33,0.8)]" />
-            )}
+            <Car className="size-5 text-[#F47721] shrink-0" />
+            <span>Nettoyage automobile</span>
+          </Link>
+
+          <Link
+            to="/canapes-textiles"
+            aria-current={isTextilesActive ? "page" : undefined}
+            onClick={() => setOpen(false)}
+            className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-[7px] font-display text-xl uppercase tracking-wide transition-colors duration-200 ease-out ${
+              isTextilesActive
+                ? "bg-[#F47721]/[0.12] text-[#F47721] font-semibold"
+                : "bg-transparent text-white font-medium hover:text-white/80"
+            }`}
+          >
+            <Sofa className="size-5 text-[#F47721] shrink-0" />
+            <span>Canapés &amp; textiles</span>
           </Link>
 
           {/* Section Réservation & Devis mobile */}
           <div className="pt-2 border-t border-white/10 mt-1 space-y-2">
-            <div className="flex items-center justify-between px-1">
-              <p className="text-xs font-bold uppercase tracking-wider text-primary">
+            <div className="flex items-center px-1">
+              <p
+                className={`text-xs uppercase tracking-wider px-2.5 py-1 rounded-[7px] transition-colors duration-200 ease-out ${
+                  isBookingActive
+                    ? "bg-[#F47721]/[0.12] text-[#F47721] font-semibold"
+                    : "bg-transparent text-white font-medium"
+                }`}
+              >
                 Réservation &amp; Devis
               </p>
-              {isBookingActive && (
-                <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/30">
-                  En cours
-                </span>
-              )}
             </div>
             <div className="grid gap-2">
               {BOOKING_OPTIONS.map((opt) => (
@@ -556,24 +564,28 @@ export function Footer() {
           <div className="space-y-3">
             <Logo light variant="horizontal" />
             <p className="text-sm opacity-80 max-w-xs leading-relaxed">
-              Nettoyage automobile professionnel à domicile. Intervention à Lille, Wambrechies,
-              Marcq-en-Barœul, Lambersart, Bondues, La Madeleine, Roubaix, Tourcoing et toute la
-              métropole lilloise (déplacement offert jusqu'à 20 km).
+              Nettoyage automobile professionnel à domicile (et nettoyage de canapés, matelas et
+              textiles). Intervention à Lille, Wambrechies, Marcq-en-Barœul, Lambersart, Bondues, La
+              Madeleine, Roubaix, Tourcoing et toute la métropole lilloise (déplacement offert
+              jusqu'à 20 km).
             </p>
           </div>
           <div className="space-y-2 text-sm">
             <p className="font-display text-lg uppercase text-primary">Prestations</p>
             <Link to="/formules" className="block opacity-80 hover:opacity-100">
-              Formules & tarifs
+              Nettoyage automobile
+            </Link>
+            <Link to="/canapes-textiles" className="block opacity-80 hover:opacity-100">
+              Canapés &amp; textiles
             </Link>
             <Link to="/resultats" className="block opacity-80 hover:opacity-100">
               Résultats avant / après
             </Link>
             <Link to="/contact" className="block opacity-80 hover:opacity-100">
-              Réservation & Devis
+              Réservation &amp; Devis
             </Link>
             <Link to="/entreprises" className="block opacity-80 hover:opacity-100">
-              Entreprises & Flottes
+              Entreprises &amp; Flottes
             </Link>
           </div>
           <div className="space-y-2 text-sm">

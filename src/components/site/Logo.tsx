@@ -11,10 +11,21 @@ export function Logo({
   light?: boolean;
   showIcon?: boolean;
   showText?: boolean;
-  variant?: "graphic" | "text" | "horizontal" | "round" | "split";
+  variant?: "graphic" | "text" | "horizontal" | "round" | "split" | "wordmark";
   alt?: string;
 }) {
   const textColor = light ? "text-white" : "text-[#11114E]";
+
+  if (variant === "wordmark") {
+    return (
+      <span
+        className={`inline-flex items-baseline gap-[0.26em] whitespace-nowrap select-none font-sans font-extrabold not-italic tracking-[-0.025em] text-[18px] sm:text-[20px] lg:text-[21px] xl:text-[22px] leading-none antialiased ${className}`}
+      >
+        <span className={textColor}>Bichonne</span>
+        <span className="text-[#F47721]">ta Caisse</span>
+      </span>
+    );
+  }
 
   if (variant === "horizontal") {
     return (
