@@ -497,7 +497,7 @@ function Index() {
 
             <div className="lg:col-span-6 grid grid-cols-3 gap-2.5 sm:gap-3.5">
               <Link
-                to="/canapes-textiles"
+                to="/nettoyage-canape-lille"
                 className="group rounded-xl bg-[#F6F8FC] border border-slate-200/80 hover:border-primary/50 p-3 sm:p-4 text-center flex flex-col items-center justify-between transition-all hover:-translate-y-0.5"
               >
                 <TextileLineIcon
@@ -529,7 +529,7 @@ function Index() {
               </Link>
 
               <Link
-                to="/canapes-textiles"
+                to="/nettoyage-matelas-lille"
                 className="group rounded-xl bg-[#F6F8FC] border border-slate-200/80 hover:border-primary/50 p-3 sm:p-4 text-center flex flex-col items-center justify-between transition-all hover:-translate-y-0.5"
               >
                 <TextileLineIcon

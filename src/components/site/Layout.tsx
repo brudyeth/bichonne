@@ -560,7 +560,7 @@ export function Footer() {
 
       <div className="relative z-10">
         <div className="h-2 stripe-accent opacity-80" />
-        <div className="container-site grid gap-10 py-14 md:grid-cols-3">
+        <div className="container-site grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-3">
             <Logo light variant="horizontal" />
             <p className="text-sm opacity-80 max-w-xs leading-relaxed">
@@ -586,6 +586,21 @@ export function Footer() {
             </Link>
             <Link to="/entreprises" className="block opacity-80 hover:opacity-100">
               Entreprises &amp; Flottes
+            </Link>
+          </div>
+          <div className="space-y-2 text-sm">
+            <p className="font-display text-lg uppercase text-primary">Informations</p>
+            <Link to="/zones-intervention" className="block opacity-80 hover:opacity-100">
+              Zones d'intervention
+            </Link>
+            <Link to="/cgv" className="block opacity-80 hover:opacity-100">
+              Conditions Générales de Vente
+            </Link>
+            <Link to="/mentions-legales" className="block opacity-80 hover:opacity-100">
+              Mentions légales
+            </Link>
+            <Link to="/confidentialite" className="block opacity-80 hover:opacity-100">
+              Politique de confidentialité
             </Link>
           </div>
           <div className="space-y-2 text-sm">

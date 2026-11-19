@@ -20,6 +20,7 @@ import {
   Header,
   HeaderReservationButton,
 } from "@/components/site/Layout";
+import { INTERVENTION_ZONES } from "@/lib/zones";
 
 // Match routes without running loaders or rendering: loaders may need a server or
 // network the test run lacks, and jsdom never loads the stylesheets React waits on.
@@ -423,5 +424,138 @@ describe("SEO metadata configuration", () => {
 
     const ogImage = headResult?.meta?.find((m) => m["property"] === "og:image");
     expect(ogImage?.["content"]).toMatch(/^https:\/\/bichonnetacaisse\.fr\//);
+  });
+
+  it("configures /zones-intervention route, SEO metadata, indexability, and 15 priority communes without dead links", () => {
+    const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
+
+    const matches = router.matchRoutes("/zones-intervention");
+    expect(matches.at(-1)?.routeId).not.toBe(rootRouteId);
+
+    const zonesRoute = router.routesById["/zones-intervention"];
+    const zonesHead = (
+      zonesRoute.options as unknown as {
+        head?: () => {
+          meta?: Array<Record<string, string>>;
+          links?: Array<Record<string, string>>;
+        };
+      }
+    ).head?.();
+
+    const titleMeta = zonesHead?.meta?.find((m) => "title" in m);
+    const descMeta = zonesHead?.meta?.find((m) => m["name"] === "description");
+    const robotsMeta = zonesHead?.meta?.find((m) => m["name"] === "robots");
+    const canonicalLink = zonesHead?.links?.find((l) => l["rel"] === "canonical");
+
+    expect(titleMeta?.["title"]).toBe(
+      "Zones d'intervention | Nettoyage auto à domicile Lille – Bichonne ta Caisse",
+    );
+    expect(descMeta?.["content"]).toBeTruthy();
+    expect(descMeta?.["content"]?.length).toBeGreaterThanOrEqual(110);
+    expect(descMeta?.["content"]?.length).toBeLessThanOrEqual(165);
+    expect(robotsMeta?.["content"]).toBe("index, follow");
+    expect(canonicalLink?.["href"]).toBe("https://bichonnetacaisse.fr/zones-intervention");
+
+    const priorityNames = [
+      "Lille",
+      "Wambrechies",
+      "Marcq-en-Barœul",
+      "Lambersart",
+      "La Madeleine",
+      "Tourcoing",
+      "Roubaix",
+      "Wasquehal",
+      "Bondues",
+      "Mouvaux",
+      "Saint-André-lez-Lille",
+      "Marquette-lez-Lille",
+      "Villeneuve-d'Ascq",
+      "Roncq",
+      "Croix",
+    ];
+    for (const city of priorityNames) {
+      expect(INTERVENTION_ZONES.some((z) => z.name === city)).toBe(true);
+    }
+
+    // Verify every localPageSlug in INTERVENTION_ZONES resolves to an actual existing local page
+    const serviceRoute = router.routesById["/services/$slug"];
+    const loader = (
+      serviceRoute.options as unknown as {
+        loader?: (ctx: { params: { slug: string } }) => { slug: string; city: string };
+      }
+    ).loader;
+    expect(typeof loader).toBe("function");
+
+    const linkedZones = INTERVENTION_ZONES.filter((z) => Boolean(z.localPageSlug));
+    expect(linkedZones).toHaveLength(7);
+    for (const zone of linkedZones) {
+      const loaded = loader?.({ params: { slug: zone.localPageSlug! } });
+      expect(loaded?.slug).toBe(zone.localPageSlug);
+    }
+
+    // Verify /zones-intervention is never added to header NAV
+    expect(NAV.some((item) => item.to === ("/zones-intervention" as string))).toBe(false);
+  });
+
+  it("configures /canapes-textiles, /nettoyage-canape-lille and /nettoyage-matelas-lille routes and SEO metadata", () => {
+    const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
+
+    const expectedPages = [
+      {
+        path: "/canapes-textiles" as const,
+        title: "Nettoyage canapé et matelas à Lille | Bichonne ta Caisse",
+        description:
+          "Nettoyage de canapés, matelas et fauteuils à domicile à Lille et dans la métropole lilloise. Nettoyage en profondeur, tarifs transparents et devis gratuit.",
+        canonical: "https://bichonnetacaisse.fr/canapes-textiles",
+      },
+      {
+        path: "/nettoyage-canape-lille" as const,
+        title: "Nettoyage canapé à domicile Lille | Bichonne ta Caisse",
+        canonical: "https://bichonnetacaisse.fr/nettoyage-canape-lille",
+      },
+      {
+        path: "/nettoyage-matelas-lille" as const,
+        title: "Nettoyage matelas à domicile Lille | Bichonne ta Caisse",
+        canonical: "https://bichonnetacaisse.fr/nettoyage-matelas-lille",
+      },
+    ];
+
+    const seenDescriptions = new Set<string>();
+
+    for (const page of expectedPages) {
+      const matches = router.matchRoutes(page.path);
+      expect(matches.at(-1)?.routeId).not.toBe(rootRouteId);
+
+      const route = router.routesById[page.path];
+      const head = (
+        route.options as unknown as {
+          head?: () => {
+            meta?: Array<Record<string, string>>;
+            links?: Array<Record<string, string>>;
+          };
+        }
+      ).head?.();
+
+      const titleMeta = head?.meta?.find((m) => "title" in m);
+      const descMeta = head?.meta?.find((m) => m["name"] === "description");
+      const robotsMeta = head?.meta?.find((m) => m["name"] === "robots");
+      const canonicalLink = head?.links?.find((l) => l["rel"] === "canonical");
+
+      expect(titleMeta?.["title"]).toBe(page.title);
+      expect(canonicalLink?.["href"]).toBe(page.canonical);
+      expect(robotsMeta?.["content"]).toBe("index, follow");
+
+      const desc = descMeta?.["content"] ?? "";
+      expect(desc.length).toBeGreaterThanOrEqual(120);
+      expect(desc.length).toBeLessThanOrEqual(165);
+      if (page.description) {
+        expect(desc).toBe(page.description);
+      }
+      expect(seenDescriptions.has(desc)).toBe(false);
+      seenDescriptions.add(desc);
+    }
+
+    // Header NAV must stay strictly unchanged
+    expect(NAV).toHaveLength(3);
   });
 });

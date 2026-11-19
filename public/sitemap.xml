@@ -21,8 +21,28 @@
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
+  <url>
+    <loc>https://bichonnetacaisse.fr/canapes-textiles</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://bichonnetacaisse.fr/nettoyage-canape-lille</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://bichonnetacaisse.fr/nettoyage-matelas-lille</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
 
   <!-- Pages Dédiées Services & SEO Local -->
+  <url>
+    <loc>https://bichonnetacaisse.fr/zones-intervention</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
   <url>
     <loc>https://bichonnetacaisse.fr/services/nettoyage-interieur-voiture-lille</loc>
     <changefreq>monthly</changefreq>

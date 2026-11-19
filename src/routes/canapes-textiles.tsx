@@ -24,29 +24,78 @@ import {
   getTextileWhatsappLink,
 } from "@/lib/textiles";
 
+import { INTERVENTION_ZONES } from "@/lib/zones";
+
+const PAGE_URL = "https://bichonnetacaisse.fr/canapes-textiles";
+const PAGE_TITLE = "Nettoyage canapé et matelas à Lille | Bichonne ta Caisse";
+const PAGE_DESCRIPTION =
+  "Nettoyage de canapés, matelas et fauteuils à domicile à Lille et dans la métropole lilloise. Nettoyage en profondeur, tarifs transparents et devis gratuit.";
+
+const TEXTILE_HUB_SCHEMA = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Service",
+      "@id": `${PAGE_URL}#service`,
+      name: "Nettoyage de canapés et matelas à domicile à Lille",
+      serviceType: "Nettoyage textile à domicile",
+      url: PAGE_URL,
+      description: PAGE_DESCRIPTION,
+      provider: {
+        "@type": ["AutoDetailing", "LocalBusiness"],
+        "@id": "https://bichonnetacaisse.fr/#organization",
+        name: BUSINESS.name,
+        url: "https://bichonnetacaisse.fr/",
+        telephone: "+33659140939",
+      },
+      areaServed: [
+        ...INTERVENTION_ZONES.map((zone) => ({
+          "@type": "City",
+          name: zone.name,
+        })),
+        {
+          "@type": "AdministrativeArea",
+          name: "Métropole Européenne de Lille",
+        },
+      ],
+      offers: TEXTILE_FIXED_PRESTATIONS.map((item) => ({
+        "@type": "Offer",
+        name: item.name,
+        price: String(item.price),
+        priceCurrency: "EUR",
+        url: `${PAGE_URL}#${item.id}`,
+      })),
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Accueil",
+          item: "https://bichonnetacaisse.fr/",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Canapés & textiles",
+          item: PAGE_URL,
+        },
+      ],
+    },
+  ],
+};
+
 export const Route = createFileRoute("/canapes-textiles")({
   head: () => ({
     meta: [
-      {
-        title: "Canapés, matelas & textiles à domicile Lille | Bichonne ta Caisse",
-      },
-      {
-        name: "description",
-        content:
-          "Nettoyage de canapés (dès 69 €), fauteuils (39 €), matelas (dès 39 €), tapis et chaises à domicile à Lille et métropole lilloise par Bichonne ta Caisse. Déplacement offert jusqu'à 20 km.",
-      },
-      { property: "og:site_name", content: "Bichonne ta Caisse" },
-      {
-        property: "og:title",
-        content: "Canapés, matelas & textiles à domicile Lille | Bichonne ta Caisse",
-      },
-      {
-        property: "og:description",
-        content:
-          "Intervention à domicile à Lille : canapé 2–3 places 69 €, 4–5 places 89 €, fauteuil 39 €, matelas 1 place 39 €, matelas 2 places 59 €. Tapis, chaises et canapé d'angle sur devis.",
-      },
+      { title: PAGE_TITLE },
+      { name: "description", content: PAGE_DESCRIPTION },
+      { property: "og:site_name", content: BUSINESS.name },
+      { property: "og:title", content: PAGE_TITLE },
+      { property: "og:description", content: PAGE_DESCRIPTION },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://bichonnetacaisse.fr/canapes-textiles" },
+      { property: "og:url", content: PAGE_URL },
       {
         property: "og:image",
         content: "https://bichonnetacaisse.fr/brand/partage-reseaux-1200x630.png",
@@ -60,22 +109,15 @@ export const Route = createFileRoute("/canapes-textiles")({
       },
       { property: "og:locale", content: "fr_FR" },
       { name: "twitter:card", content: "summary_large_image" },
-      {
-        name: "twitter:title",
-        content: "Canapés, matelas & textiles à domicile Lille | Bichonne ta Caisse",
-      },
-      {
-        name: "twitter:description",
-        content:
-          "Nettoyage par injection-extraction de canapés, matelas, fauteuils et tapis à domicile à Lille dès 39 €.",
-      },
+      { name: "twitter:title", content: PAGE_TITLE },
+      { name: "twitter:description", content: PAGE_DESCRIPTION },
       {
         name: "twitter:image",
         content: "https://bichonnetacaisse.fr/brand/partage-reseaux-1200x630.png",
       },
       { name: "robots", content: "index, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://bichonnetacaisse.fr/canapes-textiles" }],
+    links: [{ rel: "canonical", href: PAGE_URL }],
   }),
   component: CanapesTextilesPage,
 });
@@ -98,6 +140,11 @@ const COMPACT_CARD_DESCRIPTIONS: Record<string, string> = {
 function CanapesTextilesPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(TEXTILE_HUB_SCHEMA) }}
+      />
+
       <div className="relative overflow-hidden bg-[#11114E] text-white">
         {/* Halos continus cohérents avec l'identité Bichonne ta Caisse */}
         <div
@@ -119,14 +166,15 @@ function CanapesTextilesPage() {
 
         <PageHero
           transparent
-          eyebrow="Service complémentaire à domicile"
-          title="Canapés & textiles à domicile"
+          eyebrow="Nettoyage textile à domicile • Métropole lilloise"
+          title="Nettoyage de canapés et matelas à domicile à Lille"
         >
           <p>
-            Le savoir-faire d'injection-extraction de{" "}
-            <strong className="text-white font-semibold">Bichonne ta Caisse</strong> directement
-            dans votre salon ou votre chambre : canapés, fauteuils, matelas, tapis, moquettes et
-            chaises en tissu, sans déplacer vos meubles.
+            En complément du nettoyage automobile,{" "}
+            <strong className="text-white font-semibold">Bichonne ta Caisse</strong> assure votre
+            nettoyage textile à domicile à Lille et dans la métropole lilloise : canapés, matelas,
+            fauteuils, tapis et chaises en tissu nettoyés en profondeur par injection-extraction,
+            sans déplacer vos meubles.
           </p>
 
           <div className="mt-4 inline-flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2.5 rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-xs sm:text-sm text-white/95">
@@ -421,6 +469,73 @@ function CanapesTextilesPage() {
               </div>
             ))}
           </div>
+
+          {/* Textiles pris en charge, bénéfices, limites et pages dédiées */}
+          <div className="grid gap-5 lg:grid-cols-12 pt-4">
+            <div className="lg:col-span-6 rounded-2xl bg-white border border-slate-200/90 p-6 space-y-3 shadow-xs">
+              <h3 className="font-display text-xl font-bold uppercase tracking-wide text-[#11114E]">
+                Textiles pris en charge, bénéfices &amp; limites
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                L'injection-extraction convient à la majorité des tissus d'ameublement (tissu tissé,
+                microfibre, velours synthétique, coton ou mélanges textiles) ainsi qu'aux coutils de
+                matelas. Elle extrait poussières incrustées, traces du quotidien et odeurs courantes
+                tout en limitant l'humidité résiduelle (comptez 3 à 6 h de séchage avec une pièce
+                aérée).
+              </p>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Pour les matières très délicates (soie, lin non stabilisé, daim) ou les taches très
+                anciennes ayant altéré la couleur d'origine, nous échangeons avec vous avant
+                intervention afin de rester parfaitement transparents sur le résultat attendu.
+              </p>
+            </div>
+
+            <div className="lg:col-span-6 grid gap-4 sm:grid-cols-2">
+              <Link
+                to="/nettoyage-canape-lille"
+                className="group rounded-2xl bg-white border border-slate-200/90 hover:border-primary/60 p-5 shadow-xs flex flex-col justify-between gap-4 transition-all hover:-translate-y-0.5"
+              >
+                <div className="space-y-2.5">
+                  <div className="inline-flex rounded-xl bg-[#FFF8F3] border border-primary/20 px-3 py-2">
+                    <TextileLineIcon id="canape-2-3" className="w-[62px] h-[36px]" />
+                  </div>
+                  <h3 className="font-display text-xl font-bold uppercase tracking-wide text-[#11114E] group-hover:text-primary transition-colors">
+                    Nettoyage canapé Lille
+                  </h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Revêtements compatibles, formats 2 à 5 places ou angle/U, conseils de séchage et
+                    FAQ dédiée aux canapés.
+                  </p>
+                </div>
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary">
+                  <span>Voir la page canapé</span>
+                  <ArrowRight className="size-3.5 group-hover:translate-x-0.5 transition-transform" />
+                </span>
+              </Link>
+
+              <Link
+                to="/nettoyage-matelas-lille"
+                className="group rounded-2xl bg-white border border-slate-200/90 hover:border-primary/60 p-5 shadow-xs flex flex-col justify-between gap-4 transition-all hover:-translate-y-0.5"
+              >
+                <div className="space-y-2.5">
+                  <div className="inline-flex rounded-xl bg-[#FFF8F3] border border-primary/20 px-3 py-2">
+                    <TextileLineIcon id="matelas-2" className="w-[62px] h-[36px]" />
+                  </div>
+                  <h3 className="font-display text-xl font-bold uppercase tracking-wide text-[#11114E] group-hover:text-primary transition-colors">
+                    Nettoyage matelas Lille
+                  </h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Auréoles, méthode adaptée au coutil, préparation avant rendez-vous, séchage et
+                    FAQ literie.
+                  </p>
+                </div>
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary">
+                  <span>Voir la page matelas</span>
+                  <ArrowRight className="size-3.5 group-hover:translate-x-0.5 transition-transform" />
+                </span>
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -451,6 +566,16 @@ function CanapesTextilesPage() {
                     {c.name}
                   </span>
                 ))}
+              </div>
+
+              <div className="pt-1">
+                <Link
+                  to="/zones-intervention"
+                  className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-white hover:text-primary transition-colors"
+                >
+                  <span>Consulter le répertoire complet des zones d'intervention</span>
+                  <ArrowRight className="size-3.5 text-primary" />
+                </Link>
               </div>
             </div>
 

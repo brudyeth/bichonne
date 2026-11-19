@@ -25,6 +25,7 @@ interface ServicePageData {
   postalCode?: string;
   introParagraphs: string[];
   localFaq: Array<{ question: string; answer: string }>;
+  nearbySlugs: string[];
 }
 
 const SERVICE_PAGES: Record<string, ServicePageData> = {
@@ -54,6 +55,12 @@ const SERVICE_PAGES: Record<string, ServicePageData> = {
           "Grâce à notre technique d'extraction puissante, l'eau sale est immédiatement aspirée. Les sièges restent légèrement humides et sèchent généralement en 2 à 4 heures selon la ventilation et la température ambiante.",
       },
     ],
+    nearbySlugs: [
+      "nettoyage-voiture-domicile-la-madeleine",
+      "nettoyage-voiture-domicile-lambersart",
+      "nettoyage-voiture-domicile-marcq-en-baroeul",
+      "shampoing-sieges-tapis-voiture-lille",
+    ],
   },
   "shampoing-sieges-tapis-voiture-lille": {
     slug: "shampoing-sieges-tapis-voiture-lille",
@@ -80,6 +87,12 @@ const SERVICE_PAGES: Record<string, ServicePageData> = {
         answer:
           "Oui, les selleries en cuir et en Alcantara font l'objet d'un nettoyage spécifique avec des produits adaptés non agressifs, et nous proposons un soin nourrissant dédié au cuir en supplément (+15 €).",
       },
+    ],
+    nearbySlugs: [
+      "nettoyage-interieur-voiture-lille",
+      "nettoyage-voiture-domicile-la-madeleine",
+      "nettoyage-voiture-domicile-lambersart",
+      "nettoyage-voiture-domicile-wambrechies",
     ],
   },
   "nettoyage-voiture-domicile-wambrechies": {
@@ -108,6 +121,12 @@ const SERVICE_PAGES: Record<string, ServicePageData> = {
           "Nous avons uniquement besoin d'un accès à une prise électrique 220 V standard et d'un point d'eau si vous choisissez un lavage de la carrosserie.",
       },
     ],
+    nearbySlugs: [
+      "nettoyage-voiture-domicile-marcq-en-baroeul",
+      "nettoyage-voiture-domicile-lambersart",
+      "nettoyage-voiture-domicile-la-madeleine",
+      "nettoyage-interieur-voiture-lille",
+    ],
   },
   "nettoyage-voiture-domicile-marcq-en-baroeul": {
     slug: "nettoyage-voiture-domicile-marcq-en-baroeul",
@@ -135,6 +154,12 @@ const SERVICE_PAGES: Record<string, ServicePageData> = {
           "Tout à fait, si le stationnement de votre entreprise permet d'accéder au véhicule et que les autorisations nécessaires sont réunies.",
       },
     ],
+    nearbySlugs: [
+      "nettoyage-voiture-domicile-la-madeleine",
+      "nettoyage-voiture-domicile-wambrechies",
+      "nettoyage-voiture-domicile-roubaix",
+      "nettoyage-voiture-domicile-tourcoing",
+    ],
   },
   "nettoyage-voiture-domicile-lambersart": {
     slug: "nettoyage-voiture-domicile-lambersart",
@@ -156,6 +181,17 @@ const SERVICE_PAGES: Record<string, ServicePageData> = {
         answer:
           "La Formule Complète est au tarif fixe de 139 € (intérieur approfondi avec shampouinage sièges + carrosserie extérieure). Le déplacement à Lambersart est offert.",
       },
+      {
+        question: "Intervenez-vous en résidence ou maison individuelle à Lambersart ?",
+        answer:
+          "Oui, nous intervenons aussi bien devant une maison individuelle que sur une place de parking privative en résidence, dès lors qu'un accès à une prise 220 V est disponible à proximité.",
+      },
+    ],
+    nearbySlugs: [
+      "nettoyage-interieur-voiture-lille",
+      "nettoyage-voiture-domicile-la-madeleine",
+      "nettoyage-voiture-domicile-wambrechies",
+      "nettoyage-voiture-domicile-marcq-en-baroeul",
     ],
   },
   "nettoyage-voiture-domicile-la-madeleine": {
@@ -178,6 +214,17 @@ const SERVICE_PAGES: Record<string, ServicePageData> = {
         answer:
           "Non, nos tarifs sont strictement identiques pour une citadine, une berline, un break ou un grand SUV (69 € Intérieur Express, 99 € Intérieur Premium, 139 € Formule Complète).",
       },
+      {
+        question: "Combien de temps dure une prestation à domicile à La Madeleine ?",
+        answer:
+          "Comptez 1 h à 1 h 30 pour l'Intérieur Express, 2 à 3 h pour l'Intérieur Premium avec shampouinage des sièges, et 3 à 5 h pour la Formule Complète.",
+      },
+    ],
+    nearbySlugs: [
+      "nettoyage-interieur-voiture-lille",
+      "nettoyage-voiture-domicile-marcq-en-baroeul",
+      "nettoyage-voiture-domicile-lambersart",
+      "nettoyage-voiture-domicile-wambrechies",
     ],
   },
   "nettoyage-voiture-domicile-roubaix": {
@@ -200,6 +247,17 @@ const SERVICE_PAGES: Record<string, ServicePageData> = {
         answer:
           "Roubaix se situe à environ 11 km de notre point de référence : le déplacement est donc 100% offert dans notre rayon de 20 km gratuits.",
       },
+      {
+        question:
+          "Puis-je réserver un nettoyage intérieur avant la vente d'un véhicule à Roubaix ?",
+        answer:
+          "Oui, l'Intérieur Premium (99 €) et la Formule Complète (139 €) sont particulièrement adaptés pour valoriser un véhicule avant une vente ou une restitution de leasing.",
+      },
+    ],
+    nearbySlugs: [
+      "nettoyage-voiture-domicile-tourcoing",
+      "nettoyage-voiture-domicile-marcq-en-baroeul",
+      "nettoyage-interieur-voiture-lille",
     ],
   },
   "nettoyage-voiture-domicile-tourcoing": {
@@ -222,6 +280,16 @@ const SERVICE_PAGES: Record<string, ServicePageData> = {
         answer:
           "Oui, Tourcoing est située à environ 12 km de notre point de référence (Place de la République à Lille), ce qui est pleinement compris dans nos 20 km de déplacement gratuit.",
       },
+      {
+        question: "Proposez-vous aussi l'entretien de véhicules utilitaires à Tourcoing ?",
+        answer:
+          "Oui, nous intervenons sur les véhicules utilitaires de particuliers et d'entreprises à Tourcoing avec un supplément fixe de 20 €, ou sur devis dédié pour les flottes.",
+      },
+    ],
+    nearbySlugs: [
+      "nettoyage-voiture-domicile-roubaix",
+      "nettoyage-voiture-domicile-marcq-en-baroeul",
+      "nettoyage-voiture-domicile-wambrechies",
     ],
   },
 };
@@ -248,6 +316,9 @@ export const Route = createFileRoute("/services/$slug")({
           property: "og:url",
           content: `https://bichonnetacaisse.fr/services/${loaderData.slug}`,
         },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: loaderData.metaTitle },
+        { name: "twitter:description", content: loaderData.metaDescription },
         { name: "robots", content: "index, follow" },
       ],
       links: [
@@ -263,9 +334,66 @@ export const Route = createFileRoute("/services/$slug")({
 
 function ServicePage() {
   const data = Route.useLoaderData();
+  const nearbyPages = data.nearbySlugs
+    .map((slug) => SERVICE_PAGES[slug])
+    .filter((page): page is ServicePageData => Boolean(page));
+
+  const pageUrl = `https://bichonnetacaisse.fr/services/${data.slug}`;
+  const serviceSchema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Service",
+        "@id": `${pageUrl}#service`,
+        name: data.h1,
+        serviceType: "Nettoyage automobile à domicile",
+        url: pageUrl,
+        description: data.metaDescription,
+        provider: {
+          "@type": ["AutoDetailing", "LocalBusiness"],
+          "@id": "https://bichonnetacaisse.fr/#organization",
+          name: BUSINESS.name,
+          url: "https://bichonnetacaisse.fr/",
+          telephone: "+33659140939",
+        },
+        areaServed: {
+          "@type": "City",
+          name: data.city,
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Accueil",
+            item: "https://bichonnetacaisse.fr/",
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Zones d'intervention",
+            item: "https://bichonnetacaisse.fr/zones-intervention",
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: data.title,
+            item: pageUrl,
+          },
+        ],
+      },
+    ],
+  };
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
+      />
+
       <div className="relative overflow-hidden bg-[#11114E] text-white">
         <div
           aria-hidden="true"
@@ -277,17 +405,20 @@ function ServicePage() {
         />
 
         {/* Fil d'Ariane SEO */}
-        <div className="container-site pt-20 sm:pt-24 text-xs text-white/70 flex items-center gap-1.5">
+        <nav
+          aria-label="Fil d'Ariane"
+          className="container-site pt-20 sm:pt-24 text-xs text-white/70 flex flex-wrap items-center gap-1.5 relative z-10"
+        >
           <Link to="/" className="hover:text-white transition-colors">
             Accueil
           </Link>
-          <ChevronRight className="size-3 text-white/40" />
-          <Link to="/formules" className="hover:text-white transition-colors">
-            Prestations
+          <ChevronRight className="size-3 text-white/40" aria-hidden="true" />
+          <Link to="/zones-intervention" className="hover:text-white transition-colors">
+            Zones d'intervention
           </Link>
-          <ChevronRight className="size-3 text-white/40" />
+          <ChevronRight className="size-3 text-white/40" aria-hidden="true" />
           <span className="text-primary font-semibold truncate max-w-xs">{data.title}</span>
-        </div>
+        </nav>
 
         <PageHero transparent eyebrow={`Secteur : ${data.city}`} title={data.h1}>
           <p className="text-base sm:text-lg text-white/85 max-w-2xl leading-relaxed">
@@ -362,6 +493,51 @@ function ServicePage() {
         </section>
       )}
 
+      {/* Maillage local : communes voisines et retour au répertoire des zones */}
+      <section className="bg-[#FAFBFD] py-10 sm:py-12 border-t border-slate-200 text-[#11114E]">
+        <div className="container-site max-w-4xl space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-1">
+                <span className="w-5 h-[2px] bg-primary" aria-hidden="true" />
+                <span>Maillage local</span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-display font-bold uppercase text-[#11114E]">
+                Interventions à proximité de {data.city}
+              </h2>
+            </div>
+            <Link
+              to="/zones-intervention"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#11114E] hover:text-[#F47721] transition-colors"
+            >
+              <span>Toutes nos zones d'intervention</span>
+              <ArrowRight className="size-4 text-[#F47721]" aria-hidden="true" />
+            </Link>
+          </div>
+
+          <ul className="grid gap-3 sm:grid-cols-2">
+            {nearbyPages.map((nearby) => (
+              <li key={nearby.slug}>
+                <Link
+                  to="/services/$slug"
+                  params={{ slug: nearby.slug }}
+                  className="group flex items-center justify-between gap-3 rounded-xl border border-[#E9EDF1] bg-white px-4 py-3 text-sm font-semibold text-[#11114E] hover:border-[#F47721]/50 hover:text-[#F47721] transition-colors"
+                >
+                  <span className="flex items-center gap-2 min-w-0">
+                    <MapPin className="size-4 text-[#F47721] shrink-0" aria-hidden="true" />
+                    <span className="truncate">{nearby.title}</span>
+                  </span>
+                  <ArrowRight
+                    className="size-4 text-slate-400 group-hover:text-[#F47721] group-hover:translate-x-0.5 transition-all shrink-0"
+                    aria-hidden="true"
+                  />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
       {/* Barème de déplacement transparent */}
       <section className="bg-[#11114E] py-14 text-white border-t border-white/10">
         <div className="container-site max-w-2xl text-center space-y-4">
@@ -379,13 +555,19 @@ function ServicePage() {
             la Place de la République à Lille. Au-delà, seuls les kilomètres supplémentaires sont
             facturés 0,50 €/km aller-retour selon la distance routière estimée.
           </p>
-          <div className="pt-2">
-            <a
-              href="/contact"
+          <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
+            <Link
+              to="/contact"
               className="btn btn-primary inline-flex text-xs uppercase tracking-wider font-bold py-3 px-6 rounded-xl shadow-lg"
             >
               Demander un devis pour {data.city}
-            </a>
+            </Link>
+            <Link
+              to="/zones-intervention"
+              className="btn btn-outline-light inline-flex text-xs uppercase tracking-wider font-bold py-3 px-5 rounded-xl"
+            >
+              Voir toutes nos zones d'intervention
+            </Link>
           </div>
         </div>
       </section>
