@@ -150,6 +150,19 @@ export const TEXTILE_STEAM_OPTION = {
     "Un soin complémentaire à la vapeur pour une hygiène renforcée. La chaleur aide à réduire la présence d'acariens en surface, à décoller certaines salissures et à rafraîchir vos textiles.",
 } as const;
 
+export const TEXTILE_ANTI_ODOR_OPTION = {
+  id: "traitement-anti-odeurs",
+  name: "Traitement anti-odeurs",
+  price: 10,
+  priceLabel: "+10 €",
+  unitLabel: "en complément d'un nettoyage",
+  complementNote: "Prestation complémentaire au nettoyage d'un canapé ou d'un matelas.",
+  short:
+    "Traitement complémentaire ciblant les mauvaises odeurs incrustées dans les textiles : urine d'animaux, odeurs persistantes et autres désagréments du quotidien.",
+  disclaimer:
+    "Selon l'ancienneté et la profondeur de pénétration (notamment lorsque l'urine a imprégné les mousses internes), les odeurs peuvent être atténuées sans garantie d'élimination à 100 %.",
+} as const;
+
 export interface TextileSteamEstimateInput {
   /** Quantités sélectionnées par prestation à tarif fixe (id -> quantité >= 0) */
   quantities: Record<string, number>;
@@ -161,6 +174,8 @@ export interface TextileSteamEstimateInput {
   steamQuantities: Record<string, number>;
   /** Nombre d'éléments supplémentaires à traiter à la vapeur (cas sur devis uniquement) */
   steamCustomCount?: number;
+  /** Option traitement anti-odeurs activée par le client (+10 €, jamais true par défaut) */
+  antiOdorEnabled?: boolean;
 }
 
 export interface TextileOrderLine {
@@ -180,15 +195,16 @@ export interface TextileEstimateResult {
   fixedSubtotal: number;
   steamPiecesCount: number;
   steamSurcharge: number;
-  /** Total chiffré (prestations fixes + supplément vapeur), ou 0 si uniquement sur devis sans vapeur */
+  antiOdorSurcharge: number;
+  /** Total chiffré (prestations fixes + supplément vapeur + traitement anti-odeurs) */
   baseTotal: number;
   hasQuoteOnlyItems: boolean;
   isQuoteOnlyOrder: boolean;
 }
 
 /**
- * Calcule le détail d'une commande textile (multi-pièces) et le supplément
- * traitement vapeur à 10 € par élément traité.
+ * Calcule le détail d'une commande textile (multi-pièces), le supplément
+ * traitement vapeur à 10 € par élément traité et l'option traitement anti-odeurs (+10 €).
  */
 export function calculateTextileEstimate(input: TextileSteamEstimateInput): TextileEstimateResult {
   const fixedLines: TextileOrderLine[] = [];
@@ -227,6 +243,7 @@ export function calculateTextileEstimate(input: TextileSteamEstimateInput): Text
 
   const steamPiecesCount = fixedSteamCount + extraSteamCount;
   const steamSurcharge = steamPiecesCount * TEXTILE_STEAM_OPTION.pricePerItem;
+  const antiOdorSurcharge = input.antiOdorEnabled ? TEXTILE_ANTI_ODOR_OPTION.price : 0;
 
   const hasQuoteOnlyItems = quoteItems.length > 0;
   const isQuoteOnlyOrder = totalFixedPieces === 0;
@@ -238,7 +255,8 @@ export function calculateTextileEstimate(input: TextileSteamEstimateInput): Text
     fixedSubtotal,
     steamPiecesCount,
     steamSurcharge,
-    baseTotal: fixedSubtotal + steamSurcharge,
+    antiOdorSurcharge,
+    baseTotal: fixedSubtotal + steamSurcharge + antiOdorSurcharge,
     hasQuoteOnlyItems,
     isQuoteOnlyOrder,
   };

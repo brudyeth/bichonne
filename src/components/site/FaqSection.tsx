@@ -16,7 +16,7 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     question: "Le tarif dépend-il de la taille de mon véhicule ?",
     answer:
-      "Non, nos tarifs sont transparents et identiques pour tous les véhicules : citadine, berline, break ou SUV. Les tarifs affichés (69 € Intérieur Express, 99 € Intérieur Premium, 139 € Formule Complète) restent les mêmes quel que soit votre modèle.",
+      "Non, nos tarifs sont transparents et identiques pour tous les véhicules : citadine, berline, break ou SUV. Les tarifs affichés (69 € Intérieur Express, 89 € Intérieur Premium, 139 € Formule Complète) restent les mêmes quel que soit votre modèle.",
   },
   {
     question: "Quels sont les frais de déplacement ?",
@@ -26,7 +26,7 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     question: "Le shampouinage des sièges et tapis est-il bien inclus ?",
     answer:
-      "Oui ! Le shampouinage complet des sièges, tapis et moquettes est inclus d'office dans la formule Intérieur Premium (99 €) ainsi que dans la Formule Complète (139 €).",
+      "Oui ! Le shampouinage complet des sièges, tapis et moquettes est inclus d'office dans la formule Intérieur Premium (89 €) ainsi que dans la Formule Complète (139 €).",
   },
   {
     question: "Comment régler ma prestation ?",

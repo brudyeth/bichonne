@@ -316,7 +316,7 @@ export function FormulaCards({ detailed = false }: { detailed?: boolean }) {
                     </span>
                   </div>
                   <p className="text-[11px] text-slate-600 font-semibold pl-5.5">
-                    Inclus dans Intérieur Premium — 99 €
+                    Inclus dans Intérieur Premium — 89 €
                   </p>
                 </div>
 

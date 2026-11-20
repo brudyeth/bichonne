@@ -22,9 +22,10 @@ import {
   Plus,
 } from "lucide-react";
 import { PageHero, Facebook3DIcon, Instagram3DIcon } from "@/components/site/Layout";
-import { TextileSteamIcon } from "@/components/site/TextileIcons";
+import { TextileAntiOdorIcon, TextileSteamIcon } from "@/components/site/TextileIcons";
 import { BUSINESS, FORMULAS, INTENSIVE_DIRT_NOTICE, euro, whatsappLink } from "@/lib/business";
 import {
+  TEXTILE_ANTI_ODOR_OPTION,
   TEXTILE_FIXED_PRESTATIONS,
   TEXTILE_HONEST_NOTICE,
   TEXTILE_PRESTATIONS,
@@ -177,10 +178,11 @@ function Page() {
     }
     return [];
   });
-  // Le traitement vapeur n'est JAMAIS sélectionné par défaut
+  // Le traitement vapeur et le traitement anti-odeurs ne sont JAMAIS sélectionnés par défaut
   const [textileSteamEnabled, setTextileSteamEnabled] = useState(false);
   const [textileSteamQuantities, setTextileSteamQuantities] = useState<Record<string, number>>({});
   const [textileSteamCustomCount, setTextileSteamCustomCount] = useState(1);
+  const [textileAntiOdorEnabled, setTextileAntiOdorEnabled] = useState(false);
   const [textileDetails, setTextileDetails] = useState("");
   const [textileAccess, setTextileAccess] = useState<string>("Rez-de-chaussée ou maison");
 
@@ -264,6 +266,7 @@ function Page() {
         steamEnabled: textileSteamEnabled,
         steamQuantities: textileSteamQuantities,
         steamCustomCount: textileSteamCustomCount,
+        antiOdorEnabled: textileAntiOdorEnabled,
       }),
     [
       textileQuantities,
@@ -271,6 +274,7 @@ function Page() {
       textileSteamEnabled,
       textileSteamQuantities,
       textileSteamCustomCount,
+      textileAntiOdorEnabled,
     ],
   );
 
@@ -358,6 +362,17 @@ function Page() {
       .join(", ");
     return `${textileEstimate.steamPiecesCount} ${textileEstimate.steamPiecesCount > 1 ? "pièces" : "pièce"} : ${itemsList} (+${euro(textileEstimate.steamSurcharge)})`;
   }, [textileSteamEnabled, textileEstimate]);
+
+  const textileOptionsHelperLabel = useMemo(() => {
+    const parts: string[] = [];
+    if (textileSteamEnabled && textileEstimate.steamSurcharge > 0) {
+      parts.push(`traitement vapeur (+${euro(textileEstimate.steamSurcharge)})`);
+    }
+    if (textileAntiOdorEnabled && textileEstimate.antiOdorSurcharge > 0) {
+      parts.push(`traitement anti-odeurs (+${euro(textileEstimate.antiOdorSurcharge)})`);
+    }
+    return parts.length > 0 ? `Inclut ${parts.join(" et ")}` : null;
+  }, [textileSteamEnabled, textileAntiOdorEnabled, textileEstimate]);
 
   const steps = useMemo(
     () =>
@@ -667,6 +682,21 @@ function Page() {
         textileSteamEnabled && textileEstimate.steamPiecesCount > 0
           ? `Traitement vapeur — ${textileSteamDetailLabel}`
           : "Aucun";
+      const antiOdorText = textileAntiOdorEnabled
+        ? `Oui (+${euro(TEXTILE_ANTI_ODOR_OPTION.price)})`
+        : "Non";
+
+      const textileOptionSummaryParts: string[] = [];
+      if (textileEstimate.steamSurcharge > 0) {
+        textileOptionSummaryParts.push(
+          `traitement vapeur : +${euro(textileEstimate.steamSurcharge)}`,
+        );
+      }
+      if (textileEstimate.antiOdorSurcharge > 0) {
+        textileOptionSummaryParts.push(
+          `traitement anti-odeurs : +${euro(textileEstimate.antiOdorSurcharge)}`,
+        );
+      }
 
       const lines: (string | null)[] = [
         "Bonjour, je souhaite un devis Canapés & textiles pour Bichonne ta Caisse.",
@@ -681,6 +711,7 @@ function Page() {
         "🛋️ TEXTILE & INTERVENTION :",
         `• Prestation(s) souhaitée(s) : ${textileSelectionLabel}`,
         `• Option traitement vapeur : ${steamText}`,
+        `• Option traitement anti-odeurs : ${antiOdorText}`,
         `• Détails / Dimensions : ${textileDetails.trim() || "Non précisé"}`,
         `• Accès logement : ${textileAccess}`,
         `• Accès à l'eau : ${hasWater ? "Oui" : "Non"}`,
@@ -700,8 +731,8 @@ function Page() {
         "",
         isTextileQuoteOnly
           ? `💰 TARIF ESTIMÉ : Sur devis${
-              textileEstimate.steamSurcharge > 0
-                ? ` (+ traitement vapeur : +${euro(textileEstimate.steamSurcharge)})`
+              textileOptionSummaryParts.length > 0
+                ? ` (+ ${textileOptionSummaryParts.join(" + ")})`
                 : ""
             }${
               travelCalculation && travelCalculation.fee > 0
@@ -714,8 +745,8 @@ function Page() {
             ? `💰 TARIF ESTIMÉ : ${euro(total)}${
                 textileEstimate.hasQuoteOnlyItems ? " (+ éléments sur devis)" : ""
               }${
-                textileEstimate.steamSurcharge > 0
-                  ? ` (dont traitement vapeur : +${euro(textileEstimate.steamSurcharge)})`
+                textileOptionSummaryParts.length > 0
+                  ? ` (dont ${textileOptionSummaryParts.join(" · ")})`
                   : ""
               }${
                 travelCalculation && travelCalculation.fee > 0
@@ -812,6 +843,7 @@ function Page() {
     hasIntensiveDirt,
     textileEstimate,
     textileSteamEnabled,
+    textileAntiOdorEnabled,
     textileSelectionLabel,
     textileSteamDetailLabel,
     textileDetails,
@@ -870,11 +902,20 @@ function Page() {
                 ? textileEstimate.fixedSubtotal
                 : undefined
               : selectedFormula?.price,
+          textileOptionsSurcharge:
+            activity === "textiles"
+              ? textileEstimate.steamSurcharge + textileEstimate.antiOdorSurcharge
+              : undefined,
           selectedCares:
             activity === "textiles"
-              ? textileSteamEnabled && textileEstimate.steamPiecesCount > 0
-                ? [`Traitement vapeur — ${textileSteamDetailLabel}`]
-                : []
+              ? [
+                  ...(textileSteamEnabled && textileEstimate.steamPiecesCount > 0
+                    ? [`Traitement vapeur — ${textileSteamDetailLabel}`]
+                    : []),
+                  ...(textileAntiOdorEnabled
+                    ? [`${TEXTILE_ANTI_ODOR_OPTION.name} (${TEXTILE_ANTI_ODOR_OPTION.priceLabel})`]
+                    : []),
+                ]
               : [
                   ...selectedCaresList.map((c) => `${c.name} (+${euro(c.price)})`),
                   ...(hasIntensiveDirt ? ["Salissures intensives (sur devis)"] : []),
@@ -1239,12 +1280,12 @@ function Page() {
                                 plus populaire
                               </p>
                               <p className="text-sm font-semibold text-foreground">
-                                Passez à l'Intérieur Premium pour +30 € seulement
+                                Passez à l'Intérieur Premium pour +20 € seulement
                               </p>
                               <p className="text-xs text-muted-foreground leading-relaxed">
                                 Profitez du shampouinage et de l'assainissement des sièges, tapis et
                                 moquettes, du nettoyage des rails, aérations, contours de portes,
-                                pédalier et de la protection anti-UV des plastiques (99 € au total).
+                                pédalier et de la protection anti-UV des plastiques (89 € au total).
                               </p>
                             </div>
                             <button
@@ -1252,7 +1293,7 @@ function Page() {
                               onClick={() => setFormula("interieur-premium")}
                               className="self-start sm:self-center shrink-0 rounded-lg bg-primary px-3.5 py-2 text-xs font-bold text-primary-foreground uppercase tracking-wide hover:bg-primary/90 transition-colors shadow-xs"
                             >
-                              Passer au Premium (+30 €)
+                              Passer au Premium (+20 €)
                             </button>
                           </div>
                         )}
@@ -1263,7 +1304,7 @@ function Page() {
                                 <Sparkles className="size-3.5" /> Suggestion confort · Soin intégral
                               </p>
                               <p className="text-sm font-semibold text-foreground">
-                                Passez à la Formule Complète pour +40 € seulement
+                                Passez à la Formule Complète pour +50 € seulement
                               </p>
                               <p className="text-xs text-muted-foreground leading-relaxed">
                                 Profitez d'un véhicule impeccable à l'extérieur comme à l'intérieur
@@ -1276,7 +1317,7 @@ function Page() {
                               onClick={() => setFormula("complet")}
                               className="self-start sm:self-center shrink-0 rounded-lg bg-primary px-3.5 py-2 text-xs font-bold text-primary-foreground uppercase tracking-wide hover:bg-primary/90 transition-colors shadow-xs"
                             >
-                              Passer au Complet (+40 €)
+                              Passer au Complet (+50 €)
                             </button>
                           </div>
                         )}
@@ -1291,7 +1332,7 @@ function Page() {
                               onClick={() => setFormula("interieur-premium")}
                               className="text-primary font-semibold hover:underline shrink-0"
                             >
-                              Revenir à l'Intérieur Premium (99 €)
+                              Revenir à l'Intérieur Premium (89 €)
                             </button>
                           </div>
                         )}
@@ -1676,6 +1717,52 @@ function Page() {
                         )}
                       </div>
 
+                      {/* Option facultative : Traitement anti-odeurs (+10 €, jamais coché par défaut) */}
+                      <div
+                        className={`rounded-xl border transition-colors ${
+                          textileAntiOdorEnabled
+                            ? "border-primary bg-[#FFF8F3]/70"
+                            : "border-border bg-background"
+                        }`}
+                      >
+                        <label className="flex cursor-pointer items-start justify-between gap-3 p-4">
+                          <div className="flex items-start gap-3">
+                            <input
+                              type="checkbox"
+                              className="size-4 accent-primary mt-1 shrink-0"
+                              checked={textileAntiOdorEnabled}
+                              onChange={(e) => setTextileAntiOdorEnabled(e.target.checked)}
+                            />
+                            <div className="space-y-1">
+                              <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                                <TextileAntiOdorIcon className="size-6 shrink-0" />
+                                <span className="text-sm font-bold text-[#11114E]">
+                                  {TEXTILE_ANTI_ODOR_OPTION.name}
+                                </span>
+                                <span className="text-xs font-normal text-muted-foreground">
+                                  (facultatif)
+                                </span>
+                              </div>
+                              <p className="text-xs text-muted-foreground leading-snug">
+                                {TEXTILE_ANTI_ODOR_OPTION.short}
+                              </p>
+                              <p className="text-[11px] text-slate-500 leading-snug">
+                                {TEXTILE_ANTI_ODOR_OPTION.complementNote}{" "}
+                                {TEXTILE_ANTI_ODOR_OPTION.disclaimer}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-right shrink-0">
+                            <span className="font-bold text-primary text-sm block whitespace-nowrap">
+                              {TEXTILE_ANTI_ODOR_OPTION.priceLabel}
+                            </span>
+                            <span className="text-[11px] font-medium text-slate-500 block whitespace-nowrap">
+                              canapé / matelas
+                            </span>
+                          </div>
+                        </label>
+                      </div>
+
                       <div className="rounded-xl border border-border/80 bg-secondary/40 p-3.5 text-xs text-muted-foreground leading-relaxed flex items-start gap-2">
                         <Info className="size-4 text-primary shrink-0 mt-0.5" />
                         <p>{TEXTILE_HONEST_NOTICE}</p>
@@ -1690,10 +1777,8 @@ function Page() {
                         Tarif estimé
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        {activity === "textiles" &&
-                        textileSteamEnabled &&
-                        textileEstimate.steamSurcharge > 0
-                          ? `Inclut traitement vapeur (+${euro(textileEstimate.steamSurcharge)})`
+                        {activity === "textiles" && textileOptionsHelperLabel
+                          ? textileOptionsHelperLabel
                           : "Actualisé en temps réel"}
                       </span>
                     </div>
@@ -1713,6 +1798,14 @@ function Page() {
                         textileEstimate.steamSurcharge > 0 && (
                           <span className="block text-[11px] font-semibold text-[#11114E]">
                             +{euro(textileEstimate.steamSurcharge)} traitement vapeur
+                          </span>
+                        )}
+                      {activity === "textiles" &&
+                        isTextileQuoteOnly &&
+                        textileAntiOdorEnabled &&
+                        textileEstimate.antiOdorSurcharge > 0 && (
+                          <span className="block text-[11px] font-semibold text-[#11114E]">
+                            +{euro(textileEstimate.antiOdorSurcharge)} traitement anti-odeurs
                           </span>
                         )}
                       {activity === "textiles" &&
@@ -2039,10 +2132,8 @@ function Page() {
                       <span className="text-xs text-muted-foreground">
                         {isUtilityVehicle
                           ? "Dont supplément utilitaire (+20 €)"
-                          : activity === "textiles" &&
-                              textileSteamEnabled &&
-                              textileEstimate.steamSurcharge > 0
-                            ? `Inclut traitement vapeur (+${euro(textileEstimate.steamSurcharge)})`
+                          : activity === "textiles" && textileOptionsHelperLabel
+                            ? textileOptionsHelperLabel
                             : "Actualisé en temps réel"}
                       </span>
                     </div>
@@ -2062,6 +2153,14 @@ function Page() {
                         textileEstimate.steamSurcharge > 0 && (
                           <span className="block text-[11px] font-semibold text-[#11114E]">
                             +{euro(textileEstimate.steamSurcharge)} traitement vapeur
+                          </span>
+                        )}
+                      {activity === "textiles" &&
+                        isTextileQuoteOnly &&
+                        textileAntiOdorEnabled &&
+                        textileEstimate.antiOdorSurcharge > 0 && (
+                          <span className="block text-[11px] font-semibold text-[#11114E]">
+                            +{euro(textileEstimate.antiOdorSurcharge)} traitement anti-odeurs
                           </span>
                         )}
                     </div>
@@ -2374,6 +2473,17 @@ function Page() {
                           </div>
                         )}
 
+                      {activity === "textiles" && textileAntiOdorEnabled && (
+                        <div className="flex justify-between gap-4 py-1 border-b border-border/50">
+                          <span className="text-muted-foreground shrink-0">
+                            {TEXTILE_ANTI_ODOR_OPTION.name} :
+                          </span>
+                          <span className="font-semibold text-right text-primary">
+                            Oui ({TEXTILE_ANTI_ODOR_OPTION.priceLabel})
+                          </span>
+                        </div>
+                      )}
+
                       {activity === "auto" && hasIntensiveDirt && (
                         <div className="flex justify-between py-1 border-b border-border/50">
                           <span className="text-muted-foreground">Salissures intensives :</span>
@@ -2485,6 +2595,14 @@ function Page() {
                           textileEstimate.steamSurcharge > 0 && (
                             <span className="block text-[11px] font-semibold text-[#11114E]">
                               +{euro(textileEstimate.steamSurcharge)} traitement vapeur
+                            </span>
+                          )}
+                        {activity === "textiles" &&
+                          isTextileQuoteOnly &&
+                          textileAntiOdorEnabled &&
+                          textileEstimate.antiOdorSurcharge > 0 && (
+                            <span className="block text-[11px] font-semibold text-[#11114E]">
+                              +{euro(textileEstimate.antiOdorSurcharge)} traitement anti-odeurs
                             </span>
                           )}
                         {activity === "textiles" &&

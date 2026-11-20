@@ -401,6 +401,7 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
       electricityAccess?: boolean;
       formulaName?: string;
       formulaPrice?: number;
+      textileOptionsSurcharge?: number;
       selectedCares?: string[];
       isVeryDirty?: boolean;
       hasPetHair?: boolean;
@@ -433,6 +434,7 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
       electricityAccess,
       formulaName,
       formulaPrice,
+      textileOptionsSurcharge,
       selectedCares,
       isVeryDirty,
       hasPetHair,
@@ -636,8 +638,14 @@ async function handleContactApi(request: Request, env?: unknown): Promise<Respon
     // Récapitulatif du total estimé avec frais de déplacement vérifiés
     let finalTotalDisplay = "";
     if (typeof formulaPrice === "number") {
+      const safeTextileOptionsSurcharge =
+        typeof textileOptionsSurcharge === "number" &&
+        Number.isFinite(textileOptionsSurcharge) &&
+        textileOptionsSurcharge > 0
+          ? textileOptionsSurcharge
+          : 0;
       const basePrestationTotal = isTextiles
-        ? formulaPrice + (isVeryDirty || hasPetHair ? 15 : 0)
+        ? formulaPrice + safeTextileOptionsSurcharge + (isVeryDirty || hasPetHair ? 15 : 0)
         : formulaPrice + (utilitySurcharge || 0) + (isVeryDirty ? 15 : 0) + (hasPetHair ? 15 : 0);
 
       if (verifiedTravelFee !== null && verifiedTravelFee > 0) {

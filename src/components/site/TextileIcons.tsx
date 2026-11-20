@@ -242,3 +242,37 @@ export function TextileSteamIcon({ className = "size-8" }: { className?: string 
     </svg>
   );
 }
+
+/**
+ * Icône vectorielle minimaliste (line art, sans remplissage) évoquant la fraîcheur
+ * et la neutralisation des odeurs pour l'option « Traitement anti-odeurs (+10 €) ».
+ */
+export function TextileAntiOdorIcon({ className = "size-8" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 40 40"
+      fill="none"
+      aria-hidden="true"
+      className={className}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {/* Flux d'air frais purifié */}
+      <path
+        d="M8.5 16H23.5C25.7 16 27.5 14.3 27.5 12.2C27.5 10.2 25.9 8.8 24 8.8C22.4 8.8 21.2 9.8 21 11.2"
+        stroke="#11114E"
+        strokeWidth="1.7"
+      />
+      <path
+        d="M11 21.5H28.5C30.4 21.5 32 23 32 24.9C32 26.8 30.5 28.2 28.6 28.2C27 28.2 25.8 27.2 25.6 25.8"
+        stroke="#F47721"
+        strokeWidth="1.75"
+      />
+      {/* Éclat de fraîcheur discret */}
+      <path d="M14 27.5H21" stroke="#11114E" strokeWidth="1.65" />
+      <path d="M12 10.5V13.5M10.5 12H13.5" stroke="#F47721" strokeWidth="1.5" />
+      {/* Surface textile minimaliste */}
+      <path d="M9.5 32.5H30.5" stroke="#11114E" strokeWidth="1.6" />
+    </svg>
+  );
+}

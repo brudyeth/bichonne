@@ -13,9 +13,14 @@ import {
   Zap,
 } from "lucide-react";
 import { PageHero } from "@/components/site/Layout";
-import { TextileLineIcon, TextileSteamIcon } from "@/components/site/TextileIcons";
+import {
+  TextileAntiOdorIcon,
+  TextileLineIcon,
+  TextileSteamIcon,
+} from "@/components/site/TextileIcons";
 import { BUSINESS, LOCAL_COMMUNES, TRAVEL_CONDITIONS } from "@/lib/business";
 import {
+  TEXTILE_ANTI_ODOR_OPTION,
   TEXTILE_FIXED_PRESTATIONS,
   TEXTILE_HONEST_NOTICE,
   TEXTILE_PROCESS_STEPS,
@@ -303,32 +308,66 @@ function CanapesTextilesPage() {
               })}
             </div>
 
-            {/* Option complémentaire : Traitement vapeur (bandeau élégant sous les 5 cartes) */}
-            <div className="rounded-2xl bg-white/95 text-[#11114E] border border-primary/30 shadow-md px-4 py-3.5 sm:px-6 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 sm:gap-5">
-              <div className="flex items-start sm:items-center gap-3.5">
-                <div className="grid size-11 sm:size-12 shrink-0 place-items-center rounded-xl bg-[#FFF8F3] border border-primary/20">
-                  <TextileSteamIcon className="size-8" />
+            {/* Options complémentaires : Traitement vapeur & Traitement anti-odeurs */}
+            <div className="grid gap-3.5 lg:grid-cols-2 items-stretch">
+              <div className="rounded-2xl bg-white/95 text-[#11114E] border border-primary/30 shadow-md px-4 py-4 sm:px-5 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 sm:gap-4">
+                <div className="flex items-start gap-3.5">
+                  <div className="grid size-11 sm:size-12 shrink-0 place-items-center rounded-xl bg-[#FFF8F3] border border-primary/20">
+                    <TextileSteamIcon className="size-8" />
+                  </div>
+                  <div className="space-y-1">
+                    <span className="block text-[11px] font-bold uppercase tracking-wider text-primary">
+                      Option complémentaire
+                    </span>
+                    <h3 className="font-display text-lg sm:text-xl font-bold uppercase tracking-wide text-[#11114E] leading-tight">
+                      {TEXTILE_STEAM_OPTION.name}
+                    </h3>
+                    <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed">
+                      {TEXTILE_STEAM_OPTION.short}
+                    </p>
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  <span className="block text-[11px] font-bold uppercase tracking-wider text-primary">
-                    Option complémentaire
+
+                <div className="flex sm:flex-col items-baseline sm:items-end justify-between sm:justify-center gap-1 shrink-0 border-t sm:border-t-0 border-slate-200/80 pt-2.5 sm:pt-0 sm:pl-4 sm:border-l">
+                  <span className="font-display text-3xl sm:text-[34px] font-bold text-primary leading-none tabular-nums whitespace-nowrap">
+                    {TEXTILE_STEAM_OPTION.priceLabel}
                   </span>
-                  <h3 className="font-display text-lg sm:text-xl font-bold uppercase tracking-wide text-[#11114E] leading-tight">
-                    {TEXTILE_STEAM_OPTION.name}
-                  </h3>
-                  <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed max-w-2xl">
-                    {TEXTILE_STEAM_OPTION.short}
-                  </p>
+                  <span className="text-xs font-semibold text-[#11114E] sm:text-right">
+                    {TEXTILE_STEAM_OPTION.unitLabel}
+                  </span>
                 </div>
               </div>
 
-              <div className="flex sm:flex-col items-baseline sm:items-end justify-between sm:justify-center gap-1.5 shrink-0 border-t sm:border-t-0 border-slate-200/80 pt-2.5 sm:pt-0 sm:pl-5 sm:border-l">
-                <span className="font-display text-3xl sm:text-[34px] font-bold text-primary leading-none tabular-nums">
-                  {TEXTILE_STEAM_OPTION.priceLabel}
-                </span>
-                <span className="text-xs font-semibold text-[#11114E] sm:text-right">
-                  {TEXTILE_STEAM_OPTION.unitLabel}
-                </span>
+              <div className="rounded-2xl bg-white/95 text-[#11114E] border border-primary/30 shadow-md px-4 py-4 sm:px-5 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 sm:gap-4">
+                <div className="flex items-start gap-3.5">
+                  <div className="grid size-11 sm:size-12 shrink-0 place-items-center rounded-xl bg-[#FFF8F3] border border-primary/20">
+                    <TextileAntiOdorIcon className="size-8" />
+                  </div>
+                  <div className="space-y-1">
+                    <span className="block text-[11px] font-bold uppercase tracking-wider text-primary">
+                      Option complémentaire • Canapés &amp; matelas
+                    </span>
+                    <h3 className="font-display text-lg sm:text-xl font-bold uppercase tracking-wide text-[#11114E] leading-tight">
+                      {TEXTILE_ANTI_ODOR_OPTION.name}
+                    </h3>
+                    <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed">
+                      {TEXTILE_ANTI_ODOR_OPTION.short}
+                    </p>
+                    <p className="text-[11px] text-slate-500 leading-snug pt-0.5">
+                      {TEXTILE_ANTI_ODOR_OPTION.complementNote}{" "}
+                      {TEXTILE_ANTI_ODOR_OPTION.disclaimer}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex sm:flex-col items-baseline sm:items-end justify-between sm:justify-center gap-1 shrink-0 border-t sm:border-t-0 border-slate-200/80 pt-2.5 sm:pt-0 sm:pl-4 sm:border-l">
+                  <span className="font-display text-3xl sm:text-[34px] font-bold text-primary leading-none tabular-nums whitespace-nowrap">
+                    {TEXTILE_ANTI_ODOR_OPTION.priceLabel}
+                  </span>
+                  <span className="text-xs font-semibold text-[#11114E] sm:text-right">
+                    {TEXTILE_ANTI_ODOR_OPTION.unitLabel}
+                  </span>
+                </div>
               </div>
             </div>
 

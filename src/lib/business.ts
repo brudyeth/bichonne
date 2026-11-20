@@ -42,7 +42,7 @@ export const FORMULAS: Formula[] = [
   {
     id: "interieur-premium",
     name: "Intérieur Premium",
-    price: 99,
+    price: 89,
     duration: "2 à 3 h",
     short:
       "Prestations de l'Express + nettoyage approfondi, shampouinage des textiles et finitions détaillées.",

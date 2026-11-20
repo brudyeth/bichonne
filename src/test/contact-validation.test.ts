@@ -115,10 +115,10 @@ describe("Utility vehicle pricing rules", () => {
     expect(calculateTotal(69, "grand-utilitaire")).toBe(89);
   });
 
-  it("calculates Intérieur Premium (99 €) correctly for all vehicle types", () => {
-    expect(calculateTotal(99, "standard")).toBe(99);
-    expect(calculateTotal(99, "utilitaire")).toBe(119);
-    expect(calculateTotal(99, "grand-utilitaire")).toBe(119);
+  it("calculates Intérieur Premium (89 €) correctly for all vehicle types", () => {
+    expect(calculateTotal(89, "standard")).toBe(89);
+    expect(calculateTotal(89, "utilitaire")).toBe(109);
+    expect(calculateTotal(89, "grand-utilitaire")).toBe(109);
   });
 
   it("calculates Formule Complète (139 €) correctly for all vehicle types, including utilitaires (+20 € = 159 €)", () => {
@@ -132,8 +132,8 @@ describe("Utility vehicle pricing rules", () => {
     expect(calculateTotal(139, "utilitaire", [15])).toBe(174);
     // Formule Complète 139 € + Grand utilitaire 20 € + Poils 15 € + Cuir 15 € = 189 €
     expect(calculateTotal(139, "grand-utilitaire", [15, 15])).toBe(189);
-    // Intérieur Premium 99 € + Utilitaire 20 € + Poils 15 € = 134 €
-    expect(calculateTotal(99, "utilitaire", [15])).toBe(134);
+    // Intérieur Premium 89 € + Utilitaire 20 € + Poils 15 € = 124 €
+    expect(calculateTotal(89, "utilitaire", [15])).toBe(124);
   });
 });
 

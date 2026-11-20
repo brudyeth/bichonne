@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import { routeTree } from "@/routeTree.gen";
 import { BUSINESS, CARES, FORMULAS, TRAVEL_CONDITIONS } from "@/lib/business";
 import {
+  TEXTILE_ANTI_ODOR_OPTION,
   TEXTILE_FIXED_PRESTATIONS,
   TEXTILE_HONEST_NOTICE,
   TEXTILE_OPTIONS,
@@ -76,7 +77,7 @@ describe("App routing", () => {
 });
 
 describe("Business configuration & pricing", () => {
-  it("has exact expected formula prices: 69 €, 99 €, 139 € and updated descriptions", () => {
+  it("has exact expected formula prices: 69 €, 89 €, 139 € and updated descriptions", () => {
     const express = FORMULAS.find((f) => f.id === "interieur-express");
     const premium = FORMULAS.find((f) => f.id === "interieur-premium");
     const comp = FORMULAS.find((f) => f.id === "complet");
@@ -93,7 +94,7 @@ describe("Business configuration & pricing", () => {
     );
     expect(express?.items).toContain("Nettoyage de surface des sièges et tissus");
 
-    expect(premium?.price).toBe(99);
+    expect(premium?.price).toBe(89);
     expect(premium?.duration).toBe("2 à 3 h");
     expect(premium?.short).toBe(
       "Prestations de l'Express + nettoyage approfondi, shampouinage des textiles et finitions détaillées.",
@@ -201,6 +202,7 @@ describe("Business configuration & pricing", () => {
     const serialized = JSON.stringify({
       TEXTILE_PRESTATIONS,
       TEXTILE_STEAM_OPTION,
+      TEXTILE_ANTI_ODOR_OPTION,
       TEXTILE_HONEST_NOTICE,
     }).toLowerCase();
     expect(serialized).not.toMatch(/d[ée]sinfect/);
@@ -276,6 +278,43 @@ describe("Business configuration & pricing", () => {
     expect(clamped.steamPiecesCount).toBe(2);
     expect(clamped.steamSurcharge).toBe(20);
   });
+
+  it("calculates optional Traitement anti-odeurs (+10 €) accurately and never enables it by default", () => {
+    expect(TEXTILE_ANTI_ODOR_OPTION.name).toBe("Traitement anti-odeurs");
+    expect(TEXTILE_ANTI_ODOR_OPTION.price).toBe(10);
+    expect(TEXTILE_ANTI_ODOR_OPTION.priceLabel).toBe("+10 €");
+    expect(TEXTILE_ANTI_ODOR_OPTION.short).toBe(
+      "Traitement complémentaire ciblant les mauvaises odeurs incrustées dans les textiles : urine d'animaux, odeurs persistantes et autres désagréments du quotidien.",
+    );
+
+    const withoutAntiOdor = calculateTextileEstimate({
+      quantities: { "canape-2-3": 1 },
+      steamEnabled: false,
+      steamQuantities: {},
+    });
+    expect(withoutAntiOdor.antiOdorSurcharge).toBe(0);
+    expect(withoutAntiOdor.baseTotal).toBe(69);
+
+    const withAntiOdor = calculateTextileEstimate({
+      quantities: { "canape-2-3": 1 },
+      steamEnabled: false,
+      steamQuantities: {},
+      antiOdorEnabled: true,
+    });
+    expect(withAntiOdor.antiOdorSurcharge).toBe(10);
+    expect(withAntiOdor.baseTotal).toBe(79);
+
+    const withBothOptions = calculateTextileEstimate({
+      quantities: { "matelas-2": 1 },
+      steamEnabled: true,
+      steamQuantities: { "matelas-2": 1 },
+      antiOdorEnabled: true,
+    });
+    expect(withBothOptions.fixedSubtotal).toBe(59);
+    expect(withBothOptions.steamSurcharge).toBe(10);
+    expect(withBothOptions.antiOdorSurcharge).toBe(10);
+    expect(withBothOptions.baseTotal).toBe(79);
+  });
 });
 
 describe("SEO metadata configuration", () => {
@@ -324,7 +363,7 @@ describe("SEO metadata configuration", () => {
 
     const formulesDesc = formulesHead?.meta?.find((m) => m["name"] === "description");
     expect(formulesDesc?.["content"]).toBe(
-      "Découvrez nos formules de nettoyage auto à domicile à Lille : Intérieur Express 69 €, Intérieur Premium 99 € et Formule Complète 139 €. Intervention dans la métropole lilloise.",
+      "Découvrez nos formules de nettoyage auto à domicile à Lille : Intérieur Express 69 €, Intérieur Premium 89 € et Formule Complète 139 €. Intervention dans la métropole lilloise.",
     );
 
     const contactRoute = router.routesById["/contact"];
